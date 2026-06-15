@@ -17,6 +17,8 @@ import httpx
 FEEDS = [
     ("BBC", "https://feeds.bbci.co.uk/sport/football/rss.xml"),
     ("Guardian", "https://www.theguardian.com/football/rss"),
+    ("ESPN", "https://www.espn.com/espn/rss/soccer/news"),
+    ("Sky", "https://www.skysports.com/rss/12040"),
 ]
 
 # 过滤词：世界杯总词 + 球队名/常见别称（小写匹配）
