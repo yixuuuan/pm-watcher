@@ -188,6 +188,8 @@ function flag(team){
   if(!iso) return "🏳️";
   return [...iso].map(c=>String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join("");
 }
+// 是否真国家：有 ISO 国旗或细分旗。用于过滤掉球员名 / Other / No Winner / 大小写重复项。
+function hasFlag(team){ return !!(ISO[team] || FLAG_SPECIAL[team]); }
 let DATA=null, TAB="champion", SORT="consensus";
 let NEWS=[], NEWSFAV=load("pmw_newsfav", false);
 let EVENTS=load("pmw_events", []);   // 赔率异动事件 {ts,team,delta,plat}
@@ -218,14 +220,18 @@ async function tick(){
   }catch(e){}
 }
 
-// 把"动量 ≥1pt"记成事件，进新闻时间线
+// 把"动量 ≥1pt"记成事件，进新闻时间线。只在服务端有新刷新时记一次，按 队+平台+刷新时刻 去重。
+let lastMovesTs = 0;
 function logMoves(){
-  if(!DATA) return;
-  const now=Math.floor(Date.now()/1000);
+  if(!DATA || !DATA.updated || DATA.updated===lastMovesTs) return;
+  lastMovesTs = DATA.updated;
   (DATA.champion||[]).forEach(r=>{
+    if(!hasFlag(r.team)) return;
     Object.entries(r.mom||{}).forEach(([p,d])=>{
       if(Math.abs(d)>=1.0){
-        EVENTS.push({ts:now, team:r.team, delta:d, plat:p});
+        const key = r.team+"|"+p+"|"+DATA.updated;
+        if(!EVENTS.some(e=>e.key===key))
+          EVENTS.push({ts:DATA.updated, team:r.team, delta:d, plat:p, key});
       }
     });
   });
@@ -319,7 +325,7 @@ function render(){
   pc.innerHTML=`<span class="sub">${L("platform")}</span>`+DATA.platforms.map(p=>
     `<span class="chk ${OFF.has(p)?'off':''}" data-p="${p}"><b>${OFF.has(p)?'○':'●'}</b>${p}</span>`).join("");
 
-  const rows=(DATA[TAB]||[]).map(r=>({r,s:stat(r)})).filter(x=>x.s);
+  const rows=(DATA[TAB]||[]).map(r=>({r,s:stat(r)})).filter(x=>x.s && hasFlag(x.r.team));
   rows.sort((a,b)=> SORT==="divergence" ? b.s.d-a.s.d : b.s.c-a.s.c);
 
   // 指标卡
@@ -413,7 +419,7 @@ function matchNews(A,B){
 }
 
 function renderChips(){
-  const teams=[...new Set((DATA.champion||[]).map(r=>r.team))];
+  const teams=[...new Set((DATA.champion||[]).map(r=>r.team).filter(hasFlag))];
   document.getElementById("chips").innerHTML=teams.map(t=>
     `<span class="chip ${WATCH.includes(t)?'on':''}" data-team="${t}">${flag(t)} ${t}</span>`).join("");
 }
@@ -458,7 +464,7 @@ function spark(team){
 }
 function renderWatch(){
   const aps=activePlats();
-  document.getElementById("watch").innerHTML=WATCH.map(t=>{
+  document.getElementById("watch").innerHTML=WATCH.filter(hasFlag).map(t=>{
     const r=(DATA.champion||[]).find(x=>x.team===t); if(!r) return "";
     const kv=aps.filter(p=>r.p[p]!=null).map(p=>`<div class="kv"><span>${p}</span><span>${r.p[p].toFixed(1)}%</span></div>`).join("");
     const s=stat(r);
@@ -486,6 +492,8 @@ document.addEventListener("click",e=>{
 });
 
 applyStatic();
+WATCH = WATCH.filter(hasFlag); save("pmw_watch", WATCH);   // 清掉历史遗留的非球队项
+EVENTS = EVENTS.filter(e=>e && e.key && hasFlag(e.team)); save("pmw_events", EVENTS); // 清掉旧版重复事件
 tick(); setInterval(tick, 12000); fetchHist(); setInterval(fetchHist, 30000);
 </script>
 </body>
