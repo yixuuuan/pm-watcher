@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>World Cup · Cross-Platform Pricing Monitor</title>
+<style>
+  :root{ --bg:#faf9f6; --card:#ffffff; --ink:#2c2c2a; --mut:#6b6a64; --hint:#9a988f;
+         --line:rgba(0,0,0,.10); --teal:#1d9e75; --up:#1d9e75; --down:#d85a30; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB",sans-serif;
+       font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1040px;margin:0 auto;padding:22px 20px 60px}
+  h1{font-size:27px;font-weight:650;letter-spacing:-0.5px;margin:0}
+  .sub{font-size:12px;color:var(--mut)}
+  .byline{font-size:12.5px;color:var(--hint);margin-top:3px}
+  .byline b{color:var(--mut);font-weight:500}
+  .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .between{justify-content:space-between}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
+  .mc{background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:18px 18px 16px;
+      position:relative;overflow:hidden}
+  .mc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,#1d9e75)}
+  .mc .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:0.08em}
+  .mc .v{font-size:26px;font-weight:650;letter-spacing:-0.4px;margin-top:6px;line-height:1.25}
+  .mc .v.small{font-size:14px;font-weight:500;letter-spacing:0}
+  .tabs button,.ctl button{font:inherit;cursor:pointer;border:.5px solid var(--line);background:var(--card);
+       color:var(--ink);border-radius:9px;padding:6px 13px}
+  .tabs button.on,.ctl button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .rcol{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+  .langsw{display:inline-flex;border:.5px solid var(--line);border-radius:9px;overflow:hidden}
+  .langsw button{font:inherit;cursor:pointer;border:0;background:var(--card);color:var(--mut);padding:5px 12px;font-size:13px}
+  .langsw button.on{background:var(--ink);color:#fff}
+  .chk{display:inline-flex;align-items:center;gap:5px;font-size:13px;color:var(--mut);
+       border:.5px solid var(--line);border-radius:9px;padding:5px 10px;cursor:pointer;background:var(--card)}
+  .chk.off{opacity:.4}
+  table{width:100%;border-collapse:collapse;margin-top:14px}
+  th{font-size:11px;color:var(--mut);font-weight:400;text-align:left;padding:0 8px 8px}
+  th.r,td.r{text-align:right} td{padding:9px 8px;border-top:.5px solid var(--line);vertical-align:middle}
+  .team{font-weight:500;white-space:nowrap}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--teal);margin-right:7px;vertical-align:1px}
+  .num{font-weight:500} .pct{color:var(--hint);font-size:11px}
+  .bar{height:4px;background:#eee9df;border-radius:2px;margin-top:3px}.bar>i{display:block;height:4px;background:#8b8a82;border-radius:2px}
+  .mom{font-size:11px;margin-left:3px} .up{color:var(--up)} .down{color:var(--down)}
+  .pill{font-weight:500;font-size:12px;padding:3px 9px;border-radius:8px}
+  .caret{color:var(--down);font-size:11px;margin-left:2px}
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+  .chip{font-size:12px;border:.5px solid var(--line);border-radius:20px;padding:4px 11px;cursor:pointer;background:var(--card);color:var(--mut)}
+  .chip.on{background:#e1f5ee;border-color:#9fe1cb;color:#0f6e56}
+  .watch{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:12px}
+  .wc{background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:12px 14px;overflow:hidden}
+  .wc svg{width:100%;height:auto;display:block}
+  .wc .lg{display:flex;flex-wrap:wrap;gap:2px 8px;margin-top:2px}
+  .wc .t{font-weight:600;margin-bottom:6px} .wc .kv{display:flex;justify-content:space-between;font-size:12px;color:var(--mut);padding:2px 0}
+  .err{color:var(--down);font-size:12px;margin-top:8px}
+  .muted{color:var(--mut)}
+  @media(max-width:680px){.cards{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="row between">
+    <div><h1 data-i18n="title">World Cup · Cross-Platform Pricing</h1>
+      <div class="byline">World Cup Cross-Platform Pricing Monitor · by <b>Yixuan</b></div>
+      <div class="sub" id="meta">Loading…</div></div>
+    <div class="rcol">
+      <div class="langsw"><button data-lang="en" class="on">EN</button><button data-lang="zh">中</button></div>
+      <div class="tabs row"><button data-tab="champion" class="on" data-i18n="tab_champion">Champion</button><button data-tab="group" data-i18n="tab_group">Group Winner</button><button data-tab="matches" data-i18n="tab_matches">Fixtures</button></div>
+    </div>
+  </div>
+
+  <div class="cards" id="cards"></div>
+
+  <div class="row between" id="boardCtl">
+    <div class="ctl row">
+      <span class="sub" data-i18n="sort">Sort</span>
+      <button data-sort="consensus" class="on" data-i18n="sort_consensus">by consensus</button>
+      <button data-sort="divergence" data-i18n="sort_divergence">by divergence</button>
+    </div>
+    <div class="row" id="plats"></div>
+  </div>
+
+  <table id="tbl"><thead></thead><tbody></tbody></table>
+  <div id="matches" style="display:none;margin-top:14px"></div>
+  <div class="err" id="err"></div>
+
+  <div style="margin-top:26px" class="row between">
+    <div><div class="team" style="font-size:15px" data-i18n="watch_head">My Watchlist</div><div class="sub" data-i18n="watch_sub">Tap a team below to add or remove; the line is each platform's odds history.</div></div>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div class="watch" id="watch"></div>
+
+  <div style="margin-top:26px" class="row between">
+    <div><div class="team" style="font-size:15px" data-i18n="news_head">Live News × Odds Moves</div>
+      <div class="sub" data-i18n="news_sub">BBC / Guardian football RSS, filtered to the World Cup; ⚡ marks a consensus move the monitor caught. Timelines are shown side by side for you to compare — no automatic causal claims.</div></div>
+    <div class="ctl row"><button id="newsFav" class="" data-i18n="news_fav">Watchlist only</button></div>
+  </div>
+  <div id="news" style="margin-top:10px"></div>
+</div>
+
+<script>
+let LANG = load("pmw_lang", "en");
+const I18N = {
+  en: {
+    title:"World Cup · Cross-Platform Pricing", tab_champion:"Champion", tab_group:"Group Winner",
+    tab_matches:"Fixtures", sort:"Sort", sort_consensus:"by consensus", sort_divergence:"by divergence",
+    watch_head:"My Watchlist", watch_sub:"Tap a team below to add or remove; the line is each platform's odds history.",
+    news_head:"Live News × Odds Moves",
+    news_sub:"BBC / Guardian football RSS, filtered to the World Cup; ⚡ marks a consensus move the monitor caught. Timelines are shown side by side for you to compare — no automatic causal claims.",
+    news_fav:"Watchlist only", loading:"Loading…", conn_fail:"Connection failed, retrying…",
+    updated:"updated", every:"every", refresh:"refresh", platform:"Platforms",
+    card_lead:"Consensus leader", card_div:"Widest divergence", card_over:"Overround · sum of probabilities",
+    card_cover:"Outcomes covered", th_team:"Team", th_consensus:"Consensus", th_divergence:"Divergence",
+    board_empty:"No data for this board (group board needs --live, and some platforms have no group market yet).",
+    matches_empty:"No comparable single-match markets. On --live, if this stays empty: match markets on Polymarket/Manifold may not be listed yet (they usually appear close to kickoff), or the network is unreachable.",
+    tbd:"Time TBD", th_draw:"Draw", th_spread:"Spread", books:"books",
+    matches_note:"Time shown is market close ≈ kickoff (not the official schedule); summary is the first platform's W/D/L %. Tap to expand the cross-platform comparison and both teams' news.",
+    no_team_news:"No news for", team_news:"Related news", news_odds:"📈 odds around this",
+    loading_odds:"Loading odds ±3h around this news…",
+    news_empty:"No matching news (RSS needs your network to reach BBC/Guardian; the “Watchlist only” toggle also filters many out).",
+    no_hist_window:"no stored data in this window (news predates the monitor, or odds never moved).",
+    yaxis:"y-axis", dashed_news:"dashed = news time", hist_building:"Building history… the line appears as odds move.",
+    consensus:"consensus", no_team_yet:"No teams selected — tap a name above to add."
+  },
+  zh: {
+    title:"世界杯 · 跨平台定价看板", tab_champion:"冠军榜", tab_group:"小组第一",
+    tab_matches:"赛程", sort:"排序", sort_consensus:"按共识", sort_divergence:"按分歧",
+    watch_head:"我的关注", watch_sub:"点下面的队名增减；曲线是各平台赔率的历史走势。",
+    news_head:"实时新闻 × 赔率异动",
+    news_sub:"BBC / Guardian 足球 RSS，按世界杯过滤；⚡ 是看板捕捉到的共识异动。两路时间戳并排呈现、供自行对照，不做自动因果归因。",
+    news_fav:"只看我关注的队", loading:"加载中…", conn_fail:"连接服务失败，重试中…",
+    updated:"更新于", every:"每", refresh:"刷新", platform:"平台",
+    card_lead:"共识领跑", card_div:"最大分歧", card_over:"盘口溢价 · 各家概率和",
+    card_cover:"覆盖结果数", th_team:"球队", th_consensus:"共识", th_divergence:"分歧",
+    board_empty:"这个榜暂无数据（小组榜需 --live，且部分平台尚未接小组市场）。",
+    matches_empty:"暂无可比的单场比赛盘。--live 下若长期为空：Polymarket/Manifold 的比赛盘可能尚未上架（多在临近开球时出现），或网络未通。",
+    tbd:"时间待定", th_draw:"平局", th_spread:"价差", books:"家",
+    matches_note:"时间为市场收盘时间 ≈ 开球时间（非官方赛程）；概要为首家平台的 胜/平/负 %。点击展开跨平台对比与两队新闻。",
+    no_team_news:"暂无相关新闻：", team_news:"两队相关新闻", news_odds:"📈 前后赔率",
+    loading_odds:"加载该新闻前后 ±3 小时的赔率…",
+    news_empty:"暂无匹配的新闻（RSS 拉取需要你的网络可达 BBC/Guardian；“只看我关注的队”也会过滤掉很多）。",
+    no_hist_window:"该时段没有落盘数据（新闻早于监控启动，或赔率全程未动）。",
+    yaxis:"纵轴", dashed_news:"虚线=新闻时刻", hist_building:"历史积累中…曲线随赔率变动出现。",
+    consensus:"共识", no_team_yet:"还没选队，点上面的队名添加。"
+  }
+};
+function L(k){ return (I18N[LANG] && I18N[LANG][k]) || (I18N.en[k] || k); }
+function loc(){ return LANG === "zh" ? "zh-CN" : "en-US"; }
+function applyStatic(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ el.textContent = L(el.dataset.i18n); });
+  document.title = L("title");
+  document.querySelectorAll("[data-lang]").forEach(b=>b.classList.toggle("on", b.dataset.lang===LANG));
+}
+
+const FAV = ["Spain","Argentina","England","Portugal","France","Brazil"];
+// 国名 -> ISO2（再转区域指示符 emoji）。England/Scotland 用 Unicode 细分旗。
+const ISO = {"Spain":"ES","France":"FR","Portugal":"PT","Brazil":"BR","Argentina":"AR","Germany":"DE",
+"Netherlands":"NL","Norway":"NO","Belgium":"BE","Colombia":"CO","Japan":"JP","Morocco":"MA","Mexico":"MX",
+"USA":"US","Turkey":"TR","Switzerland":"CH","Uruguay":"UY","Czechia":"CZ","Croatia":"HR","DR Congo":"CD",
+"Iraq":"IQ","Ecuador":"EC","Iran":"IR","Canada":"CA","Algeria":"DZ","Haiti":"HT","Egypt":"EG","Austria":"AT",
+"Ghana":"GH","Ivory Coast":"CI","Australia":"AU","Curaçao":"CW","Panama":"PA","Senegal":"SN","South Korea":"KR",
+"Cape Verde":"CV","New Zealand":"NZ","Scotland":"","England":"","Wales":"","Italy":"IT","South Africa":"ZA",
+"Uzbekistan":"UZ","Saudi Arabia":"SA","Jordan":"JO","Qatar":"QA","Tunisia":"TN","Paraguay":"PY","Sweden":"SE",
+"Bosnia & Herzegovina":"BA","Poland":"PL","Denmark":"DK","Ukraine":"UA","Chile":"CL","Peru":"PE","Nigeria":"NG",
+"Cameroon":"CM","Costa Rica":"CR","Honduras":"HN","Jamaica":"JM","Greece":"GR","Romania":"RO","Serbia":"RS",
+"Slovakia":"SK","Slovenia":"SI","Hungary":"HU","Finland":"FI","Ireland":"IE","Israel":"IL","Russia":"RU",
+"North Korea":"KP","China":"CN","India":"IN","Indonesia":"ID","Thailand":"TH","Vietnam":"VN","Philippines":"PH",
+"Bolivia":"BO","Venezuela":"VE","Guatemala":"GT","Ecuatorial Guinea":"GQ","Mali":"ML","Burkina Faso":"BF",
+"Gabon":"GA","Zambia":"ZM","Kenya":"KE","Angola":"AO","Mozambique":"MZ","Benin":"BJ","Togo":"TG","Libya":"LY",
+"Sudan":"SD","Ethiopia":"ET","Tanzania":"TZ","Uganda":"UG","Zimbabwe":"ZW","Botswana":"BW","Namibia":"NA",
+"Madagascar":"MG","Congo":"CG","Gambia":"GM","Guinea":"GN","Sierra Leone":"SL","Liberia":"LR","Niger":"NE",
+"Chad":"TD","Mauritania":"MR","Oman":"OM","Kuwait":"KW","Bahrain":"BH","UAE":"AE","Lebanon":"LB","Syria":"SY",
+"Yemen":"YE","Afghanistan":"AF","Pakistan":"PK","Bangladesh":"BD","Sri Lanka":"LK","Nepal":"NP","Myanmar":"MM",
+"Malaysia":"MY","Singapore":"SG","Cambodia":"KH","Laos":"LA","Mongolia":"MN","Kazakhstan":"KZ","Kyrgyzstan":"KG",
+"Tajikistan":"TJ","Turkmenistan":"TM","Azerbaijan":"AZ","Armenia":"AM","Georgia":"GE","Moldova":"MD","Belarus":"BY",
+"Lithuania":"LT","Latvia":"LV","Estonia":"EE","Iceland":"IS","Luxembourg":"LU","Malta":"MT","Cyprus":"CY",
+"Albania":"AL","North Macedonia":"MK","Montenegro":"ME","Kosovo":"XK","Bulgaria":"BG","Trinidad & Tobago":"TT",
+"El Salvador":"SV","Nicaragua":"NI","Cuba":"CU","Dominican Republic":"DO","Puerto Rico":"PR","Suriname":"SR",
+"Guyana":"GY","Fiji":"FJ","Papua New Guinea":"PG"};
+const FLAG_SPECIAL = {"England":"\u{1F3F4}\u{E0067}\u{E0062}\u{E0065}\u{E006E}\u{E0067}\u{E007F}",
+"Scotland":"\u{1F3F4}\u{E0067}\u{E0062}\u{E0073}\u{E0063}\u{E0074}\u{E007F}",
+"Wales":"\u{1F3F4}\u{E0067}\u{E0062}\u{E0077}\u{E006C}\u{E0073}\u{E007F}"};
+function flag(team){
+  if(FLAG_SPECIAL[team]) return FLAG_SPECIAL[team];
+  const iso = ISO[team];
+  if(!iso) return "🏳️";
+  return [...iso].map(c=>String.fromCodePoint(0x1F1E6 + c.charCodeAt(0) - 65)).join("");
+}
+let DATA=null, TAB="champion", SORT="consensus";
+let NEWS=[], NEWSFAV=load("pmw_newsfav", false);
+let EVENTS=load("pmw_events", []);   // 赔率异动事件 {ts,team,delta,plat}
+let WATCH = load("pmw_watch", FAV);
+let OFF = new Set(load("pmw_off", []));   // 被关掉的平台
+
+function load(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch(e){return d}}
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+
+function activePlats(){return (DATA?DATA.platforms:[]).filter(p=>!OFF.has(p))}
+function stat(row){
+  const ps=activePlats().filter(p=>row.p[p]!=null).map(p=>row.p[p]);
+  if(!ps.length) return null;
+  const c=ps.reduce((a,b)=>a+b,0)/ps.length, d=ps.length>1?Math.max(...ps)-Math.min(...ps):0;
+  return {c, d};
+}
+function divColor(d){ if(d<1)return['#f1efe8','#2c2c2a']; if(d<2)return['#faeeda','#412402'];
+  if(d<3)return['#faece7','#712b13']; return['#f5c4b3','#4a1b0c']; }
+
+async function tick(){
+  try{
+    const r=await fetch("/api/board",{cache:"no-store"}); DATA=await r.json();
+    logMoves(); render();
+  }catch(e){ document.getElementById("meta").textContent=L("conn_fail"); }
+  try{
+    const n=await fetch("/api/news",{cache:"no-store"}); NEWS=(await n.json()).items||[];
+    renderNews();
+  }catch(e){}
+}
+
+// 把"动量 ≥1pt"记成事件，进新闻时间线
+function logMoves(){
+  if(!DATA) return;
+  const now=Math.floor(Date.now()/1000);
+  (DATA.champion||[]).forEach(r=>{
+    Object.entries(r.mom||{}).forEach(([p,d])=>{
+      if(Math.abs(d)>=1.0){
+        EVENTS.push({ts:now, team:r.team, delta:d, plat:p});
+      }
+    });
+  });
+  EVENTS=EVENTS.slice(-60); save("pmw_events",EVENTS);
+}
+
+let OPENNEWS = null;
+function renderNews(){
+  const favOnly=NEWSFAV;
+  document.getElementById("newsFav").classList.toggle("on",favOnly);
+  const newsItems=(NEWS||[])
+    .filter(n=>!favOnly || n.teams.some(t=>WATCH.includes(t)))
+    .map(n=>({kind:"news",...n}));
+  const evItems=EVENTS
+    .filter(e=>!favOnly || WATCH.includes(e.team))
+    .map(e=>({kind:"move",...e}));
+  const all=[...newsItems,...evItems].sort((a,b)=>b.ts-a.ts).slice(0,30);
+  const fmt=ts=>ts?new Date(ts*1000).toLocaleString(loc(),{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"—";
+    document.getElementById("news").innerHTML = all.map(it=>{
+    if(it.kind==="move"){
+      const cls=it.delta>0?"up":"down", arr=it.delta>0?"▲":"▼";
+      const onp = LANG==="zh"?"在":"on";
+      return `<div style="display:flex;gap:10px;align-items:baseline;padding:8px 4px;border-top:.5px solid var(--line)">
+        <span class="sub" style="min-width:84px">${fmt(it.ts)}</span>
+        <span>⚡ ${flag(it.team)} <b>${it.team}</b> ${onp} ${it.plat} <span class="${cls}">${arr}${Math.abs(it.delta).toFixed(1)}pt</span></span></div>`;
+    }
+    const tg=it.teams.slice(0,3).map(t=>flag(t)).join(" ");
+    const nid = it.url;
+    const open = OPENNEWS===nid && it.teams.length;
+    const hint = it.teams.length ? `<span class="sub" style="margin-left:6px;cursor:pointer">${L("news_odds")}</span>` : "";
+    let chart = "";
+    if(open){
+      chart = `<div id="newschart" style="background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 10px">
+        <div class="sub">${L("loading_odds")}</div></div>`;
+      loadNewsChart(it);
+    }
+    return `<div data-news="${nid}" style="display:flex;gap:10px;align-items:baseline;padding:8px 4px;border-top:.5px solid var(--line);cursor:${it.teams.length?'pointer':'default'}">
+      <span class="sub" style="min-width:84px">${fmt(it.ts)}</span>
+      <span><a href="${it.url}" target="_blank" rel="noopener" style="color:var(--ink);text-decoration:none">${it.title}</a>
+        <span class="sub" style="margin-left:7px">${tg} · ${it.source}</span>${hint}</span></div>${chart}`;
+  }).join("") || `<div class="sub" style="padding:12px 4px">${L("news_empty")}</div>`;
+}
+
+async function loadNewsChart(it){
+  const W=3*3600;                       // ±3 小时
+  const since = it.ts - W;
+  const teams = it.teams.slice(0,2);
+  try{
+    const r = await fetch(`/api/history?scope=champion&teams=${encodeURIComponent(teams.join(","))}&since=${since}`,{cache:"no-store"});
+    const ser = (await r.json()).series || {};
+    const el = document.getElementById("newschart");
+    if(!el) return;
+    el.innerHTML = teams.map(t=>{
+      const s = ser[t] || {};
+      const plats = Object.keys(s).filter(p=>s[p].length);
+      if(!plats.length) return `<div class="sub" style="padding:4px 0">${flag(t)} ${t} — ${L("no_hist_window")}</div>`;
+      const w=420, ht=64, pad=4, t0=since, t1=Math.min(it.ts+W, Math.floor(Date.now()/1000));
+      let v0=Infinity,v1=-Infinity;
+      plats.forEach(p=>s[p].forEach(([ts,v])=>{v0=Math.min(v0,v);v1=Math.max(v1,v);}));
+      if(v1-v0<0.5){const m=(v0+v1)/2;v0=m-0.3;v1=m+0.3;}
+      const X=ts=>pad+(Math.min(Math.max(ts,t0),t1)-t0)/(t1-t0)*(w-2*pad), Y=v=>ht-pad-(v-v0)/(v1-v0)*(ht-2*pad);
+      const lines=plats.map(p=>{
+        let d=""; s[p].forEach(([ts,v],i)=>{const x=X(ts),y=Y(v);
+          d += (i? ` H${x.toFixed(1)} V${y.toFixed(1)}` : `M${x.toFixed(1)},${y.toFixed(1)}`);});
+        d += ` H${X(t1).toFixed(1)}`;
+        return `<path d="${d}" fill="none" stroke="${PCOLOR[p]||'#888'}" stroke-width="1.5"/>`;
+      }).join("");
+      const nx=X(it.ts);
+      const marker=`<line x1="${nx}" y1="0" x2="${nx}" y2="${ht}" stroke="#b32d0f" stroke-width="1" stroke-dasharray="3,3"/>`;
+      const legend=plats.map(p=>`<span style="color:${PCOLOR[p]||'#888'};font-size:10px;margin-right:8px">●${p}</span>`).join("");
+      return `<div style="padding:4px 0"><div style="font-size:13px;font-weight:500">${flag(t)} ${t} <span class="sub">${L("yaxis")} ${v0.toFixed(1)}–${v1.toFixed(1)}% · ${L("dashed_news")}</span></div>
+        <svg viewBox="0 0 ${w} ${ht}" preserveAspectRatio="none" style="width:100%;height:64px">${lines}${marker}</svg><div>${legend}</div></div>`;
+    }).join("");
+  }catch(e){}
+}
+
+function render(){
+  if(!DATA) return;
+  const upd=DATA.updated?new Date(DATA.updated*1000).toLocaleTimeString(loc()):"—";
+  document.getElementById("meta").textContent=
+    `${DATA.live?"LIVE":"MOCK"} · ${L("updated")} ${upd} · ${L("every")} ${DATA.interval}s ${L("refresh")}`;
+
+  const isMatches = TAB==="matches";
+  document.getElementById("tbl").style.display = isMatches?"none":"";
+  document.getElementById("boardCtl").style.display = isMatches?"none":"";
+  document.getElementById("matches").style.display = isMatches?"":"none";
+  if(isMatches){ renderMatches(); renderChips(); renderWatch(); return; }
+
+  // 平台勾选
+  const pc=document.getElementById("plats");
+  pc.innerHTML=`<span class="sub">${L("platform")}</span>`+DATA.platforms.map(p=>
+    `<span class="chk ${OFF.has(p)?'off':''}" data-p="${p}"><b>${OFF.has(p)?'○':'●'}</b>${p}</span>`).join("");
+
+  const rows=(DATA[TAB]||[]).map(r=>({r,s:stat(r)})).filter(x=>x.s);
+  rows.sort((a,b)=> SORT==="divergence" ? b.s.d-a.s.d : b.s.c-a.s.c);
+
+  // 指标卡
+  const lead=[...rows].sort((a,b)=>b.s.c-a.s.c)[0];
+  const wide=[...rows].sort((a,b)=>b.s.d-a.s.d)[0];
+  const over=DATA.overround||{};
+  const overTxt=activePlats().map(p=>over[p]!=null?`${p} ${over[p]}%`:null).filter(Boolean).join(" · ")||"—";
+  document.getElementById("cards").innerHTML=`
+    ${mc(L("card_lead"), lead?`${flag(lead.r.team)} ${lead.r.team} ${lead.s.c.toFixed(1)}%`:"—","#1d9e75")}
+    ${mc(L("card_div"), wide?`${flag(wide.r.team)} ${wide.r.team} ${wide.s.d.toFixed(1)}pt`:"—","#d85a30")}
+    ${mc(L("card_over"), overTxt, "#c2a23a", true)}
+    ${mc(L("card_cover"), rows.length, "#2563ab")}`;
+
+  // 表头
+  const aps=activePlats();
+  document.querySelector("#tbl thead").innerHTML=
+    `<tr><th>${L("th_team")}</th>${aps.map(p=>`<th>${p}</th>`).join("")}<th class="r">${L("th_consensus")}</th><th class="r">${L("th_divergence")}</th></tr>`;
+  const SCALE=Math.max(18,...rows.map(x=>x.s.c))*1.05;
+  document.querySelector("#tbl tbody").innerHTML=rows.map(({r,s})=>{
+    const lowP = aps.length>1 ? aps.reduce((m,p)=> (r.p[p]!=null&&(m==null||r.p[p]<r.p[m]))?p:m, null) : null;
+    const cells=aps.map(p=>{
+      const v=r.p[p]; if(v==null) return `<td class="muted r">—</td>`;
+      const w=Math.min(100,v/SCALE*100);
+      const m=r.mom&&r.mom[p];
+      const mom=m?`<span class="mom ${m>0?'up':'down'}">${m>0?'▲':'▼'}${Math.abs(m).toFixed(1)}</span>`:"";
+      const car=p===lowP?`<span class="caret">▼</span>`:"";
+      return `<td class="r"><div><span class="num">${v.toFixed(1)}</span><span class="pct">%</span>${mom}${car}</div>
+              <div class="bar"><i style="width:${w}%"></i></div></td>`;
+    }).join("");
+    const dc=divColor(s.d), watched=WATCH.includes(r.team);
+    return `<tr><td class="team">${watched?'<span class="dot"></span>':''}<span style="margin-right:6px">${flag(r.team)}</span>${r.team}</td>${cells}
+      <td class="r num">${s.c.toFixed(1)}<span class="pct">%</span></td>
+      <td class="r"><span class="pill" style="background:${dc[0]};color:${dc[1]}">${s.d.toFixed(1)}pt</span></td></tr>`;
+  }).join("") || `<tr><td colspan="9" class="muted" style="padding:18px">${L("board_empty")}</td></tr>`;
+
+  const errs=Object.entries(DATA.errors||{});
+  document.getElementById("err").innerHTML=errs.length?("⚠️ "+errs.map(([k,v])=>`${k}: ${v}`).join(" · ")):"";
+
+  renderChips(); renderWatch();
+}
+function mc(l,v,accent,small){return `<div class="mc" style="--accent:${accent||'#1d9e75'}"><div class="l">${l}</div><div class="v ${small?'small':''}">${v}</div></div>`}
+
+let OPENMATCH = null;
+function renderMatches(){
+  const ms = DATA.matches||[];
+  const el = document.getElementById("matches");
+  if(!ms.length){
+    el.innerHTML = `<div class="sub" style="padding:14px 4px">${L("matches_empty")}</div>`;
+    return;
+  }
+  const fmtT = ts => ts? new Date(ts*1000).toLocaleString(loc(),{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
+  const byDay = {};
+  ms.forEach(m=>{ const d = m.kickoff? new Date(m.kickoff*1000).toLocaleDateString(loc(),{month:"long",day:"numeric"}) : L("tbd");
+    (byDay[d]=byDay[d]||[]).push(m); });
+  el.innerHTML = Object.entries(byDay).map(([day,list])=>{
+    const rows = list.map(m=>{
+      const key = m.teams.join("|");
+      const open = OPENMATCH===key;
+      const [A,B]=m.teams;
+      const p0 = Object.values(m.odds)[0]||{};
+      const sum = `<span class="num">${p0[A]!=null?p0[A].toFixed(0):"–"}</span><span class="sub"> / </span><span class="num">${p0["Draw"]!=null?p0["Draw"].toFixed(0):"–"}</span><span class="sub"> / </span><span class="num">${p0[B]!=null?p0[B].toFixed(0):"–"}</span>`;
+      let detail = "";
+      if(open){
+        const plats = Object.keys(m.odds);
+        const cols = [A,"Draw",B];
+        const sprd = {};
+        cols.forEach(c=>{ const vs=plats.map(p=>m.odds[p][c]).filter(v=>v!=null);
+          sprd[c]= vs.length>1 ? (Math.max(...vs)-Math.min(...vs)).toFixed(1) : null; });
+        detail = `<div style="background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 10px">
+          <table style="margin:0"><thead><tr><th>${L("platform")}</th><th class="r">${flag(A)} ${A}</th><th class="r">${L("th_draw")}</th><th class="r">${flag(B)} ${B}</th></tr></thead><tbody>
+          ${plats.map(p=>`<tr><td>${p}</td>${cols.map(c=>`<td class="r num">${m.odds[p][c]!=null?m.odds[p][c].toFixed(1)+"%":"—"}</td>`).join("")}</tr>`).join("")}
+          ${plats.length>1?`<tr><td class="sub">${L("th_spread")}</td>${cols.map(c=>`<td class="r sub">${sprd[c]?sprd[c]+"pt":"—"}</td>`).join("")}</tr>`:""}
+          </tbody></table>
+          <div style="margin-top:10px">${matchNews(A,B)}</div></div>`;
+      }
+      return `<div data-match="${key}" style="display:flex;gap:12px;align-items:baseline;padding:10px 4px;border-top:.5px solid var(--line);cursor:pointer">
+          <span class="sub" style="min-width:84px">${fmtT(m.kickoff)}</span>
+          <span class="team">${flag(A)} ${A} <span class="sub">vs</span> ${flag(B)} ${B}</span>
+          <span style="margin-left:auto">${sum}</span>
+          <span class="sub">${Object.keys(m.odds).length} ${L("books")}</span></div>${detail}`;
+    }).join("");
+    return `<div class="sub" style="margin-top:14px;font-weight:500">${day}</div>${rows}`;
+  }).join("") + `<div class="sub" style="margin-top:12px">${L("matches_note")}</div>`;
+}
+function matchNews(A,B){
+  const rel=(NEWS||[]).filter(n=>n.teams.includes(A)||n.teams.includes(B)).slice(0,5);
+  if(!rel.length) return `<span class="sub">${L("no_team_news")} ${A}/${B}</span>`;
+  const fmt=ts=>ts?new Date(ts*1000).toLocaleString(loc(),{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"—";
+  return `<div class="sub" style="margin-bottom:4px">${L("team_news")}</div>`+rel.map(n=>
+    `<div style="padding:4px 0;font-size:13px"><span class="sub" style="margin-right:8px">${fmt(n.ts)}</span><a href="${n.url}" target="_blank" rel="noopener" style="color:var(--ink)">${n.title}</a></div>`).join("");
+}
+
+function renderChips(){
+  const teams=[...new Set((DATA.champion||[]).map(r=>r.team))];
+  document.getElementById("chips").innerHTML=teams.map(t=>
+    `<span class="chip ${WATCH.includes(t)?'on':''}" data-team="${t}">${flag(t)} ${t}</span>`).join("");
+}
+let HIST = {};   // team -> {platform: [[ts, price%],...]}（来自落盘历史）
+const PCOLOR = {polymarket:"#2563ab", kalshi:"#1d9e75", "42":"#d85a30", manifold:"#9a6bd6", predict:"#c2a23a"};
+async function fetchHist(){
+  if(!WATCH.length) return;
+  try{
+    const r = await fetch("/api/history?scope=champion&teams="+encodeURIComponent(WATCH.join(",")),{cache:"no-store"});
+    HIST = (await r.json()).series || {};
+    renderWatch();
+  }catch(e){}
+}
+function spark(team){
+  const ser = HIST[team] || {};
+  const plats = Object.keys(ser).filter(p=>ser[p].length>=1);
+  // 落盘历史不足时退回内存共识线
+  if(!plats.length){
+    const h=(DATA.history||[]).map(s=>s.c[team]).filter(v=>v!=null);
+    if(h.length<2) return `<div class="sub" style="margin-top:6px">${L("hist_building")}</div>`;
+    const mn=Math.min(...h),mx=Math.max(...h),w=190,ht=34,pad=2;
+    const pts=h.map((v,i)=>{const x=pad+i/(h.length-1)*(w-2*pad);
+      const y=ht-pad-(mx===mn?0.5:(v-mn)/(mx-mn))*(ht-2*pad);return x.toFixed(1)+","+y.toFixed(1)}).join(" ");
+    return `<svg viewBox="0 0 ${w} ${ht}" preserveAspectRatio="none" style="margin-top:6px"><polyline points="${pts}" fill="none" stroke="#1d9e75" stroke-width="1.5"/></svg>`;
+  }
+  // 逐平台阶梯曲线（变动驱动存储 → 阶梯插值还原）
+  const w=200, ht=44, pad=3;
+  let t0=Infinity, t1=-Infinity, v0=Infinity, v1=-Infinity;
+  plats.forEach(p=>ser[p].forEach(([t,v])=>{t0=Math.min(t0,t);t1=Math.max(t1,t);v0=Math.min(v0,v);v1=Math.max(v1,v);}));
+  t1=Math.max(t1, Math.floor(Date.now()/1000)); if(t1===t0) t1=t0+1;
+  if(v1-v0<0.5){const m=(v0+v1)/2; v0=m-0.3; v1=m+0.3;}
+  const X=t=>pad+(t-t0)/(t1-t0)*(w-2*pad), Y=v=>ht-pad-(v-v0)/(v1-v0)*(ht-2*pad);
+  const lines=plats.map(p=>{
+    const pts=ser[p]; let d="";
+    pts.forEach(([t,v],i)=>{ const x=X(t),y=Y(v);
+      d += (i? ` H${x.toFixed(1)} V${y.toFixed(1)}` : `M${x.toFixed(1)},${y.toFixed(1)}`); });
+    d += ` H${X(t1).toFixed(1)}`;   // 延伸到现在
+    return `<path d="${d}" fill="none" stroke="${PCOLOR[p]||'#888'}" stroke-width="1.4" opacity="0.9"/>`;
+  }).join("");
+  const legend=plats.map(p=>`<span style="color:${PCOLOR[p]||'#888'};font-size:10px;white-space:nowrap">●${p}</span>`).join("");
+  return `<svg viewBox="0 0 ${w} ${ht}" preserveAspectRatio="none" style="margin-top:6px">${lines}</svg><div class="lg">${legend}</div>`;
+}
+function renderWatch(){
+  const aps=activePlats();
+  document.getElementById("watch").innerHTML=WATCH.map(t=>{
+    const r=(DATA.champion||[]).find(x=>x.team===t); if(!r) return "";
+    const kv=aps.filter(p=>r.p[p]!=null).map(p=>`<div class="kv"><span>${p}</span><span>${r.p[p].toFixed(1)}%</span></div>`).join("");
+    const s=stat(r);
+    return `<div class="wc"><div class="t">${flag(t)} ${t} <span class="sub">${L("consensus")} ${s?s.c.toFixed(1):'—'}%</span></div>${kv}${spark(t)}</div>`;
+  }).join("") || `<div class="sub">${L("no_team_yet")}</div>`;
+}
+
+document.addEventListener("click",e=>{
+  if(e.target.closest("a")) return;   // 链接照常跳转
+  const nr=e.target.closest("[data-news]"); if(nr){const k=nr.dataset.news;
+    OPENNEWS = (OPENNEWS===k? null : k); renderNews(); return;}
+  const mr=e.target.closest("[data-match]"); if(mr){const k=mr.dataset.match;
+    OPENMATCH = (OPENMATCH===k? null : k); renderMatches(); return;}
+  if(e.target.id==="newsFav"){NEWSFAV=!NEWSFAV; save("pmw_newsfav",NEWSFAV); renderNews(); return;}
+  const tb=e.target.closest("[data-tab]"); if(tb){TAB=tb.dataset.tab;
+    document.querySelectorAll("[data-tab]").forEach(b=>b.classList.toggle("on",b===tb)); render(); return;}
+  const sb=e.target.closest("[data-sort]"); if(sb){SORT=sb.dataset.sort;
+    document.querySelectorAll("[data-sort]").forEach(b=>b.classList.toggle("on",b===sb)); render(); return;}
+  const pp=e.target.closest("[data-p]"); if(pp){const p=pp.dataset.p;
+    OFF.has(p)?OFF.delete(p):OFF.add(p); save("pmw_off",[...OFF]); render(); return;}
+  const lg=e.target.closest("[data-lang]"); if(lg){LANG=lg.dataset.lang; save("pmw_lang",LANG);
+    applyStatic(); if(DATA) render(); renderNews(); fetchHist(); return;}
+  const ch=e.target.closest("[data-team]"); if(ch){const t=ch.dataset.team;
+    WATCH.includes(t)?WATCH=WATCH.filter(x=>x!==t):WATCH.push(t); save("pmw_watch",WATCH); render(); return;}
+});
+
+applyStatic();
+tick(); setInterval(tick, 12000); fetchHist(); setInterval(fetchHist, 30000);
+</script>
+</body>
+</html>
