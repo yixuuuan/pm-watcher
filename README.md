@@ -13,7 +13,8 @@ One World Cup, five prediction markets, five different answers. pm-watcher puts 
 - **Champion board** — title odds for all 48 teams, five platforms side by side, plus a consensus price and a divergence heatmap (darker = the platforms disagree more)
 - **Group winner** — qualifying odds for all 12 groups (live data from Kalshi and 42)
 - **Fixtures** — a schedule of ~80 group-stage matches, auto-generated from the platforms' own markets; tap any match for a cross-platform Win / Draw / Loss comparison and the spread
-- **Live news × odds** — a BBC / Guardian football feed filtered by team; **tap a story to see that team's per-platform odds for ±3 hours around it** (the dashed red line marks the news timestamp)
+- **Live news × odds** — a BBC / Guardian / ESPN / Sky football feed plus Dongqiudi (Chinese), filtered by team; **tap a story to see that team's per-platform odds for ±3 hours around it** (the dashed red line marks the news timestamp)
+- **News danmaku** — recent and newly arrived headlines drift across the top as bullet-screen pills; hover to pause and read, click to open, and a top-right button toggles the stream off
 - **Persisted history** — every odds change is written to a local SQLite file (change-driven: nothing is stored while a price holds steady). When the tournament ends, `history.db` is a complete record of how five markets priced 104 matches
 - **Telegram alerts** — optional push when a cross-platform spread crosses your threshold
 - **Bilingual UI** — English / 中文 toggle, top right
@@ -25,6 +26,14 @@ One World Cup, five prediction markets, five different answers. pm-watcher puts 
 **Tap a news story to see the two teams' odds around it; ⚡ marks consensus moves the monitor caught:**
 
 ![Live news and odds-move timeline](docs/news_en.png)
+
+**News danmaku — headlines drift across the top like a bullet-screen; hovering a pill pauses it so you can read or click through, and the top-right button turns the stream off:**
+
+![News danmaku bullet-screen](docs/danmaku_en.png)
+
+**News × odds in one picture — a story's timestamp dropped onto each platform's price line for the hours around it, so the relationship between a headline and a price move is visible at a glance (a temporal relationship, not a causal claim):**
+
+![News and odds correlation chart](docs/newsodds_en.png)
 
 **A selectable watchlist — each card shows per-platform odds and a multi-platform history line:**
 
@@ -78,7 +87,7 @@ pm_watcher/
 ├── names.py        # country-name canonicalization + 48-team list
 ├── aggregator.py   # cross-platform merge (boards / fixtures)
 ├── history.py      # SQLite change-driven persistence
-├── news.py         # BBC/Guardian RSS, filtered by World Cup / team
+├── news.py         # BBC/Guardian/ESPN/Sky RSS + Dongqiudi, filtered by World Cup / team
 ├── notifier.py     # Telegram push
 ├── serve.py        # local dashboard server (http://127.0.0.1:8765)
 ├── dashboard.html  # single-page dashboard (no frontend build step)
