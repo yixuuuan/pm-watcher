@@ -12,20 +12,18 @@
   body{margin:0;background:var(--bg);color:var(--ink);
        font-family:"Twemoji Country Flags",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB",sans-serif;
        font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
-  /* 新闻浮层：半透明磨砂气泡，右下角滑入、悬停后上飘消失 */
-  #newsToasts{position:fixed;right:18px;bottom:18px;z-index:9999;display:flex;
-    flex-direction:column;gap:10px;pointer-events:none;max-width:330px}
-  .ntoast{pointer-events:auto;background:rgba(255,255,255,.70);
-    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-    border:.5px solid var(--line);border-radius:13px;padding:10px 13px;
-    box-shadow:0 8px 30px rgba(0,0,0,.14);cursor:pointer;
-    opacity:0;transform:translateX(44px);
-    transition:opacity .45s ease,transform .5s cubic-bezier(.22,1,.36,1)}
-  .ntoast.show{opacity:1;transform:translateX(0)}
-  .ntoast.out{opacity:0;transform:translateY(-30px)}
-  .ntoast:hover{background:rgba(255,255,255,.93)}
-  .ntoast .nt-tag{font-size:11px;color:var(--mut);margin-bottom:3px;display:flex;gap:5px;align-items:center}
-  .ntoast .nt-title{font-size:13px;line-height:1.45;color:var(--ink)}
+  /* 新闻弹幕：半透明磨砂胶囊，从右向左飞过页面顶部区域，可点击跳转 */
+  #danmaku{position:fixed;left:0;right:0;top:64px;height:42vh;z-index:9998;
+    pointer-events:none;overflow:hidden}
+  .dm{position:absolute;left:0;white-space:nowrap;pointer-events:auto;cursor:pointer;
+    display:inline-flex;align-items:center;gap:7px;
+    background:rgba(255,255,255,.66);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+    border:.5px solid var(--line);border-radius:999px;padding:6px 15px;
+    box-shadow:0 4px 18px rgba(0,0,0,.10);font-size:13px;color:var(--ink);
+    will-change:transform}
+  .dm:hover{background:rgba(255,255,255,.95);box-shadow:0 6px 22px rgba(0,0,0,.16)}
+  .dm .dm-tag{font-size:11px;color:var(--mut)}
+  .dm .dm-new{color:var(--up);font-weight:600}
   .wrap{max-width:1040px;margin:0 auto;padding:22px 20px 60px}
   h1{font-size:27px;font-weight:650;letter-spacing:-0.5px;margin:0}
   .sub{font-size:12px;color:var(--mut)}
@@ -108,7 +106,7 @@
 
   <div style="margin-top:26px" class="row between">
     <div><div class="team" style="font-size:15px" data-i18n="news_head">Live News × Odds Moves</div>
-      <div class="sub" data-i18n="news_sub">BBC / Guardian football RSS, filtered to the World Cup; ⚡ marks a consensus move the monitor caught. Timelines are shown side by side for you to compare — no automatic causal claims.</div></div>
+      <div class="sub" data-i18n="news_sub">BBC / Guardian / ESPN / Sky football RSS + Dongqiudi (Chinese), filtered to the World Cup; ⚡ marks a consensus move the monitor caught. Timelines are shown side by side for you to compare — no automatic causal claims.</div></div>
     <div class="ctl row"><button id="newsFav" class="" data-i18n="news_fav">Watchlist only</button></div>
   </div>
   <div id="news" style="margin-top:10px"></div>
@@ -122,7 +120,7 @@ const I18N = {
     tab_matches:"Fixtures", sort:"Sort", sort_consensus:"by consensus", sort_divergence:"by divergence",
     watch_head:"My Watchlist", watch_sub:"Tap a team below to add or remove; the line is each platform's odds history.",
     news_head:"Live News × Odds Moves",
-    news_sub:"BBC / Guardian football RSS, filtered to the World Cup; ⚡ marks a consensus move the monitor caught. Timelines are shown side by side for you to compare — no automatic causal claims.",
+    news_sub:"BBC / Guardian / ESPN / Sky football RSS + Dongqiudi (Chinese), filtered to the World Cup; ⚡ marks a consensus move the monitor caught. Timelines are shown side by side for you to compare — no automatic causal claims.",
     news_fav:"Watchlist only", loading:"Loading…", conn_fail:"Connection failed, retrying…",
     updated:"updated", every:"every", refresh:"refresh", platform:"Platforms",
     card_lead:"Consensus leader", card_div:"Widest divergence", card_over:"Overround · sum of probabilities",
@@ -133,7 +131,7 @@ const I18N = {
     matches_note:"Time shown is market close ≈ kickoff (not the official schedule); summary is the first platform's W/D/L %. Tap to expand the cross-platform comparison and both teams' news.",
     no_team_news:"No news for", team_news:"Related news", news_odds:"📈 odds around this", news_new:"New",
     loading_odds:"Loading odds ±3h around this news…",
-    news_empty:"No matching news (RSS needs your network to reach BBC/Guardian; the “Watchlist only” toggle also filters many out).",
+    news_empty:"No matching news (needs your network to reach BBC/Guardian/ESPN/Sky and Dongqiudi; the “Watchlist only” toggle also filters many out).",
     no_hist_window:"no stored data in this window (news predates the monitor, or odds never moved).",
     yaxis:"y-axis", dashed_news:"dashed = news time", hist_building:"Building history… the line appears as odds move.",
     consensus:"consensus", no_team_yet:"No teams selected — tap a name above to add."
@@ -143,7 +141,7 @@ const I18N = {
     tab_matches:"赛程", sort:"排序", sort_consensus:"按共识", sort_divergence:"按分歧",
     watch_head:"我的关注", watch_sub:"点下面的队名增减；曲线是各平台赔率的历史走势。",
     news_head:"实时新闻 × 赔率异动",
-    news_sub:"BBC / Guardian 足球 RSS，按世界杯过滤；⚡ 是看板捕捉到的共识异动。两路时间戳并排呈现、供自行对照，不做自动因果归因。",
+    news_sub:"BBC / Guardian / ESPN / Sky 足球 RSS + 懂球帝（中文），按世界杯过滤；⚡ 是看板捕捉到的共识异动。两路时间戳并排呈现、供自行对照，不做自动因果归因。",
     news_fav:"只看我关注的队", loading:"加载中…", conn_fail:"连接服务失败，重试中…",
     updated:"更新于", every:"每", refresh:"刷新", platform:"平台",
     card_lead:"共识领跑", card_div:"最大分歧", card_over:"盘口溢价 · 各家概率和",
@@ -154,7 +152,7 @@ const I18N = {
     matches_note:"时间为市场收盘时间 ≈ 开球时间（非官方赛程）；概要为首家平台的 胜/平/负 %。点击展开跨平台对比与两队新闻。",
     no_team_news:"暂无相关新闻：", team_news:"两队相关新闻", news_odds:"📈 前后赔率", news_new:"新闻",
     loading_odds:"加载该新闻前后 ±3 小时的赔率…",
-    news_empty:"暂无匹配的新闻（RSS 拉取需要你的网络可达 BBC/Guardian；“只看我关注的队”也会过滤掉很多）。",
+    news_empty:"暂无匹配的新闻（拉取需要你的网络可达 BBC/Guardian/ESPN/Sky 与懂球帝；“只看我关注的队”也会过滤掉很多）。",
     no_hist_window:"该时段没有落盘数据（新闻早于监控启动，或赔率全程未动）。",
     yaxis:"纵轴", dashed_news:"虚线=新闻时刻", hist_building:"历史积累中…曲线随赔率变动出现。",
     consensus:"共识", no_team_yet:"还没选队，点上面的队名添加。"
@@ -232,36 +230,73 @@ async function tick(){
   }catch(e){ document.getElementById("meta").textContent=L("conn_fail"); }
   try{
     const n=await fetch("/api/news",{cache:"no-store"}); NEWS=(await n.json()).items||[];
-    renderNews(); checkNewNews();
+    renderNews(); trackNews();
   }catch(e){}
 }
 
 // 新闻浮层：检测新到的文章，弹出可点击的漂浮气泡，3 秒后自动消散。
-let SEEN_NEWS = null;   // null = 尚未初始化（首次加载只记录、不弹，避免一上来刷屏）
-function ensureToastBox(){
-  let b=document.getElementById("newsToasts");
-  if(!b){ b=document.createElement("div"); b.id="newsToasts"; document.body.appendChild(b); }
+// ===== 新闻弹幕 =====
+// 每隔 DM_SPAWN_MS 飞出一条：有未播过的新新闻优先，否则循环播最近几条。
+// DM_TRAVEL_MS 是飞过屏幕的时长（设为可读速度；3 秒太快读不完整条标题，可自行调）。
+const DM_SPAWN_MS = 3000;
+const DM_TRAVEL_MS = 8000;
+let SEEN_NEWS = new Set();   // 已"播过"的新闻 url
+let dmQueue = [];            // 待播的新新闻（优先）
+let dmCycle = 0;             // 没有新新闻时，循环播最近列表的游标
+let dmFirst = true;          // 首次拉到新闻只登记、不立刻全部当"新"喷出
+let dmLanes = [];            // 各车道空闲时间戳
+
+function trackNews(){
+  const cur=(NEWS||[]).filter(n=>n && n.url && n.title);
+  if(dmFirst){ cur.forEach(n=>SEEN_NEWS.add(n.url)); dmFirst=false; return; }
+  cur.forEach(n=>{ if(!SEEN_NEWS.has(n.url)){ SEEN_NEWS.add(n.url); dmQueue.push(n); } });
+}
+
+function ensureDanmakuBox(){
+  let b=document.getElementById("danmaku");
+  if(!b){ b=document.createElement("div"); b.id="danmaku"; document.body.appendChild(b); }
   return b;
 }
-function showNewsToast(it){
-  const box=ensureToastBox();
+
+function spawnDanmaku(){
+  const box=ensureDanmakuBox();
+  // 选条目：优先新新闻，否则循环最近列表
+  let it=null, isNew=false;
+  if(dmQueue.length){ it=dmQueue.shift(); isNew=true; }
+  else {
+    const pool=(NEWS||[]).filter(n=>n && n.url && n.title);
+    if(!pool.length) return;
+    it=pool[dmCycle % pool.length]; dmCycle++;
+  }
+  const W=box.clientWidth||window.innerWidth;
+  const laneH=38, lanes=Math.max(1, Math.floor(box.clientHeight/laneH));
+  if(dmLanes.length!==lanes) dmLanes=new Array(lanes).fill(0);
+  const now=performance.now();
+  // 选最空闲的车道
+  let lane=0; for(let i=1;i<lanes;i++){ if(dmLanes[i]<dmLanes[lane]) lane=i; }
+
   const el=document.createElement("div");
-  el.className="ntoast";
+  el.className="dm";
   const fl=(it.teams&&it.teams.length)?flag(it.teams[0]):"📰";
-  el.innerHTML=`<div class="nt-tag">${fl}<span>${it.source||""} · ${L("news_new")||"新闻"}</span></div>`+
-               `<div class="nt-title">${(it.title||"").slice(0,80)}</div>`;
+  const tag=isNew?`<span class="dm-new">${L("news_new")}</span>`:`<span class="dm-tag">${it.source||""}</span>`;
+  el.innerHTML=`${fl}<span>${(it.title||"").slice(0,46)}</span>${tag}`;
   if(it.url) el.onclick=()=>window.open(it.url,"_blank","noopener");
+  el.style.top=(lane*laneH+4)+"px";
+  el.style.transform=`translateX(${W}px)`;
   box.appendChild(el);
-  requestAnimationFrame(()=>el.classList.add("show"));
-  setTimeout(()=>{ el.classList.add("out"); setTimeout(()=>el.remove(),600); }, 3000);
+
+  const w=el.offsetWidth;
+  // 车道占用到该条尾部离开右边缘为止，避免追尾
+  const speed=(W+w)/DM_TRAVEL_MS;            // px/ms
+  dmLanes[lane]=now + (w+70)/speed;
+  // 触发横移
+  requestAnimationFrame(()=>{
+    el.style.transition=`transform ${DM_TRAVEL_MS}ms linear`;
+    el.style.transform=`translateX(${-w-20}px)`;
+  });
+  setTimeout(()=>el.remove(), DM_TRAVEL_MS+120);
 }
-function checkNewNews(){
-  const cur=(NEWS||[]).filter(n=>n && n.url);
-  if(SEEN_NEWS===null){ SEEN_NEWS=new Set(cur.map(n=>n.url)); return; }
-  const fresh=cur.filter(n=>!SEEN_NEWS.has(n.url)).slice(0,3);   // 每次最多弹 3 条
-  fresh.reverse().forEach(showNewsToast);
-  cur.forEach(n=>SEEN_NEWS.add(n.url));
-}
+setInterval(spawnDanmaku, DM_SPAWN_MS);
 
 // 把"动量 ≥1pt"记成事件，进新闻时间线。只在服务端有新刷新时记一次，按 队+平台+刷新时刻 去重。
 let lastMovesTs = 0;
