@@ -12,31 +12,38 @@
   body{margin:0;background:var(--bg);color:var(--ink);
        font-family:"Twemoji Country Flags",-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB",sans-serif;
        font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
-  /* 新闻弹幕：半透明磨砂胶囊，从右向左飞过页面顶部区域，可点击跳转 */
+  /* 新闻弹幕：半透明磨砂胶囊，从右向左飞过页面顶部区域，可点击跳转；鼠标悬停暂停 */
   #danmaku{position:fixed;left:0;right:0;top:64px;height:42vh;z-index:9998;
     pointer-events:none;overflow:hidden}
   .dm{position:absolute;left:0;white-space:nowrap;pointer-events:auto;cursor:pointer;
     display:inline-flex;align-items:center;gap:7px;
-    background:rgba(255,255,255,.66);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-    border:.5px solid var(--line);border-radius:999px;padding:6px 15px;
-    box-shadow:0 4px 18px rgba(0,0,0,.10);font-size:13px;color:var(--ink);
+    background:rgba(255,255,255,.42);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    border:.5px solid rgba(0,0,0,.07);border-radius:999px;padding:6px 15px;
+    box-shadow:0 3px 14px rgba(0,0,0,.07);font-size:13px;color:var(--ink);
+    opacity:.72;transition:opacity .2s ease,background .2s ease,box-shadow .2s ease;
     will-change:transform}
-  .dm:hover{background:rgba(255,255,255,.95);box-shadow:0 6px 22px rgba(0,0,0,.16)}
+  .dm:hover{opacity:1;background:rgba(255,255,255,.96);box-shadow:0 6px 22px rgba(0,0,0,.16)}
   .dm .dm-tag{font-size:11px;color:var(--mut)}
   .dm .dm-new{color:var(--up);font-weight:600}
+  .dm-toggle{position:fixed;top:64px;right:14px;z-index:10000;
+    background:rgba(255,255,255,.9);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    border:.5px solid var(--line);border-radius:999px;padding:5px 12px;
+    font-size:12px;color:var(--mut);cursor:pointer;font-family:inherit;
+    box-shadow:0 2px 10px rgba(0,0,0,.08)}
+  .dm-toggle:hover{color:var(--ink);background:#fff}
   .wrap{max-width:1040px;margin:0 auto;padding:22px 20px 60px}
-  h1{font-size:27px;font-weight:650;letter-spacing:-0.5px;margin:0}
+  h1{font-size:36px;font-weight:700;letter-spacing:-0.8px;margin:0;line-height:1.1}
   .sub{font-size:12px;color:var(--mut)}
   .byline{font-size:12.5px;color:var(--hint);margin-top:3px}
   .byline b{color:var(--mut);font-weight:500}
   .row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
   .between{justify-content:space-between}
-  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:22px 0}
-  .mc{background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:18px 18px 16px;
-      position:relative;overflow:hidden}
-  .mc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent,#1d9e75)}
-  .mc .l{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:0.08em}
-  .mc .v{font-size:26px;font-weight:650;letter-spacing:-0.4px;margin-top:6px;line-height:1.25}
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:28px 0}
+  .mc{background:var(--card);border:.5px solid var(--line);border-radius:16px;padding:24px 22px 22px;
+      position:relative;overflow:hidden;box-shadow:0 2px 14px rgba(0,0,0,.05)}
+  .mc::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--accent,#1d9e75)}
+  .mc .l{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:0.09em}
+  .mc .v{font-size:34px;font-weight:700;letter-spacing:-0.6px;margin-top:10px;line-height:1.15}
   .mc .v.small{font-size:14px;font-weight:500;letter-spacing:0}
   .tabs button,.ctl button{font:inherit;cursor:pointer;border:.5px solid var(--line);background:var(--card);
        color:var(--ink);border-radius:9px;padding:6px 13px}
@@ -129,7 +136,7 @@ const I18N = {
     matches_empty:"No comparable single-match markets. On --live, if this stays empty: match markets on Polymarket/Manifold may not be listed yet (they usually appear close to kickoff), or the network is unreachable.",
     tbd:"Time TBD", th_draw:"Draw", th_spread:"Spread", books:"books",
     matches_note:"Time shown is market close ≈ kickoff (not the official schedule); summary is the first platform's W/D/L %. Tap to expand the cross-platform comparison and both teams' news.",
-    no_team_news:"No news for", team_news:"Related news", news_odds:"📈 odds around this", news_new:"New",
+    no_team_news:"No news for", team_news:"Related news", news_odds:"📈 odds around this", news_new:"New", danmaku:"Danmaku",
     loading_odds:"Loading odds ±3h around this news…",
     news_empty:"No matching news (needs your network to reach BBC/Guardian/ESPN/Sky and Dongqiudi; the “Watchlist only” toggle also filters many out).",
     no_hist_window:"no stored data in this window (news predates the monitor, or odds never moved).",
@@ -150,7 +157,7 @@ const I18N = {
     matches_empty:"暂无可比的单场比赛盘。--live 下若长期为空：Polymarket/Manifold 的比赛盘可能尚未上架（多在临近开球时出现），或网络未通。",
     tbd:"时间待定", th_draw:"平局", th_spread:"价差", books:"家",
     matches_note:"时间为市场收盘时间 ≈ 开球时间（非官方赛程）；概要为首家平台的 胜/平/负 %。点击展开跨平台对比与两队新闻。",
-    no_team_news:"暂无相关新闻：", team_news:"两队相关新闻", news_odds:"📈 前后赔率", news_new:"新闻",
+    no_team_news:"暂无相关新闻：", team_news:"两队相关新闻", news_odds:"📈 前后赔率", news_new:"新闻", danmaku:"弹幕",
     loading_odds:"加载该新闻前后 ±3 小时的赔率…",
     news_empty:"暂无匹配的新闻（拉取需要你的网络可达 BBC/Guardian/ESPN/Sky 与懂球帝；“只看我关注的队”也会过滤掉很多）。",
     no_hist_window:"该时段没有落盘数据（新闻早于监控启动，或赔率全程未动）。",
@@ -234,17 +241,19 @@ async function tick(){
   }catch(e){}
 }
 
-// 新闻浮层：检测新到的文章，弹出可点击的漂浮气泡，3 秒后自动消散。
 // ===== 新闻弹幕 =====
 // 每隔 DM_SPAWN_MS 飞出一条：有未播过的新新闻优先，否则循环播最近几条。
-// DM_TRAVEL_MS 是飞过屏幕的时长（设为可读速度；3 秒太快读不完整条标题，可自行调）。
-const DM_SPAWN_MS = 3000;
-const DM_TRAVEL_MS = 8000;
-let SEEN_NEWS = new Set();   // 已"播过"的新闻 url
-let dmQueue = [];            // 待播的新新闻（优先）
-let dmCycle = 0;             // 没有新新闻时，循环播最近列表的游标
-let dmFirst = true;          // 首次拉到新闻只登记、不立刻全部当"新"喷出
-let dmLanes = [];            // 各车道空闲时间戳
+// 逐帧推进，速度 DM_PX_PER_SEC（越小越慢）；鼠标悬停暂停该条；右上角按钮整体开关。
+const DM_SPAWN_MS = 3800;
+const DM_PX_PER_SEC = 80;        // 像素/秒，越小越慢
+const DM_LANE_H = 38;
+let DM_ON = load("pmw_dm", true);
+let SEEN_NEWS = new Set();
+let dmQueue = [];                // 待播的新新闻（优先）
+let dmCycle = 0;                 // 没有新新闻时循环播最近列表的游标
+let dmFirst = true;              // 首次拉到只登记、不全部当"新"喷出
+let dmItems = [];                // {el,x,w,lane,paused}
+let dmLaneLast = [];             // 每车道最近一条（防重叠）
 
 function trackNews(){
   const cur=(NEWS||[]).filter(n=>n && n.url && n.title);
@@ -259,21 +268,19 @@ function ensureDanmakuBox(){
 }
 
 function spawnDanmaku(){
+  if(!DM_ON || document.hidden) return;   // 后台不生成，避免堆积
   const box=ensureDanmakuBox();
+  const W=box.clientWidth||window.innerWidth;
+  const lanes=Math.max(1, Math.floor(box.clientHeight/DM_LANE_H));
+  if(dmLaneLast.length!==lanes) dmLaneLast=new Array(lanes).fill(null);
   // 选条目：优先新新闻，否则循环最近列表
   let it=null, isNew=false;
   if(dmQueue.length){ it=dmQueue.shift(); isNew=true; }
-  else {
-    const pool=(NEWS||[]).filter(n=>n && n.url && n.title);
-    if(!pool.length) return;
-    it=pool[dmCycle % pool.length]; dmCycle++;
-  }
-  const W=box.clientWidth||window.innerWidth;
-  const laneH=38, lanes=Math.max(1, Math.floor(box.clientHeight/laneH));
-  if(dmLanes.length!==lanes) dmLanes=new Array(lanes).fill(0);
-  const now=performance.now();
-  // 选最空闲的车道
-  let lane=0; for(let i=1;i<lanes;i++){ if(dmLanes[i]<dmLanes[lane]) lane=i; }
+  else { const pool=(NEWS||[]).filter(n=>n && n.url && n.title); if(!pool.length) return; it=pool[dmCycle%pool.length]; dmCycle++; }
+  // 选车道：优先尾部已离开右边并留出间隔的；否则选最靠左的
+  let lane=-1;
+  for(let i=0;i<lanes;i++){ const last=dmLaneLast[i]; if(!last || last.x+last.w < W-60){ lane=i; break; } }
+  if(lane<0){ lane=0; for(let i=1;i<lanes;i++){ if(dmLaneLast[i] && dmLaneLast[i].x < dmLaneLast[lane].x) lane=i; } }
 
   const el=document.createElement("div");
   el.className="dm";
@@ -281,22 +288,43 @@ function spawnDanmaku(){
   const tag=isNew?`<span class="dm-new">${L("news_new")}</span>`:`<span class="dm-tag">${it.source||""}</span>`;
   el.innerHTML=`${fl}<span>${(it.title||"").slice(0,46)}</span>${tag}`;
   if(it.url) el.onclick=()=>window.open(it.url,"_blank","noopener");
-  el.style.top=(lane*laneH+4)+"px";
+  el.style.top=(lane*DM_LANE_H+4)+"px";
   el.style.transform=`translateX(${W}px)`;
   box.appendChild(el);
-
-  const w=el.offsetWidth;
-  // 车道占用到该条尾部离开右边缘为止，避免追尾
-  const speed=(W+w)/DM_TRAVEL_MS;            // px/ms
-  dmLanes[lane]=now + (w+70)/speed;
-  // 触发横移
-  requestAnimationFrame(()=>{
-    el.style.transition=`transform ${DM_TRAVEL_MS}ms linear`;
-    el.style.transform=`translateX(${-w-20}px)`;
-  });
-  setTimeout(()=>el.remove(), DM_TRAVEL_MS+120);
+  const item={el, x:W, w:el.offsetWidth, lane, paused:false};
+  el.onmouseenter=()=>item.paused=true;     // 悬停暂停
+  el.onmouseleave=()=>item.paused=false;    // 移走继续
+  dmItems.push(item);
+  dmLaneLast[lane]=item;
 }
-setInterval(spawnDanmaku, DM_SPAWN_MS);
+
+let dmLastTs=0, dmAccum=0;
+function dmFrame(ts){
+  const dt=dmLastTs?Math.min(0.05,(ts-dmLastTs)/1000):0; dmLastTs=ts;
+  // 发射计时也放在 rAF 里：切到后台时 rAF 暂停，发射随之暂停，回到前台不会一次性喷出
+  dmAccum+=dt*1000;
+  if(dmAccum>=DM_SPAWN_MS){ dmAccum=0; spawnDanmaku(); }
+  const step=DM_PX_PER_SEC*dt;
+  for(let i=dmItems.length-1;i>=0;i--){
+    const it=dmItems[i];
+    if(!it.paused){ it.x-=step; it.el.style.transform=`translateX(${it.x}px)`; }
+    if(it.x < -(it.w+24)){ it.el.remove(); dmItems.splice(i,1); }
+  }
+  requestAnimationFrame(dmFrame);
+}
+requestAnimationFrame(dmFrame);
+// 切回前台时清零计时基准，避免一次大跳
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden){ dmLastTs=0; dmAccum=0; } });
+
+function clearDanmaku(){ dmItems.forEach(it=>it.el.remove()); dmItems=[]; dmLaneLast=dmLaneLast.map(()=>null); }
+function ensureDmToggle(){
+  let b=document.getElementById("dmToggle");
+  if(!b){ b=document.createElement("button"); b.id="dmToggle"; b.className="dm-toggle";
+    b.onclick=()=>{ DM_ON=!DM_ON; save("pmw_dm",DM_ON); if(!DM_ON) clearDanmaku(); ensureDmToggle(); };
+    document.body.appendChild(b); }
+  b.innerHTML=(DM_ON?"✕ ":"▷ ")+L("danmaku");
+}
+ensureDmToggle();
 
 // 把"动量 ≥1pt"记成事件，进新闻时间线。只在服务端有新刷新时记一次，按 队+平台+刷新时刻 去重。
 let lastMovesTs = 0;
@@ -564,7 +592,7 @@ document.addEventListener("click",e=>{
   const pp=e.target.closest("[data-p]"); if(pp){const p=pp.dataset.p;
     OFF.has(p)?OFF.delete(p):OFF.add(p); save("pmw_off",[...OFF]); render(); return;}
   const lg=e.target.closest("[data-lang]"); if(lg){LANG=lg.dataset.lang; save("pmw_lang",LANG);
-    applyStatic(); if(DATA) render(); renderNews(); fetchHist(); return;}
+    applyStatic(); ensureDmToggle(); if(DATA) render(); renderNews(); fetchHist(); return;}
   const ch=e.target.closest("[data-team]"); if(ch){const t=ch.dataset.team;
     WATCH.includes(t)?WATCH=WATCH.filter(x=>x!==t):WATCH.push(t); save("pmw_watch",WATCH); render(); return;}
 });
