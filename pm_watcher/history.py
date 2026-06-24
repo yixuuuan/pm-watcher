@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import os
+import hashlib
 import sqlite3
 import threading
 import time
@@ -51,6 +52,11 @@ def _db() -> sqlite3.Connection:
         _conn.execute("""CREATE TABLE IF NOT EXISTS backfill(
             scope TEXT, key TEXT, platform TEXT, price REAL,
             ts INTEGER, src TEXT, fetched_at INTEGER)""")
+        # 访问统计：每日总点击 hits + 当日去重独立访客 uniq
+        _conn.execute("""CREATE TABLE IF NOT EXISTS visit_day(
+            day TEXT PRIMARY KEY, hits INTEGER NOT NULL DEFAULT 0, uniq INTEGER NOT NULL DEFAULT 0)""")
+        _conn.execute("""CREATE TABLE IF NOT EXISTS visit_uniq(
+            day TEXT NOT NULL, iph TEXT NOT NULL, PRIMARY KEY(day, iph))""")
         _conn.commit()
         # 预热变动检测缓存：取每个序列的最后一笔
         for s, k, p, v in _conn.execute(
@@ -220,3 +226,35 @@ def closing_line(home: str, away: str, kickoff_ts: int) -> dict[str, dict[str, f
         label = key.split("|")[2]
         out.setdefault(plat, {})[label] = round(price * 100, 2)
     return out
+
+
+def record_visit(ip: str) -> None:
+    """每次页面加载 +1 次点击；同一 IP 当天只计一次独立访客。绝不抛错。"""
+    try:
+        day = time.strftime("%Y-%m-%d")
+        iph = hashlib.sha256(((ip or "?") + "|" + day).encode("utf-8")).hexdigest()[:16]
+        with _lock:
+            c = _db()
+            cur = c.execute("INSERT OR IGNORE INTO visit_uniq(day, iph) VALUES(?,?)", (day, iph))
+            new_uniq = 1 if cur.rowcount > 0 else 0
+            c.execute("INSERT INTO visit_day(day, hits, uniq) VALUES(?,1,?) "
+                      "ON CONFLICT(day) DO UPDATE SET hits=hits+1, uniq=uniq+?",
+                      (day, new_uniq, new_uniq))
+            c.commit()
+    except Exception:
+        pass
+
+
+def visit_stats() -> dict:
+    """返回累计总点击、今日点击、今日独立访客。"""
+    try:
+        with _lock:
+            c = _db()
+            total = c.execute("SELECT COALESCE(SUM(hits),0) FROM visit_day").fetchone()[0]
+            day = time.strftime("%Y-%m-%d")
+            row = c.execute("SELECT hits, uniq FROM visit_day WHERE day=?", (day,)).fetchone()
+        return {"total": int(total or 0),
+                "today_hits": int(row[0]) if row else 0,
+                "today_unique": int(row[1]) if row else 0}
+    except Exception:
+        return {"total": 0, "today_hits": 0, "today_unique": 0}

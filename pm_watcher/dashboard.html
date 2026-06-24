@@ -290,6 +290,7 @@
 <script src="qrcode.js"></script>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><polygon id="tcstar" points="0,-8 1.88,-2.59 7.61,-2.47 3.04,0.99 4.70,6.47 0,3.2 -4.70,6.47 -3.04,0.99 -7.61,-2.47 -1.88,-2.59"/></defs></svg>
 <script>
+const SITE_URL="https://pm-watchers.up.railway.app/", SITE_HOST="pm-watchers.up.railway.app";
 let LANG = load("pmw_lang", "en");
 const I18N = {
   en: {
@@ -1022,7 +1023,7 @@ function rcShareSVG(m){
   const FF="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif";
   const hl=rcHeadline(m); const HLC=hl?({hit:"#1d9e75",upset:"#d85a30",div:"#ba7517",calib:"#888780"}[hl.type]):"#888780";
   const HLBG=hl?({hit:"rgba(29,158,117,.12)",upset:"rgba(216,90,48,.12)",div:"rgba(186,117,23,.13)",calib:"rgba(136,135,128,.10)"}[hl.type]):"rgba(136,135,128,.10)";
-  const L_zh=LANG==="zh"; const qrUrl=(typeof location!=="undefined"?(location.origin+location.pathname):"")+"#recap";
+  const L_zh=LANG==="zh"; const qrUrl=SITE_URL+"#recap";
   const fe=t=>flag(t).replace(/<[^>]+>/g,"");   // 取出国旗 emoji（去掉 span）
   const date=m.kickoff? new Date(m.kickoff*1000).toLocaleDateString(loc(),{month:"short",day:"numeric",year:"numeric"}):L("tbd");
   const grp=rcGroup(m.grp), when=(grp?`${date} · ${grp}`:date);
@@ -1074,7 +1075,7 @@ function rcShareSVG(m){
     ${body}
     ${tcQRsvg(qrUrl, cardX+cardW-72-150, cardY+cardH-72-150, 150)}
     <text x="${inL}" y="1232" font-family="${FF}" font-size="23" fill="#9a988f">pm-watcher · ${_xml(L("brand_tag"))}</text>
-    <text x="${inL}" y="1272" font-family="${FF}" font-size="25" font-weight="600" fill="#6b6a64">${L_zh?"扫码 / 链接看完整看板 →":"scan / tap for the full board →"}</text>
+    <text x="${inL}" y="1272" font-family="${FF}" font-size="25" font-weight="600" fill="#6b6a64">${L_zh?("扫码看完整看板 · "+SITE_HOST):("scan the board · "+SITE_HOST)}</text>
   </svg>`;
 }
 function rcExport(mk){
@@ -1350,7 +1351,7 @@ function tcCard(t, id, opts){
   <text x="252" y="408" font-family="FWCCond,${TC_CJK}" font-size="11" fill="${st.sub}">${TL('ups')}</text>
   ${big?`<rect x="28" y="420" width="304" height="54" rx="11" fill="rgba(255,255,255,0.13)"/><text x="44" y="440" font-family="FWCCond,${TC_CJK}" font-size="11" letter-spacing="1" fill="${st.sub}">${upTitle}</text><text x="316" y="440" text-anchor="end" font-family="FWCNormal,${TC_CJK}" font-size="11" fill="${st.accent}">${TL('priced')} ${Math.round(big.win*100)}%</text><text x="44" y="461" font-family="FWCNormal,${TC_CJK}" font-size="14" fill="#fff">${tcEsc(L?(cn||en):en)} ${big.score} ${tcEsc(L?(TC_CN[big.opp]||big.opp):big.opp)}</text>`:""}
   <text x="28" y="500" font-family="FWCLight,${TC_CJK}" font-size="11" fill="${st.sub}">pm-watcher · ${L?"校准而非预测":"calibration, not prediction"}</text>
-  ${exp?`${tcQRsvg(opts.qrUrl||"",286,486,46)}<text x="28" y="519" font-family="FWCCond,${TC_CJK}" font-size="12" fill="#fff">${TL('scan')}</text>`:""}
+  ${exp?`${tcQRsvg(opts.qrUrl||"",286,486,46)}<text x="28" y="519" font-family="FWCCond,${TC_CJK}" font-size="12" fill="#fff">${(L?"扫码看完整看板 · ":"scan the board · ")+SITE_HOST}</text>`:""}
 </svg>`;
 }
 
@@ -1398,12 +1399,12 @@ async function tcExport(name){
     let flagHref=null; const fh=tcFlagHref(name);
     if(fh){ try{ const txt=await (await fetch(fh)).text(); flagHref="data:image/svg+xml;base64,"+btoa(unescape(encodeURIComponent(txt))); }catch(e){} }
     const fontCSS=await tcFontCSS();
-    const url=location.origin+location.pathname+"#team="+encodeURIComponent(name);
+    const url=SITE_URL+"#team="+encodeURIComponent(name);
     const svg=tcCard(t,"x",{exp:true,flagHref,fontCSS,qrUrl:url});
-    const W=1080,H=Math.round(548/360*1080);
+    const W=1080,H=Math.round(548/360*1080), M=56, CW=W+M*2, CH=H+M*2;
     const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"}); const u=URL.createObjectURL(blob);
     const img=new Image();
-    img.onload=()=>{ const c=document.createElement("canvas"); c.width=W; c.height=H; const ctx=c.getContext("2d"); ctx.drawImage(img,0,0,W,H); URL.revokeObjectURL(u);
+    img.onload=()=>{ const c=document.createElement("canvas"); c.width=CW; c.height=CH; const ctx=c.getContext("2d"); ctx.fillStyle="#ece9e0"; ctx.fillRect(0,0,CW,CH); ctx.drawImage(img,M,M,W,H); URL.revokeObjectURL(u);
       c.toBlob(b=>{ if(!b) return; const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=`pm-watcher-${name.replace(/\s+/g,'-')}.png`; document.body.appendChild(a); a.click(); a.remove(); }); };
     img.onerror=()=>{ URL.revokeObjectURL(u); };
     img.src=u;
@@ -1614,6 +1615,24 @@ applyStatic();
 WATCH = WATCH.filter(hasFlag); save("pmw_watch", WATCH);   // 清掉历史遗留的非球队项
 EVENTS = EVENTS.filter(e=>e && e.key && hasFlag(e.team)); save("pmw_events", EVENTS); // 清掉旧版重复事件
 tick(); setInterval(tick, 12000); fetchHist(); setInterval(fetchHist, 30000);
+
+// —— 站点页脚：实时累计访问量 + 版权 + 联系 ——
+(function(){
+  const st=document.createElement("style");
+  st.textContent=`#sitefoot{margin:42px auto 30px;padding:18px 16px 0;max-width:1100px;text-align:center;border-top:.5px solid var(--line,#e5e3db);color:var(--mut,#8a8880);font-size:12.5px;line-height:1.7}
+  #sitefoot .sf-views{font-size:14px;color:var(--ink,#2c2c2a);margin-bottom:5px}
+  #sitefoot .sf-views b{font-variant-numeric:tabular-nums}
+  #sitefoot .sf-legal a{color:inherit}`;
+  document.head.appendChild(st);
+  const f=document.createElement("footer"); f.id="sitefoot";
+  f.innerHTML=`<div class="sf-views" id="sfViews"></div><div class="sf-legal">© 2026 Yixuan · All rights reserved · <a href="mailto:isabel.yx.wang@gmail.com">isabel.yx.wang@gmail.com</a></div>`;
+  document.body.appendChild(f);
+  async function pull(){ try{ const r=await fetch("/api/stats",{cache:"no-store"}); const d=await r.json();
+      const n=(d.total||0).toLocaleString("en-US");
+      document.getElementById("sfViews").innerHTML=`👀 <b>${n}</b> ${LANG==="zh"?"累计访问":"total views"}`;
+    }catch(e){ const v=document.getElementById("sfViews"); if(v) v.textContent=""; } }
+  pull(); setInterval(pull, 30000);
+})();
 </script>
 </body>
 </html>

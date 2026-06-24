@@ -142,6 +142,13 @@ class _Handler(BaseHTTPRequestHandler):
         if self.path.split("?")[0] == "/healthz":
             return self._send(200, b"ok", "text/plain; charset=utf-8")
         if self.path == "/" or self.path.startswith("/index"):
+            try:
+                from . import history
+                ip = (self.headers.get("X-Forwarded-For", "").split(",")[0].strip()
+                      or self.client_address[0])
+                history.record_visit(ip)
+            except Exception:
+                pass
             self._send(200, _HTML.encode("utf-8"), "text/html; charset=utf-8")
         elif self.path.startswith("/api/history"):
             try:
@@ -186,6 +193,14 @@ class _Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(),
                            "application/json")
+        elif self.path.startswith("/api/stats"):
+            try:
+                from . import history
+                self._send(200, json.dumps(history.visit_stats()).encode("utf-8"),
+                           "application/json; charset=utf-8")
+            except Exception as e:
+                self._send(500, json.dumps({"error": str(e)}).encode(),
+                           "application/json; charset=utf-8")
         elif self.path.startswith("/api/board"):
             try:
                 _refresh()
