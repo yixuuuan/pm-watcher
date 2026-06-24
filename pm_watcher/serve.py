@@ -117,13 +117,25 @@ def _payload():
 
 
 class _Handler(BaseHTTPRequestHandler):
+    def handle(self):
+        # 客户端在响应写完前断开（刷新页面 / 切走 / 前端自动重拉时中止上一个请求）
+        # 会触发 BrokenPipeError / ConnectionResetError。这是无害的，静默忽略，
+        # 以免整屏 traceback 把 backfill 等真实输出淹没。
+        try:
+            super().handle()
+        except (BrokenPipeError, ConnectionResetError):
+            pass
+
     def _send(self, code, body: bytes, ctype):
-        self.send_response(code)
-        self.send_header("Content-Type", ctype)
-        self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store")
-        self.end_headers()
-        self.wfile.write(body)
+        try:
+            self.send_response(code)
+            self.send_header("Content-Type", ctype)
+            self.send_header("Content-Length", str(len(body)))
+            self.send_header("Cache-Control", "no-store")
+            self.end_headers()
+            self.wfile.write(body)
+        except (BrokenPipeError, ConnectionResetError):
+            pass  # 对端已断开，丢弃本次响应
 
     def do_GET(self):
         if self.path == "/" or self.path.startswith("/index"):
@@ -152,6 +164,25 @@ class _Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(),
                            "application/json")
+        elif self.path.startswith("/api/recap"):
+            try:
+                from . import history
+                out = []
+                for r in history.results():
+                    cl = history.closing_line(r["home"], r["away"], r["kickoff_ts"])
+                    odds = {p: [d.get(r["home"]), d.get("Draw"), d.get(r["away"])]
+                            for p, d in cl.items()}
+                    res = "D" if r["outcome"] == "Draw" else ("A" if r["outcome"] == r["home"] else "B")
+                    out.append({"home": r["home"], "away": r["away"],
+                                "sa": r["home_score"], "sb": r["away_score"],
+                                "result": res, "kickoff": r["kickoff_ts"],
+                                "grp": r.get("grp"), "odds": odds})
+                out.sort(key=lambda m: m["kickoff"])
+                self._send(200, json.dumps({"matches": out}).encode("utf-8"),
+                           "application/json; charset=utf-8")
+            except Exception as e:
+                self._send(500, json.dumps({"error": str(e)}).encode(),
+                           "application/json")
         elif self.path.startswith("/api/board"):
             try:
                 _refresh()
@@ -160,11 +191,38 @@ class _Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(),
                            "application/json")
+        elif self.path.startswith("/fonts/") or self.path.startswith("/flags/") or self.path.split("?")[0] == "/qrcode.js":
+            try:
+                from pathlib import Path as _P
+                rel = self.path.lstrip("/").split("?")[0]
+                base = _P(__file__).parent.resolve()
+                fp = (base / rel).resolve()
+                if base in fp.parents and fp.is_file():
+                    ext = fp.suffix.lower()
+                    ctype = {".svg": "image/svg+xml", ".ttf": "font/ttf",
+                             ".woff2": "font/woff2", ".js": "text/javascript; charset=utf-8"}.get(ext, "application/octet-stream")
+                    self._send(200, fp.read_bytes(), ctype)
+                else:
+                    self._send(404, b"not found", "text/plain")
+            except Exception:
+                self._send(404, b"not found", "text/plain")
         else:
             self._send(404, b"not found", "text/plain")
 
     def log_message(self, *a):
         pass
+
+
+def _results_loop(every: int = 300):
+    """后台定时把已结束比赛同步进 result 表，recap 随比赛打完自动更新。"""
+    from . import results
+    while True:
+        try:
+            n = results.ingest()
+            print(f"[results] 赛果同步：{n} 场已结束")
+        except Exception as e:
+            print(f"[results] 赛果同步跳过（忽略，继续）：{str(e)[:80]}")
+        time.sleep(every)
 
 
 def main():
@@ -182,6 +240,7 @@ def main():
     print(f"平台: {', '.join(_cfg['platforms'])} | 模式: {mode} | 刷新: {_cfg['interval']}s")
     print(f"看板地址 → http://127.0.0.1:{args.port}    (Ctrl+C 停止)")
     threading.Thread(target=lambda: _refresh(force=True), daemon=True).start()
+    threading.Thread(target=lambda: _results_loop(300), daemon=True).start()   # 每 5 分钟同步赛果
     srv = ThreadingHTTPServer(("127.0.0.1", args.port), _Handler)
     try:
         srv.serve_forever()
