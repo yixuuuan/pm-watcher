@@ -41,7 +41,7 @@ One World Cup, five prediction markets, five different answers. pm-watcher puts 
 
 ## 🆕 New in this release — retrospective board & team cards
 
-Once a match is over, the question changes from *"what will happen"* to ***"who priced it right — and how wrong were the rest?"*** This release adds a retrospective layer under the project's guiding idea: **calibration, not prediction (校准而非预测)**.
+Once a match is over, the question changes from *"what will happen"* to ***"who priced it right — and how wrong were the rest?"*** This release adds a retrospective layer under the project's guiding idea: **calibration, not prediction**.
 
 ### Match Recap board
 
@@ -56,7 +56,7 @@ Once a match is over, the question changes from *"what will happen"* to ***"who 
 
 ![Platform calibration and Brier accuracy ranking](docs/calib_en.png)
 
-### Team cards (球队名片)
+### Team cards
 
 - A collectible **card for all 48 nations**, in the official WC26-poster visual language — every nation has a **fixed colour + texture** (12 bold textures, no two nations alike), locked so that only the data updates.
 - A **Surprise Index** (S / A / B / C, 0–100) and a giant **±% gap** number: how far the market's pricing missed that team's actual results. *It measures how wrong the market was — not a team's strength.*
