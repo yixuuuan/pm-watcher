@@ -41,27 +41,29 @@ One World Cup, five prediction markets, five different answers. pm-watcher puts 
 
 ## 🆕 New in this release — retrospective board & team cards
 
-Once a match is over, the question changes from *"what will happen"* to ***"who priced it right — and how wrong were the rest?"*** This release adds a retrospective layer under the project's guiding idea: **calibration, not prediction**.
+Once a match is over, the question changes from *"what will happen"* to ***"who priced it right — and how wrong were the rest?"*** This release adds a retrospective layer under the project's guiding idea: **calibration, not prediction (校准而非预测)**.
 
 ### Match Recap board
 
 - **Priced-vs-actual recap** for every finished match: the pre-match five-platform consensus set against the real Win / Draw / Loss result, with a hit-or-miss verdict.
 - A **market-consensus record** pinned to the top — how often the consensus favourite actually delivered — with one-tap *delivered / fell-short* filtering.
-- **Platform calibration**: a calibration chart plus a **Brier-score accuracy ranking** of the five platforms — who priced the group stage best.
-- A **shareable one-line headline** on every card — varied, not templated, bilingual (English headline with a Chinese sub-line in 中文 mode), e.g. *"Everyone was wrong about this one."*
+- **Platform calibration**: a calibration chart plus a **Brier-score accuracy ranking** of the five platforms.
+- A **shareable one-line headline** on every card — varied, not templated, bilingual (English headline with a Chinese sub-line in 中文 mode).
 - Horizontal **date tabs** to jump to any match-day.
 - **One-tap card export** (1080×1350 PNG) carrying the headline, the five-platform table, and a **QR code + link** back to the live board.
 
 ![Match Recap board](docs/recap_en.png)
 
+![A downloadable recap card](docs/recapcard_en.png)
+
 ![Platform calibration and Brier accuracy ranking](docs/calib_en.png)
 
 ### Team cards
 
-- A collectible **card for all 48 nations**, in the official WC26-poster visual language — every nation has a **fixed colour + texture** (12 bold textures, no two nations alike), locked so that only the data updates.
-- A **Surprise Index** (S / A / B / C, 0–100) and a giant **±% gap** number: how far the market's pricing missed that team's actual results. *It measures how wrong the market was — not a team's strength.*
+- A collectible **card for all 48 nations** in the official WC26-poster visual language — every nation has a **fixed colour + texture** (12 bold textures, no two alike), locked so only the data updates.
+- A **Surprise Index** (S / A / B / C, 0–100) and a giant **±% gap** number: how far the market's pricing missed that team's actual results (it measures how wrong the market was, not a team's strength).
 - Record, GF / GA, upsets made, and the team's single most surprising match.
-- **One-tap PNG export** with a QR deep-link straight to that team on the board; bilingual EN / 中文; gold stars for past champions.
+- **One-tap PNG export** with a QR deep-link straight to that team; bilingual EN / 中文; gold stars for past champions.
 
 ![Team cards](docs/teamcards_en.png)
 

@@ -12,6 +12,7 @@
 from __future__ import annotations
 
 import argparse
+import os
 import asyncio
 import json
 import threading
@@ -138,6 +139,8 @@ class _Handler(BaseHTTPRequestHandler):
             pass  # 对端已断开，丢弃本次响应
 
     def do_GET(self):
+        if self.path.split("?")[0] == "/healthz":
+            return self._send(200, b"ok", "text/plain; charset=utf-8")
         if self.path == "/" or self.path.startswith("/index"):
             self._send(200, _HTML.encode("utf-8"), "text/html; charset=utf-8")
         elif self.path.startswith("/api/history"):
@@ -230,7 +233,8 @@ def main():
     ap.add_argument("--platforms", default=",".join(ALL_PLATFORMS))
     ap.add_argument("--live", action="store_true")
     ap.add_argument("--interval", type=int, default=30)
-    ap.add_argument("--port", type=int, default=8765)
+    ap.add_argument("--port", type=int, default=int(os.environ.get("PORT", "8765")))
+    ap.add_argument("--host", default=os.environ.get("HOST", "127.0.0.1"))   # 托管时设 0.0.0.0
     args = ap.parse_args()
     _cfg["platforms"] = [p.strip() for p in args.platforms.split(",") if p.strip()]
     _cfg["live"] = args.live
@@ -238,10 +242,10 @@ def main():
 
     mode = "LIVE(只读)" if args.live else "MOCK"
     print(f"平台: {', '.join(_cfg['platforms'])} | 模式: {mode} | 刷新: {_cfg['interval']}s")
-    print(f"看板地址 → http://127.0.0.1:{args.port}    (Ctrl+C 停止)")
+    print(f"看板地址 → http://{args.host}:{args.port}    (Ctrl+C 停止)")
     threading.Thread(target=lambda: _refresh(force=True), daemon=True).start()
     threading.Thread(target=lambda: _results_loop(300), daemon=True).start()   # 每 5 分钟同步赛果
-    srv = ThreadingHTTPServer(("127.0.0.1", args.port), _Handler)
+    srv = ThreadingHTTPServer((args.host, args.port), _Handler)
     try:
         srv.serve_forever()
     except KeyboardInterrupt:
