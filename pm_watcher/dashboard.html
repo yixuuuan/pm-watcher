@@ -1128,10 +1128,18 @@ function rcShareSVG(m){
         +[[colH,0],[colD,1],[colA,2]].map(([cxx,ii])=>`<text x="${cxx}" y="${ry}" text-anchor="end" font-family="${FF}" font-size="25" ${ii===ri?'font-weight="700"':''} fill="#2c2c2a">${fmt(o[ii])}</text>`).join("")
         +`<text x="${colHit}" y="${ry}" text-anchor="end" font-family="${FF}" font-size="25" fill="${hit?'#1d9e75':'#d85a30'}">${hit?'✓':'✗'}</text>`;
     }).join("");
+    const _mv=(m.movers||[]); let mvBlock="";
+    if(_mv.length){
+      const mvY=ty+46+cmp.length*50+22;
+      mvBlock=`<text x="${inL}" y="${mvY}" font-family="${FF}" font-size="20" fill="#9a988f" letter-spacing="1">${_xml(L("rc_impact").toUpperCase())}</text>`
+        +_mv.map((x,idx)=>{ const yy=mvY+40+idx*40; const up=x.delta>=0; const col=up?"#1d9e75":"#d85a30";
+          return `<text x="${inL}" y="${yy}" font-family="${FF}" font-size="25" fill="#2c2c2a">${_xml(fe(x.team))} ${_xml(rcName(x.team))} <tspan fill="#9a988f">${x.before}%→${x.after}%</tspan> <tspan fill="${col}" font-weight="700">${up?"+":""}${x.delta}pt</tspan></text>`;
+        }).join("");
+    }
     body=`<text x="${inL}" y="528" font-family="${FF}" font-size="21" fill="#9a988f" letter-spacing="1.5">${_xml((L("prematch")+" · "+L("consensus")).toUpperCase())}</text>
       ${bar}
       <text x="${inL}" y="708" font-family="${FF}" font-size="29" font-weight="650" fill="${favHit?'#1d9e75':'#d85a30'}">${_xml(favHit?L("fav_hit"):L("fav_miss"))} · <tspan font-size="25" font-weight="400" fill="#6b6a64">${_xml(favHit?L("cap_hit"):L("cap_miss"))}</tspan></text>
-      ${headRow}${rows}`;
+      ${headRow}${rows}${mvBlock}`;
   } else {
     body=`<text x="${inL}" y="600" font-family="${FF}" font-size="27" fill="#9a988f">${_xml(L("rc_nopricing"))}</text>`;
   }

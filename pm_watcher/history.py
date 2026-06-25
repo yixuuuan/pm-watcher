@@ -88,12 +88,19 @@ def record(scope: str, key: str, platform: str, price: float,
 
 
 def record_board(scope: str, board_rows: list[dict]) -> int:
-    """落盘 serve._rows() 形状的榜单（p 为 0~100 的百分数）。返回写入行数。"""
+    """落盘 serve._rows() 形状的榜单（p 为 0~100 的百分数）。返回写入行数。
+    champion 榜只收真正的 48 强——从源头拦掉射手榜球员、板球队、'Other' 等污染项。"""
     n = 0
     ts = int(time.time())
+    wc_only = (scope == "champion")
+    if wc_only:
+        from .names import canonical_country, is_wc_team
     for r in board_rows:
+        team = r["team"]
+        if wc_only and not is_wc_team(canonical_country(team)):
+            continue
         for plat, v in (r.get("p") or {}).items():
-            if record(scope, r["team"], plat, v / 100.0, ts):
+            if record(scope, team, plat, v / 100.0, ts):
                 n += 1
     return n
 
@@ -294,7 +301,7 @@ def champ_series() -> dict:
 
 def champ_movers(series: dict, home: str, away: str, kickoff_ts: int,
                  pre_h: int = 8 * 3600, post_lo: int = 2 * 3600,
-                 post_hi: int = 14 * 3600, min_pp: float = 1.0) -> list:
+                 post_hi: int = 14 * 3600, min_pp: float = 0.5) -> list:
     """本场两支球队的赛前→赛后冠军概率变化。按平台配对：只用“同一平台在赛前(开赛前 pre_h 内)
     与赛后(开赛后 post_lo~post_hi 内)都有就近快照”的那些平台，算各平台自身变化再平均——
     避免不同平台子集混算导致的失真。无配对快照则不显示（不跨场、不编造）。"""
