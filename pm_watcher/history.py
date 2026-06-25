@@ -265,53 +265,61 @@ def visit_stats() -> dict:
 # —— 冠军概率增量（赛后影响）——
 _CKEY_JUNK = re.compile("[\u200d\ufe0f\U0001F000-\U0001FAFF]")  # 去 ZWJ/变体选择符/emoji（含旗）
 
+
 def _ckey(k: str) -> str:
-    """清掉脏字符（如 USA 被存成 'Usa 🇺‍🇸'），保留 ç 等合法重音字母。"""
     k2 = _CKEY_JUNK.sub("", k).strip()
     return "USA" if k2.lower() == "usa" else k2
 
 
 def champ_series() -> dict:
-    """一次性载入全部 champion 快照，组织成 {team: {platform: ([ts...],[price...])}}（按 ts 升序）。"""
+    """载入 champion 快照 → {team: {platform: ([ts],[price])}}。
+    只保留真正的 48 强；丢掉射手榜球员、板球队、'Other'/'No Winner' 等污染项。"""
+    from .names import canonical_country, is_wc_team
     with _lock:
         c = _db()
         rows = c.execute("SELECT key, platform, ts, price FROM snap WHERE scope='champion' ORDER BY ts").fetchall()
     series: dict = {}
     for k, p, ts, pr in rows:
-        k = _ckey(k)
-        tsl, prl = series.setdefault(k, {}).setdefault(p, ([], []))
+        team = canonical_country(_ckey(k))
+        if not is_wc_team(team):          # 白名单：非 48 强一律丢弃
+            continue
+        tsl, prl = series.setdefault(team, {}).setdefault(p, ([], []))
         tsl.append(ts); prl.append(pr)
-    for plats in series.values():                  # USA 合并两源后可能乱序，重排
+    for plats in series.values():         # 合并别名后可能乱序，按 ts 重排
         for p, (tsl, prl) in plats.items():
             if any(tsl[i] > tsl[i + 1] for i in range(len(tsl) - 1)):
                 z = sorted(zip(tsl, prl)); plats[p] = ([t for t, _ in z], [v for _, v in z])
     return series
 
 
-def _cons_at(series: dict, t: int) -> dict:
-    """t 时刻每队的冠军共识 = 各平台“ts<=t 的最近一笔”的均值。"""
-    out = {}
-    for team, plats in series.items():
-        vals = []
+def champ_movers(series: dict, home: str, away: str, kickoff_ts: int,
+                 pre_h: int = 8 * 3600, post_lo: int = 2 * 3600,
+                 post_hi: int = 14 * 3600, min_pp: float = 1.0) -> list:
+    """本场两支球队的赛前→赛后冠军概率变化。按平台配对：只用“同一平台在赛前(开赛前 pre_h 内)
+    与赛后(开赛后 post_lo~post_hi 内)都有就近快照”的那些平台，算各平台自身变化再平均——
+    避免不同平台子集混算导致的失真。无配对快照则不显示（不跨场、不编造）。"""
+    from .names import canonical_country
+    out = []
+    for raw in (home, away):
+        team = canonical_country(raw)
+        plats = series.get(team)
+        if not plats:
+            continue
+        ds, bs, as_ = [], [], []
         for tsl, prl in plats.values():
-            i = bisect.bisect_right(tsl, t) - 1
-            if i >= 0:
-                vals.append(prl[i])
-        if vals:
-            out[team] = sum(vals) / len(vals)
-    return out
-
-
-def champ_movers(series: dict, kickoff_ts: int, after_window: int = 12 * 3600,
-                 top: int = 3, min_pp: float = 1.0) -> list:
-    """该场比赛前后冠军概率变动最大的队。仅当赛前/赛后都有快照才计入。"""
-    b = _cons_at(series, kickoff_ts)
-    a = _cons_at(series, kickoff_ts + after_window)
-    mv = []
-    for team in set(b) & set(a):
-        bb, aa = b[team] * 100, a[team] * 100
-        d = aa - bb
+            i = bisect.bisect_right(tsl, kickoff_ts) - 1
+            if i < 0 or tsl[i] < kickoff_ts - pre_h:
+                continue
+            j = bisect.bisect_right(tsl, kickoff_ts + post_hi) - 1
+            if j < 0 or tsl[j] < kickoff_ts + post_lo:
+                continue
+            ds.append(prl[j] - prl[i]); bs.append(prl[i]); as_.append(prl[j])
+        if not ds:
+            continue
+        d = (sum(ds) / len(ds)) * 100
         if abs(d) >= min_pp:
-            mv.append({"team": team, "before": round(bb, 1), "after": round(aa, 1), "delta": round(d, 1)})
-    mv.sort(key=lambda m: -abs(m["delta"]))
-    return mv[:top]
+            out.append({"team": team,
+                        "before": round((sum(bs) / len(bs)) * 100, 1),
+                        "after": round((sum(as_) / len(as_)) * 100, 1),
+                        "delta": round(d, 1)})
+    return out

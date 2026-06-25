@@ -188,7 +188,7 @@ class _Handler(BaseHTTPRequestHandler):
                                 "sa": r["home_score"], "sb": r["away_score"],
                                 "result": res, "kickoff": r["kickoff_ts"],
                                 "grp": r.get("grp"), "odds": odds,
-                                "movers": history.champ_movers(_cseries, r["kickoff_ts"])})
+                                "movers": history.champ_movers(_cseries, r["home"], r["away"], r["kickoff_ts"])})
                 out.sort(key=lambda m: m["kickoff"])
                 self._send(200, json.dumps({"matches": out}).encode("utf-8"),
                            "application/json; charset=utf-8")
