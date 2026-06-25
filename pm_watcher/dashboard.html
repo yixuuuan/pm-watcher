@@ -68,7 +68,7 @@
   .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
   .chip{font-size:12px;border:.5px solid var(--line);border-radius:20px;padding:4px 11px;cursor:pointer;background:var(--card);color:var(--mut)}
   .chip.on{background:#e1f5ee;border-color:#9fe1cb;color:#0f6e56}
-  .watch{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:12px}
+  .watch{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(230px,100%),1fr));gap:12px;margin-top:12px}
   .wc{background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:12px 14px;overflow:hidden}
   .wc svg{width:100%;height:auto;display:block}
   .wc .lg{display:flex;flex-wrap:wrap;gap:2px 8px;margin-top:2px}
@@ -76,8 +76,22 @@
   .err{color:var(--down);font-size:12px;margin-top:8px}
   .muted{color:var(--mut)}
   @media(max-width:680px){.cards{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:560px){
+    html,body{max-width:100%;overflow-x:hidden}
+    .wrap{padding:16px 13px 48px}
+    h1{font-size:22px}
+    .cards{grid-template-columns:repeat(2,1fr);gap:10px;margin:16px 0}
+    .mc{padding:13px 13px 12px} .mc .v{font-size:21px} .mc .v.small{font-size:13px}
+    .tabs button,.ctl button{padding:6px 10px;font-size:13px}
+    table{font-size:13px} th,td{padding:7px 5px}
+    #recap .recapgrid{grid-template-columns:1fr}
+    #recap .node{padding:13px 14px 12px}
+    #recap .fix{font-size:15px;gap:8px} #recap .fix .sc{font-size:20px}
+    /* 卡内若有超宽表格，允许在小屏内横向滚动而不撑破页面 */
+    #recap .node table,.pdwrap{display:block;max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  }
   /* ===== 复盘 recap：单个对阵节点(最高复用原子) ===== */
-  #recap .recapgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:16px;align-items:start}
+  #recap .recapgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(330px,100%),1fr));gap:16px;align-items:start}
   #recap .node{background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:15px 17px 14px;overflow:hidden}
   #recap .top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
   #recap .when{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.07em}
@@ -250,7 +264,7 @@
       <div class="sub" id="meta">Loading…</div></div>
     <div class="rcol">
       <div class="langsw"><button data-lang="en" class="on">EN</button><button data-lang="zh">中</button></div>
-      <div class="tabs row"><button data-tab="champion" class="on" data-i18n="tab_champion">Champion</button><button data-tab="group" data-i18n="tab_group">Group Winner</button><button data-tab="matches" data-i18n="tab_matches">Fixtures</button><button data-tab="recap" data-i18n="tab_recap">Recap</button><button data-tab="knockout" data-i18n="tab_knockout">Knockout</button></div>
+      <div class="tabs row"><button data-tab="champion" class="on" data-i18n="tab_champion">Champion</button><button data-tab="group" data-i18n="tab_group" style="display:none">Group Winner</button><button data-tab="matches" data-i18n="tab_matches">Fixtures</button><button data-tab="recap" data-i18n="tab_recap">Recap</button><button data-tab="knockout" data-i18n="tab_knockout">Knockout</button></div>
     </div>
   </div>
 
@@ -291,7 +305,7 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><polygon id="tcstar" points="0,-8 1.88,-2.59 7.61,-2.47 3.04,0.99 4.70,6.47 0,3.2 -4.70,6.47 -3.04,0.99 -7.61,-2.47 -1.88,-2.59"/></defs></svg>
 <script>
 const SITE_URL="https://pm-watchers.up.railway.app/", SITE_HOST="pm-watchers.up.railway.app";
-let LANG = load("pmw_lang", "en");
+let LANG = "en";   // 每次打开都先默认英文；切换仍在本次会话内生效
 const I18N = {
   en: {
     title:"World Cup · Cross-Platform Pricing", tab_champion:"Champion", tab_group:"Group Winner",
@@ -338,7 +352,7 @@ const I18N = {
     calib_foot:"Dot size = sample in that probability band. Split per platform, so each line is thin early — it firms up as more matches finish.",
     calib_empty:"Not enough priced matches yet to plot calibration.",
     cacc_head:"Market consensus record",
-    cacc_sub:"Across priced matches, did the consensus favourite actually win? Tap a number — or a slice of the ring — to filter the cards above.",
+    cacc_sub:"Across priced matches, did the consensus favourite actually win? Tap a number — or a slice of the ring — to filter the cards below.",
     cacc_acc:"hit rate",
     filter_all:"show all", filter_showing:"Showing",
     rc_export:"save image", export_fail:"Couldn't export — try a screenshot instead.",
@@ -404,7 +418,7 @@ const I18N = {
     calib_foot:"圆点越大=该概率档样本越多。按平台拆分,早期每条线都偏薄,随比赛增多会变稳。",
     calib_empty:"已定价的比赛还太少,暂时画不出校准曲线。",
     cacc_head:"共识热门战绩",
-    cacc_sub:"在有定价的比赛里,共识看好的那一方最后赢了吗?点数字、或圆环的扇区,可筛选上方卡片。",
+    cacc_sub:"在有定价的比赛里,共识看好的那一方最后赢了吗?点数字、或圆环的扇区,可筛选下方卡片。",
     cacc_acc:"命中率",
     filter_all:"显示全部", filter_showing:"当前只看",
     rc_export:"存图", export_fail:"导出失败 —— 可以改用截图。",
@@ -774,22 +788,36 @@ function rcHeadline(m){
   let spread=0; if(cmp.length>1){const ps=cmp.map(p=>rcNorm(m.odds[p])[favIdx]); spread=Math.max(...ps)-Math.min(...ps);}
   const sp=Math.round(spread*100);
   const seed=(m.home+m.away+m.result).split("").reduce((a,c)=>((a*31+c.charCodeAt(0))>>>0),0);
+  const margin=Math.abs((m.sa||0)-(m.sb||0));
+  const winner = m.result==="A"? m.home : (m.result==="B"? m.away : null);
+  const winZh = winner? (TC_CN[winner]||winner) : "";
+  // 预留接口：以后可挂 Claude API / 冠军快照增量，返回 {type,en,zh} 即覆盖模板
+  if(typeof window!=="undefined" && typeof window.RC_HL_API==="function"){
+    try{ const r=window.RC_HL_API(m,{favPct,sp,favHit,margin,winner}); if(r&&r.en&&r.zh) return {type:r.type||"api",en:r.en,zh:r.zh}; }catch(e){}
+  }
   let type, pe, pz;
   if(!favHit && favPct>=55){ type="upset";
-    pe=["Everyone was wrong about this one","The upset nobody saw coming","So much for the favourite",`${favPct}% sure. Dead wrong.`,"This is why they play the games"];
-    pz=["全网看好，集体翻车","谁都没料到的冷门","热门?热门它输了",`${favPct}% 的把握，全错`,"这，就是足球"];
+    pe=["Everyone was wrong about this one","The upset nobody saw coming","So much for the favourite",`${favPct}% sure. Dead wrong.`,"This is why they play the games","The bracket just got rewritten","Not an upset — the price of being underrated"];
+    pz=["全网看好，集体翻车","谁都没料到的冷门","热门?热门它输了",`${favPct}% 的把握，全错`,"这，就是足球","这一场之后，签表被改写","这不是爆冷，是市场低估的代价"];
+  } else if(margin>=3 && winner){ type="blowout";
+    pe=[`${winner} ran away with it`,"Not close. Not for a second.","A statement, not a result",`${winner} left no doubt`,"Domination, priced or not"];
+    pz=[`${winZh} 大胜收场`,"毫无悬念的碾压","这不是赢，是宣告",`${winZh} 没给任何机会`,"该来的统治，如约而至"];
   } else if(favHit && favPct>=58){ type="hit";
-    pe=["Called it. Every platform.","No upset here — just receipts","The market read this perfectly","Textbook. Pure textbook.",`${favPct}% sure, and right`];
-    pz=["五个平台，异口同声","没有冷门，只有实力","市场早就写好了结局","稳得不能再稳",`${favPct}% 共识，说到做到`];
+    pe=["Called it. Every platform.","No upset here — just receipts","The market read this perfectly","Textbook. Pure textbook.",`${favPct}% sure, and right`,"Chalk held, cleanly","Exactly who they backed"];
+    pz=["五个平台，异口同声","没有冷门，只有实力","市场早就写好了结局","稳得不能再稳",`${favPct}% 共识，说到做到`,"该赢的赢了，干净利落","市场押谁，谁就赢"];
   } else if(spread>=0.2){ type="div";
-    pe=["The market couldn't agree","Five markets, five answers",`${sp}% apart — good luck`,"Nobody had a read on this","The most argued-over match"];
-    pz=["五个市场吵翻了天",`分歧 ${sp}%，谁也说不准`,"最难定价的一场","共识?不存在的","全网各执一词"];
+    pe=["The market couldn't agree","Five markets, five answers",`${sp}% apart — good luck`,"Nobody had a read on this","The most argued-over match","Pricing chaos, settled on the pitch"];
+    pz=["五个市场吵翻了天",`分歧 ${sp}%，谁也说不准`,"最难定价的一场","共识?不存在的","全网各执一词","平台吵翻，球场定音"];
+  } else if(m.result==="D"){ type="draw";
+    pe=["Honours even, markets split","A draw nobody quite priced","Stalemate — the board hates these","Even on the pitch, even on the odds","Shared the points, split the markets"];
+    pz=["握手言和，市场分裂","平局，最难定价的结果","谁也没拿下，谁也没让步","场上打平，盘口也打平","一分各拿，五盘分歧"];
   } else { type="calib";
     pe=["Boring? No — this was precise","The market nailed the call","Exactly as priced","Quiet match, sharp pricing","Probability did its job"];
     pz=["平淡，但定价封神","市场把概率拿捏死了","定价说多少，就是多少","波澜不惊，分毫不差","概率，正中靶心"];
   }
   const i=seed%pe.length; return {type, en:pe[i], zh:pz[i]};
 }
+function rcName(n){ return LANG==="zh" ? (TC_CN[n]||n) : n; }
 function rcNode(m,gi){
   const date=m.kickoff? new Date(m.kickoff*1000).toLocaleDateString(loc(),{month:"short",day:"numeric"}) : L("tbd");
   const grp=rcGroup(m.grp), when=grp? `${date} · ${grp}` : date;
@@ -800,8 +828,8 @@ function rcNode(m,gi){
   const absent=RC_ROSTER.filter(p=>!(m.odds&&Object.prototype.hasOwnProperty.call(m.odds,p)));
   const missHtml=absent.length? `<div class="rcmiss">${L("rc_missing")}: ${absent.join(LANG==="zh"?"、":", ")}</div>` : "";
   const resIdx={A:0,D:1,B:2}[m.result];
-  const resLabel = m.result==="D"? L("th_draw") : (m.result==="A"? m.home : m.away);
-  const fixhtml=`<div class="fix"><span class="a">${flag(m.home)} ${m.home}</span><span class="sc">${m.sa}–${m.sb}</span><span class="b">${m.away} ${flag(m.away)}</span></div>
+  const resLabel = m.result==="D"? L("th_draw") : (m.result==="A"? rcName(m.home) : rcName(m.away));
+  const fixhtml=`<div class="fix"><span class="a">${flag(m.home)} ${rcName(m.home)}</span><span class="sc">${m.sa}–${m.sb}</span><span class="b">${rcName(m.away)} ${flag(m.away)}</span></div>
     <div class="out">${L("outcome")}: <b>${resLabel}</b></div>`;
   if(!cmp.length){   // 仅结果档：诚实空状态，不画假条
     return `<div class="node" data-mk="${mk}"><div class="top"><span class="when">${when}</span><span class="tags">${expBtn}</span></div>
@@ -846,7 +874,7 @@ function rcNode(m,gi){
     ${missHtml}
     <div class="dsum" data-rc="${gi}">${L("detail_lab")} <span class="hint" style="text-transform:none;letter-spacing:0">(${cmp.length}/${plats.length})</span></div>
     <div class="pdbody" id="rcpd${gi}">
-      <table><thead><tr><th>${L("consensus")}</th><th class="r">${flag(m.home)} ${m.home}</th><th class="r">${L("th_draw")}</th><th class="r">${flag(m.away)} ${m.away}</th><th class="r">${L("th_hit")}</th></tr></thead>
+      <table><thead><tr><th>${L("consensus")}</th><th class="r">${flag(m.home)} ${rcName(m.home)}</th><th class="r">${L("th_draw")}</th><th class="r">${flag(m.away)} ${rcName(m.away)}</th><th class="r">${L("th_hit")}</th></tr></thead>
       <tbody>${rows}</tbody></table>
       <div class="foot">${L("foot_cmp")} (${cmp.length}/${plats.length})${footExcl}.</div>
     </div></div>`;
@@ -1027,14 +1055,15 @@ function rcShareSVG(m){
   const fe=t=>flag(t).replace(/<[^>]+>/g,"");   // 取出国旗 emoji（去掉 span）
   const date=m.kickoff? new Date(m.kickoff*1000).toLocaleDateString(loc(),{month:"short",day:"numeric",year:"numeric"}):L("tbd");
   const grp=rcGroup(m.grp), when=(grp?`${date} · ${grp}`:date);
-  const resLabel=m.result==="D"? L("th_draw") : (m.result==="A"? m.home : m.away);
+  const hn=rcName(m.home), an=rcName(m.away);
+  const resLabel=m.result==="D"? L("th_draw") : (m.result==="A"? hn : an);
   const cmp=Object.keys(m.odds||{}).filter(p=>rcComparable(m.odds[p]));
-  const maxName=Math.max(m.home.length,m.away.length);
+  const maxName=Math.max(hn.length,an.length);
   const nf = maxName>16?26 : (maxName>11?32:40);
   const fixLine=`<text x="${midX}" y="300" text-anchor="middle" font-family="${FF}" font-size="${nf}" font-weight="700" fill="#2c2c2a">`
-    +`${_xml(fe(m.home))} ${_xml(m.home)}`
+    +`${_xml(fe(m.home))} ${_xml(hn)}`
     +`<tspan font-size="${nf+20}" dx="20">${m.sa}–${m.sb}</tspan>`
-    +`<tspan dx="20">${_xml(m.away)} ${_xml(fe(m.away))}</tspan></text>`;
+    +`<tspan dx="20">${_xml(an)} ${_xml(fe(m.away))}</tspan></text>`;
   let body="";
   if(cmp.length){
     const acc=[0,0,0]; cmp.forEach(p=>{const n=rcNorm(m.odds[p]);[0,1,2].forEach(i=>acc[i]+=n[i]);});
@@ -1177,8 +1206,8 @@ function rcBurst(seg){
 /* ===================== 球队名片 Team cards ===================== */
 const TC_CJK="'PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif";
 const TCI18N={
- en:{head:"Team cards",sub:"How far did the market's pricing miss each team? Tap a card to download and share.",under:"underrated by",over:"overrated by",mkt:"market",real:"actual",rec:"record",gfga:"GF / GA",ups:"upsets",bigup:"biggest upset",bigmiss:"biggest miss",priced:"priced",tier:"TIER",si:"surprise index",note:"Surprise index = how far market pricing diverged from real results, plus upsets made or suffered — a higher number means a higher tier. It measures how wrong the market was, not a team's strength.",save:"download card",scan:"scan / tap for the full board →",feat:"Title favourites",rest:"All teams"},
- zh:{head:"球队名片",sub:"市场把每支球队定价偏离了多少?点开任意一张即可下载分享。",under:"市场低估",over:"市场高估",mkt:"市场",real:"实际",rec:"战绩",gfga:"进 / 失",ups:"制造冷门",bigup:"最大冷门",bigmiss:"最大失手",priced:"赛前",tier:"评级",si:"意外指数",note:"意外指数 = 市场定价偏离实际表现的幅度,叠加制造／吃到的冷门;数值越大评级越高。它衡量的是「市场看走眼的程度」,不是球队实力评分。",save:"下载小卡",scan:"扫码 / 链接看完整看板 →",feat:"夺冠热门",rest:"全部球队"}
+ en:{head:"Team cards",sub:"How far did the market's pricing miss each team? Tap a card to download and share.",under:"live · underrated by",over:"live · overrated by",mkt:"market",real:"actual",gap_pre:"pre-match fav",gap_pts:"points won",rec:"record",gfga:"GF / GA",ups:"upsets",bigup:"biggest upset",bigmiss:"biggest miss",priced:"priced",tier:"TIER",si:"surprise index",note:"Surprise index = how far market pricing diverged from real results, plus upsets made or suffered — a higher number means a higher tier. It measures how wrong the market was, not a team's strength.",save:"download card",scan:"scan / tap for the full board →",feat:"Title favourites",rest:"All teams"},
+ zh:{head:"球队名片",sub:"市场把每支球队定价偏离了多少?点开任意一张即可下载分享。",under:"实时市场低估",over:"实时市场高估",mkt:"市场",real:"实际",gap_pre:"赛前看好",gap_pts:"拿分率",rec:"战绩",gfga:"进 / 失",ups:"制造冷门",bigup:"最大冷门",bigmiss:"最大失手",priced:"赛前",tier:"评级",si:"意外指数",note:"意外指数 = 市场定价偏离实际表现的幅度,叠加制造／吃到的冷门;数值越大评级越高。它衡量的是「市场看走眼的程度」,不是球队实力评分。",save:"下载小卡",scan:"扫码 / 链接看完整看板 →",feat:"夺冠热门",rest:"全部球队"}
 };
 function TL(k){return (TCI18N[LANG]||TCI18N.en)[k];}
 function tcEsc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
@@ -1338,11 +1367,11 @@ function tcCard(t, id, opts){
   <text x="28" y="150" font-family="FWCCond,${TC_CJK}" font-size="14" letter-spacing="2" fill="${st.sub}">${isMiss?TL('over'):TL('under')}</text>
   <text x="34" y="235" font-family="FWCNBlack" font-size="82" fill="${st.accent}">${heroTxt}</text>
   <text x="28" y="229" font-family="FWCNBlack" font-size="82" fill="#fff">${heroTxt}</text>
-  <text x="28" y="284" font-family="FWCNormal,${TC_CJK}" font-size="13" fill="${st.sub}">${TL('mkt')} ${t.mktRate}% , ${TL('real')} ${t.actRate}%</text>
+  <text x="28" y="284" font-family="FWCNormal,${TC_CJK}" font-size="13" fill="${st.sub}">${TL('gap_pre')} ${t.mktRate}% · ${TL('gap_pts')} ${t.actRate}%</text>
   <line x1="28" y1="320" x2="332" y2="320" stroke="#fff" stroke-width="2" opacity="0.28"/>
   <line x1="${lo.toFixed(1)}" y1="320" x2="${hi.toFixed(1)}" y2="320" stroke="${st.accent}" stroke-width="6"/>
-  <circle cx="${mktA.toFixed(1)}" cy="320" r="5.5" fill="#fff"/><text x="${mktA.toFixed(1)}" y="340" text-anchor="middle" font-family="FWCCond,${TC_CJK}" font-size="11" fill="${st.sub}">${TL('mkt')} ${t.mktRate}</text>
-  <circle cx="${actA.toFixed(1)}" cy="320" r="5.5" fill="#fff"/><text x="${actA.toFixed(1)}" y="340" text-anchor="middle" font-family="FWCCond,${TC_CJK}" font-size="11" fill="#fff">${TL('real')} ${t.actRate}</text>
+  <circle cx="${mktA.toFixed(1)}" cy="320" r="5.5" fill="#fff"/><text x="${mktA.toFixed(1)}" y="340" text-anchor="middle" font-family="FWCCond,${TC_CJK}" font-size="11" fill="${st.sub}">${LANG==="zh"?"赛前":"pre"} ${t.mktRate}</text>
+  <circle cx="${actA.toFixed(1)}" cy="320" r="5.5" fill="#fff"/><text x="${actA.toFixed(1)}" y="340" text-anchor="middle" font-family="FWCCond,${TC_CJK}" font-size="11" fill="#fff">${LANG==="zh"?"拿分":"won"} ${t.actRate}</text>
   <text x="28" y="392" font-family="FWCBlack,${TC_CJK}" font-size="20" fill="#fff">${t.w}-${t.d}-${t.l}</text>
   <text x="28" y="408" font-family="FWCCond,${TC_CJK}" font-size="11" fill="${st.sub}">${TL('rec')}</text>
   <text x="150" y="392" font-family="FWCBlack,${TC_CJK}" font-size="20" fill="#fff">${t.gf} / ${t.ga}</text>
@@ -1401,10 +1430,10 @@ async function tcExport(name){
     const fontCSS=await tcFontCSS();
     const url=SITE_URL+"#team="+encodeURIComponent(name);
     const svg=tcCard(t,"x",{exp:true,flagHref,fontCSS,qrUrl:url});
-    const W=1080,H=Math.round(548/360*1080), M=56, CW=W+M*2, CH=H+M*2;
+    const W=1080,H=Math.round(548/360*1080), M=84, CW=W+M*2, CH=H+M*2;
     const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"}); const u=URL.createObjectURL(blob);
     const img=new Image();
-    img.onload=()=>{ const c=document.createElement("canvas"); c.width=CW; c.height=CH; const ctx=c.getContext("2d"); ctx.fillStyle="#ece9e0"; ctx.fillRect(0,0,CW,CH); ctx.drawImage(img,M,M,W,H); URL.revokeObjectURL(u);
+    img.onload=()=>{ const c=document.createElement("canvas"); c.width=CW; c.height=CH; const ctx=c.getContext("2d"); ctx.fillStyle="#ece9e0"; ctx.fillRect(0,0,CW,CH); ctx.save(); ctx.shadowColor="rgba(0,0,0,0.22)"; ctx.shadowBlur=38; ctx.shadowOffsetY=16; ctx.drawImage(img,M,M,W,H); ctx.restore(); URL.revokeObjectURL(u);
       c.toBlob(b=>{ if(!b) return; const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=`pm-watcher-${name.replace(/\s+/g,'-')}.png`; document.body.appendChild(a); a.click(); a.remove(); }); };
     img.onerror=()=>{ URL.revokeObjectURL(u); };
     img.src=u;

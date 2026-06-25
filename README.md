@@ -8,6 +8,10 @@ One World Cup, five prediction markets, five different answers. pm-watcher puts 
 
 ![Champion board with divergence heatmap](docs/board_en.png)
 
+> ▶️ **Live board: https://pm-watchers.up.railway.app/** — explore the two flagship views:
+> the **Match Recap board** (how each finished match was *priced vs. how it ended*) and the
+> collectible **48-nation team cards**. Read-only, no prediction, no betting.
+
 ## What it shows
 
 - **Champion board** — title odds for all 48 teams, five platforms side by side, plus a consensus price and a divergence heatmap (darker = the platforms disagree more)
@@ -41,7 +45,7 @@ One World Cup, five prediction markets, five different answers. pm-watcher puts 
 
 ## 🆕 New in this release — retrospective board & team cards
 
-Once a match is over, the question changes from *"what will happen"* to ***"who priced it right — and how wrong were the rest?"*** This release adds a retrospective layer under the project's guiding idea: **calibration, not prediction (校准而非预测)**.
+Once a match is over, the question changes from *"what will happen"* to ***"who priced it right — and how wrong were the rest?"*** This release adds a retrospective layer under the project's guiding idea: **calibration, not prediction**.
 
 ### Match Recap board
 
