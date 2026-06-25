@@ -179,6 +179,17 @@
   #knockout .koslot{background:var(--card);border:.5px solid var(--line);border-radius:10px;padding:10px 12px}
   #knockout .koslot.tbd{border-style:dashed;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--hint)}
   #knockout .koslot.tbd .kside{font-size:12.5px} #knockout .koslot.tbd .kvs{font-size:10px;color:var(--line);text-transform:uppercase;letter-spacing:.1em}
+  #knockout .kqwrap{margin-bottom:26px}
+  #knockout .kqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px}
+  #knockout .kqgrp{background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:10px 12px}
+  #knockout .kqh{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+  #knockout .kqrow{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:13px}
+  #knockout .kqrow .kqt{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #knockout .kqrow .kqpt{font-variant-numeric:tabular-nums;color:var(--mut);width:18px;text-align:right}
+  #knockout .kqrow .kqb{font-size:10.5px;font-weight:600;padding:1px 6px;border-radius:6px;white-space:nowrap}
+  #knockout .kqrow.q .kqb{background:rgba(16,224,144,.14);color:#0a8a55}
+  #knockout .kqrow.a .kqb{background:#e8e6dd;color:#7a7872}
+  #knockout .kqrow.o{opacity:.5} #knockout .kqrow.o .kqb{background:rgba(255,94,42,.12);color:#c0421c}
   #matches .kofold>summary{cursor:pointer;padding:11px 4px;font-weight:500;list-style:none;display:flex;align-items:center;gap:8px;user-select:none;border-top:.5px solid var(--line)}
   #matches .kofold>summary::-webkit-details-marker{display:none}
   #matches .kofold>summary::before{content:"▸";color:var(--hint);transition:transform .15s ease}
@@ -362,6 +373,8 @@ const I18N = {
     out_home:"Home win", out_draw:"Draw", out_away:"Away win",
     hl_upset:"Biggest upset", hl_confident:"Surest call", hl_fav:"Favourite", hl_lost:"lost", hl_won:"delivered",
     tab_knockout:"Knockout",
+    ko_grp:"Group", ko_quali_head:"Qualification tracker — {n} teams have clinched a top-2 spot · pairings resolve after the final group round",
+    ko_clinched:"through", ko_alive:"alive", ko_out:"out of top 2",
     ko_lede:"The knockout skeleton — same language as Recap: where the five markets priced each tie before kickoff, lit up by what actually happened. 2026 runs 48 teams, so the bracket starts at the Round of 32 (32→16→8→4→2). Slots fill in as the knockout stage begins.",
     ko_example:"Slot design (example)",
     ko_ex_note:"Illustrative placeholder, not a real tie — shows what a played knockout slot will look like once the bracket is live.",
@@ -428,6 +441,8 @@ const I18N = {
     out_home:"主胜", out_draw:"平局", out_away:"客胜",
     hl_upset:"最大冷门", hl_confident:"最有把握", hl_fav:"热门", hl_lost:"却输了", hl_won:"兑现",
     tab_knockout:"淘汰赛",
+    ko_grp:"小组", ko_quali_head:"出线追踪 —— 已有 {n} 队锁定小组前二 · 完整对阵待末轮战罢",
+    ko_clinched:"已出线", ko_alive:"争夺中", ko_out:"无缘前二",
     ko_lede:"淘汰赛专题骨架 —— 和复盘同一套语言:五个市场在开球前怎么给每场对阵定价、再由真实结果点亮。2026 是 48 队,所以淘汰赛从 32 强开始(32→16→8→4→2)。格子会随淘汰赛开打逐步填入。",
     ko_example:"格子设计(示意)",
     ko_ex_note:"示意占位、非真实赛果 —— 展示淘汰赛打完后一个格子会长成的样子。",
@@ -1166,15 +1181,66 @@ function koExampleSlot(){
 function koSlot(round,i){
   return `<div class="koslot tbd"><div class="kside">${L("ko_tbd")}</div><div class="kvs">${L("ko_vs")}</div><div class="kside">${L("ko_tbd")}</div></div>`;
 }
+function koStandings(){
+  const G={};
+  (typeof RECAP!=="undefined"?RECAP:[]).forEach(m=>{
+    if(m.sa==null||m.sb==null||!m.grp) return;
+    const g=m.grp; (G[g]=G[g]||{});
+    [[m.home,m.sa,m.sb],[m.away,m.sb,m.sa]].forEach(([t,gf,ga])=>{
+      const s=(G[g][t]=G[g][t]||{t,p:0,pt:0,gf:0,ga:0});
+      s.p++; s.gf+=gf; s.ga+=ga; s.pt+= gf>ga?3:(gf===ga?1:0);
+    });
+  });
+  return G;
+}
+function koClinch(g,teams){
+  const names=Object.keys(teams);
+  if(names.length<4) return {always:new Set(),ever:new Set(names)};
+  const played=new Set();
+  (typeof RECAP!=="undefined"?RECAP:[]).forEach(m=>{ if(m.grp===g && m.sa!=null) played.add([m.home,m.away].sort().join("|")); });
+  const pairs=[];
+  for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++){ const k=[names[i],names[j]].sort().join("|"); if(!played.has(k)) pairs.push([names[i],names[j]]); }
+  const base={}; names.forEach(n=>base[n]=teams[n].pt);
+  let always=new Set(names); const ever=new Set();
+  const combos=Math.pow(3,pairs.length);
+  for(let c=0;c<combos;c++){
+    const pts=Object.assign({},base); let cc=c;
+    pairs.forEach(([x,y])=>{ const o=cc%3; cc=(cc-o)/3; if(o===0)pts[x]+=3; else if(o===1){pts[x]++;pts[y]++;} else pts[y]+=3; });
+    const order=names.slice().sort((a,b)=>pts[b]-pts[a]);
+    const top2=new Set(order.slice(0,2));
+    top2.forEach(t=>ever.add(t));
+    always.forEach(t=>{ if(!top2.has(t)) always.delete(t); });
+  }
+  return {always,ever};
+}
+function koQualiHtml(){
+  const G=koStandings(); const groups=Object.keys(G).sort();
+  if(!groups.length) return "";
+  let nq=0;
+  const cards=groups.map(g=>{
+    const teams=G[g]; const {always,ever}=koClinch(g,teams); nq+=always.size;
+    const order=Object.values(teams).sort((a,b)=>b.pt-a.pt||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf);
+    const rows=order.map(s=>{
+      const st=always.has(s.t)?"q":(ever.has(s.t)?"a":"o");
+      const badge=st==="q"?L("ko_clinched"):(st==="a"?L("ko_alive"):L("ko_out"));
+      return `<div class="kqrow ${st}"><span class="kqt">${flag(s.t)} ${rcName(s.t)}</span><span class="kqpt">${s.pt}</span><span class="kqb">${badge}</span></div>`;
+    }).join("");
+    const pmax=Math.max(...order.map(s=>s.p));
+    return `<div class="kqgrp"><div class="kqh">${L("ko_grp")} ${g} <span class="hint" style="font-weight:400">· ${pmax}/3</span></div>${rows}</div>`;
+  }).join("");
+  return `<div class="kqwrap"><div class="lab" style="margin-bottom:8px">${L("ko_quali_head").replace("{n}",nq)}</div><div class="kqgrid">${cards}</div></div>`;
+}
 function renderKnockout(){
   const host=document.getElementById("knockout");
-  if(KO_VIEWKEY===LANG && host.querySelector(".kobracket")) return;   // 静态骨架：不重建、不重置滚动
-  KO_VIEWKEY=LANG;
+  const kkey=LANG+"|"+((typeof RECAP!=="undefined"&&RECAP.length)||0);
+  if(KO_VIEWKEY===kkey && host.querySelector(".kobracket")) return;   // 骨架+出线状态：数据或语言变化才重建
+  KO_VIEWKEY=kkey;
   const cols=KO_ROUNDS.map(r=>{
     const slots=Array.from({length:r.slots},(_,i)=>koSlot(r.key,i)).join("");
     return `<div class="koround"><div class="korh">${L("ko_"+r.key)} <span class="hint">· ${r.slots}</span></div>${slots}</div>`;
   }).join("");
   host.innerHTML=`<div class="sub" style="margin-bottom:14px;max-width:760px">${L("ko_lede")}</div>
+    ${koQualiHtml()}
     <div class="koexwrap"><div class="korh" style="margin-bottom:8px">${L("ko_example")}</div>${koExampleSlot()}<div class="foot">${L("ko_ex_note")}</div></div>
     <div class="lab" style="margin-bottom:8px">${L("ko_bracket")}</div>
     <div class="kobracket">${cols}</div>
