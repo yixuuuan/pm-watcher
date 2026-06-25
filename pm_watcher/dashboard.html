@@ -77,13 +77,13 @@
   .muted{color:var(--mut)}
   @media(max-width:680px){.cards{grid-template-columns:repeat(2,1fr)}}
   @media(max-width:560px){
-    html,body{max-width:100%;overflow-x:hidden}
     .wrap{padding:16px 13px 48px}
     h1{font-size:22px}
     .cards{grid-template-columns:repeat(2,1fr);gap:10px;margin:16px 0}
     .mc{padding:13px 13px 12px} .mc .v{font-size:21px} .mc .v.small{font-size:13px}
     .tabs button,.ctl button{padding:6px 10px;font-size:13px}
     table{font-size:13px} th,td{padding:7px 5px}
+    #tbl{min-width:480px}
     #recap .recapgrid{grid-template-columns:1fr}
     #recap .node{padding:13px 14px 12px}
     #recap .fix{font-size:15px;gap:8px} #recap .fix .sc{font-size:20px}
@@ -179,6 +179,25 @@
   #knockout .koslot{background:var(--card);border:.5px solid var(--line);border-radius:10px;padding:10px 12px}
   #knockout .koslot.tbd{border-style:dashed;display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--hint)}
   #knockout .koslot.tbd .kside{font-size:12.5px} #knockout .koslot.tbd .kvs{font-size:10px;color:var(--line);text-transform:uppercase;letter-spacing:.1em}
+  .tblscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  #matches{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .mxrow{display:flex;gap:10px 12px;align-items:baseline;padding:10px 4px;border-top:.5px solid var(--line);cursor:pointer;flex-wrap:wrap}
+  .mxrow .mxtime{min-width:84px;flex:0 0 auto}
+  .mxrow .mxteam{flex:1 1 auto;min-width:120px}
+  .mxrow .mxsum{margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .mxrow .mxbk{flex:0 0 auto;white-space:nowrap}
+  #recap .rcmv{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:4px 0 2px;padding:9px 11px;background:var(--card);border:.5px solid var(--line);border-radius:11px}
+  #recap .rcmv .rcmvlab{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+  #recap .rcmv .rcmvit{font-size:13px;display:inline-flex;align-items:center;gap:5px}
+  #recap .rcmv .rcmvit .rcmvn{color:var(--mut);font-variant-numeric:tabular-nums}
+  #recap .rcmv .rcmvit b{font-variant-numeric:tabular-nums}
+  #recap .rcmv .rcmvit.up b{color:#0a8a55} #recap .rcmv .rcmvit.dn b{color:#c0421c}
+  @media(max-width:560px){
+    .mxrow{gap:4px 10px;padding:12px 2px}
+    .mxrow .mxtime{flex:1 1 100%;min-width:0;order:-1;font-size:11px;opacity:.8}
+    .mxrow .mxteam{flex:1 1 auto;font-size:14px}
+    .mxrow .mxsum{margin-left:auto}
+  }
   #knockout .kqwrap{margin-bottom:26px}
   #knockout .kqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px}
   #knockout .kqgrp{background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:10px 12px}
@@ -266,6 +285,7 @@
   #recap .tcarw:hover{border-color:var(--hint)}
   #recap .tccard.tcflash{outline:3px solid #2c2c2a;outline-offset:3px;border-radius:20px;transition:outline-color .2s}
 </style>
+<script defer src="https://cloud.umami.is/script.js" data-website-id="a15878d6-668c-4f02-a838-09355fc0f5ee"></script>
 </head>
 <body>
 <div class="wrap">
@@ -290,7 +310,7 @@
     <div class="row" id="plats"></div>
   </div>
 
-  <table id="tbl"><thead></thead><tbody></tbody></table>
+  <div class="tblscroll"><table id="tbl"><thead></thead><tbody></tbody></table></div>
   <div id="matches" style="display:none;margin-top:14px"></div>
   <div id="recap" style="display:none;margin-top:14px"></div>
   <div id="knockout" style="display:none;margin-top:14px"></div>
@@ -364,6 +384,7 @@ const I18N = {
     calib_empty:"Not enough priced matches yet to plot calibration.",
     cacc_head:"Market consensus record",
     cacc_sub:"Across priced matches, did the consensus favourite actually win? Tap a number — or a slice of the ring — to filter the cards below.",
+    rc_impact:"Post-match shift",
     cacc_acc:"hit rate",
     filter_all:"show all", filter_showing:"Showing",
     rc_export:"save image", export_fail:"Couldn't export — try a screenshot instead.",
@@ -432,6 +453,7 @@ const I18N = {
     calib_empty:"已定价的比赛还太少,暂时画不出校准曲线。",
     cacc_head:"共识热门战绩",
     cacc_sub:"在有定价的比赛里,共识看好的那一方最后赢了吗?点数字、或圆环的扇区,可筛选下方卡片。",
+    rc_impact:"赛后变化",
     cacc_acc:"命中率",
     filter_all:"显示全部", filter_showing:"当前只看",
     rc_export:"存图", export_fail:"导出失败 —— 可以改用截图。",
@@ -878,6 +900,8 @@ function rcNode(m,gi){
   const excl=plats.filter(p=>!rcComparable(m.odds[p]));
   const footExcl=excl.length? ` · ${excl.join(", ")} ${L("foot_excl")}` : "";
   const hl=rcHeadline(m);
+  const mv=(m.movers||[]);
+  const mvHtml = mv.length? `<div class="rcmv"><span class="rcmvlab">${L("rc_impact")}</span>${mv.map(x=>{const up=x.delta>=0;return `<span class="rcmvit ${up?'up':'dn'}">${flag(x.team)} ${rcName(x.team)} <span class="rcmvn">${x.before}%→${x.after}%</span> <b>${up?'+':''}${x.delta}pt</b></span>`;}).join("")}</div>` : "";
   const hlBar = hl? `<div class="hl ${hl.type}"><div class="hh">${hl.en}</div>${LANG==="zh"?`<div class="hs">${hl.zh}</div>`:""}</div>` : "";
   return `<div class="node" data-mk="${mk}">
     ${hlBar}
@@ -886,6 +910,7 @@ function rcNode(m,gi){
     <div class="lab">${L("prematch")} · <span class="hint">${L("consensus")}</span></div>
     <div class="barwrap">${bar}</div>
     <div class="barcap"><span class="mk ${favHit?'good':'bad'}">${favHit?L("fav_hit"):L("fav_miss")}</span> <span class="hint">${favHit?L("cap_hit"):L("cap_miss")}</span></div>
+    ${mvHtml}
     ${missHtml}
     <div class="dsum" data-rc="${gi}">${L("detail_lab")} <span class="hint" style="text-transform:none;letter-spacing:0">(${cmp.length}/${plats.length})</span></div>
     <div class="pdbody" id="rcpd${gi}">
@@ -1499,7 +1524,7 @@ async function tcExport(name){
     const W=1080,H=Math.round(548/360*1080), M=84, CW=W+M*2, CH=H+M*2;
     const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"}); const u=URL.createObjectURL(blob);
     const img=new Image();
-    img.onload=()=>{ const c=document.createElement("canvas"); c.width=CW; c.height=CH; const ctx=c.getContext("2d"); ctx.fillStyle="#ece9e0"; ctx.fillRect(0,0,CW,CH); ctx.save(); ctx.shadowColor="rgba(0,0,0,0.22)"; ctx.shadowBlur=38; ctx.shadowOffsetY=16; ctx.drawImage(img,M,M,W,H); ctx.restore(); URL.revokeObjectURL(u);
+    img.onload=()=>{ const c=document.createElement("canvas"); c.width=CW; c.height=CH; const ctx=c.getContext("2d"); ctx.fillStyle="#ece9e0"; ctx.fillRect(0,0,CW,CH); ctx.save(); ctx.shadowColor="rgba(0,0,0,0.34)"; ctx.shadowBlur=54; ctx.shadowOffsetY=26; ctx.drawImage(img,M,M,W,H); ctx.restore(); URL.revokeObjectURL(u);
       c.toBlob(b=>{ if(!b) return; const a=document.createElement("a"); a.href=URL.createObjectURL(b); a.download=`pm-watcher-${name.replace(/\s+/g,'-')}.png`; document.body.appendChild(a); a.click(); a.remove(); }); };
     img.onerror=()=>{ URL.revokeObjectURL(u); };
     img.src=u;
@@ -1583,11 +1608,11 @@ function renderMatches(){
           </tbody></table>
           <div style="margin-top:10px">${matchNews(A,B)}</div></div>`;
       }
-      return `<div data-match="${key}" style="display:flex;gap:12px;align-items:baseline;padding:10px 4px;border-top:.5px solid var(--line);cursor:pointer">
-          <span class="sub" style="min-width:84px">${fmtT(m.kickoff)}</span>
-          <span class="team">${flag(A)} ${A} <span class="sub">vs</span> ${flag(B)} ${B}</span>
-          <span style="margin-left:auto">${sum}</span>
-          <span class="sub">${Object.keys(m.odds).length} ${L("books")}</span></div>${detail}`;
+      return `<div class="mxrow" data-match="${key}">
+          <span class="sub mxtime">${fmtT(m.kickoff)}</span>
+          <span class="team mxteam">${flag(A)} ${A} <span class="sub">vs</span> ${flag(B)} ${B}</span>
+          <span class="mxsum">${sum}</span>
+          <span class="sub mxbk">${Object.keys(m.odds).length} ${LANG==="zh"?"个平台":"platforms"}</span></div>${detail}`;
     }).join("");
     return `<div class="sub" style="margin-top:14px;font-weight:500">${day}</div>${rows}`;
   }).join("") + `<div class="sub" style="margin-top:12px">${L("matches_note")}</div>` + koFixturesHtml();

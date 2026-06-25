@@ -13,6 +13,8 @@ from __future__ import annotations
 
 import os
 import hashlib
+import bisect
+import re
 import sqlite3
 import threading
 import time
@@ -258,3 +260,58 @@ def visit_stats() -> dict:
                 "today_unique": int(row[1]) if row else 0}
     except Exception:
         return {"total": 0, "today_hits": 0, "today_unique": 0}
+
+
+# —— 冠军概率增量（赛后影响）——
+_CKEY_JUNK = re.compile("[\u200d\ufe0f\U0001F000-\U0001FAFF]")  # 去 ZWJ/变体选择符/emoji（含旗）
+
+def _ckey(k: str) -> str:
+    """清掉脏字符（如 USA 被存成 'Usa 🇺‍🇸'），保留 ç 等合法重音字母。"""
+    k2 = _CKEY_JUNK.sub("", k).strip()
+    return "USA" if k2.lower() == "usa" else k2
+
+
+def champ_series() -> dict:
+    """一次性载入全部 champion 快照，组织成 {team: {platform: ([ts...],[price...])}}（按 ts 升序）。"""
+    with _lock:
+        c = _db()
+        rows = c.execute("SELECT key, platform, ts, price FROM snap WHERE scope='champion' ORDER BY ts").fetchall()
+    series: dict = {}
+    for k, p, ts, pr in rows:
+        k = _ckey(k)
+        tsl, prl = series.setdefault(k, {}).setdefault(p, ([], []))
+        tsl.append(ts); prl.append(pr)
+    for plats in series.values():                  # USA 合并两源后可能乱序，重排
+        for p, (tsl, prl) in plats.items():
+            if any(tsl[i] > tsl[i + 1] for i in range(len(tsl) - 1)):
+                z = sorted(zip(tsl, prl)); plats[p] = ([t for t, _ in z], [v for _, v in z])
+    return series
+
+
+def _cons_at(series: dict, t: int) -> dict:
+    """t 时刻每队的冠军共识 = 各平台“ts<=t 的最近一笔”的均值。"""
+    out = {}
+    for team, plats in series.items():
+        vals = []
+        for tsl, prl in plats.values():
+            i = bisect.bisect_right(tsl, t) - 1
+            if i >= 0:
+                vals.append(prl[i])
+        if vals:
+            out[team] = sum(vals) / len(vals)
+    return out
+
+
+def champ_movers(series: dict, kickoff_ts: int, after_window: int = 12 * 3600,
+                 top: int = 3, min_pp: float = 1.0) -> list:
+    """该场比赛前后冠军概率变动最大的队。仅当赛前/赛后都有快照才计入。"""
+    b = _cons_at(series, kickoff_ts)
+    a = _cons_at(series, kickoff_ts + after_window)
+    mv = []
+    for team in set(b) & set(a):
+        bb, aa = b[team] * 100, a[team] * 100
+        d = aa - bb
+        if abs(d) >= min_pp:
+            mv.append({"team": team, "before": round(bb, 1), "after": round(aa, 1), "delta": round(d, 1)})
+    mv.sort(key=lambda m: -abs(m["delta"]))
+    return mv[:top]

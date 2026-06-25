@@ -178,6 +178,7 @@ class _Handler(BaseHTTPRequestHandler):
             try:
                 from . import history
                 out = []
+                _cseries = history.champ_series()
                 for r in history.results():
                     cl = history.closing_line(r["home"], r["away"], r["kickoff_ts"])
                     odds = {p: [d.get(r["home"]), d.get("Draw"), d.get(r["away"])]
@@ -186,7 +187,8 @@ class _Handler(BaseHTTPRequestHandler):
                     out.append({"home": r["home"], "away": r["away"],
                                 "sa": r["home_score"], "sb": r["away_score"],
                                 "result": res, "kickoff": r["kickoff_ts"],
-                                "grp": r.get("grp"), "odds": odds})
+                                "grp": r.get("grp"), "odds": odds,
+                                "movers": history.champ_movers(_cseries, r["kickoff_ts"])})
                 out.sort(key=lambda m: m["kickoff"])
                 self._send(200, json.dumps({"matches": out}).encode("utf-8"),
                            "application/json; charset=utf-8")
