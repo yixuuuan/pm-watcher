@@ -523,6 +523,7 @@ function flag(team){
 }
 // 是否真国家：有 ISO 国旗或细分旗。用于过滤掉球员名 / Other / No Winner / 大小写重复项。
 function hasFlag(team){ return !!(ISO[team] || FLAG_SPECIAL[team]); }
+function isWC48(team){ return !!TC_FLAG[team]; }   // 48强白名单（含别名），拦掉 Italy/球员/板球等
 let DATA=null, TAB="champion", SORT="consensus";
 let NEWS=[], NEWSFAV=load("pmw_newsfav", false);
 let EVENTS=load("pmw_events", []);   // 赔率异动事件 {ts,team,delta,plat}
@@ -645,7 +646,7 @@ function logMoves(){
   if(!DATA || !DATA.updated || DATA.updated===lastMovesTs) return;
   lastMovesTs = DATA.updated;
   (DATA.champion||[]).forEach(r=>{
-    if(!hasFlag(r.team)) return;
+    if(!hasFlag(r.team) || !isWC48(r.team)) return;
     Object.entries(r.mom||{}).forEach(([p,d])=>{
       if(Math.abs(d)>=1.0){
         const key = r.team+"|"+p+"|"+DATA.updated;
@@ -753,7 +754,7 @@ function render(){
   pc.innerHTML=`<span class="sub">${L("platform")}</span>`+DATA.platforms.map(p=>
     `<span class="chk ${OFF.has(p)?'off':''}" data-p="${p}"><b>${OFF.has(p)?'○':'●'}</b>${p}</span>`).join("");
 
-  const rows=(DATA[TAB]||[]).map(r=>({r,s:stat(r)})).filter(x=>x.s && hasFlag(x.r.team));
+  const rows=(DATA[TAB]||[]).map(r=>({r,s:stat(r)})).filter(x=>x.s && hasFlag(x.r.team) && isWC48(x.r.team));
   rows.sort((a,b)=> SORT==="divergence" ? b.s.d-a.s.d : b.s.c-a.s.c);
 
   // 指标卡
@@ -1646,7 +1647,7 @@ function matchNews(A,B){
 }
 
 function renderChips(){
-  const teams=[...new Set((DATA.champion||[]).map(r=>r.team).filter(hasFlag))];
+  const teams=[...new Set((DATA.champion||[]).map(r=>r.team).filter(t=>hasFlag(t)&&isWC48(t)))];
   document.getElementById("chips").innerHTML=teams.map(t=>
     `<span class="chip ${WATCH.includes(t)?'on':''}" data-team="${t}">${flag(t)} ${t}</span>`).join("");
 }
