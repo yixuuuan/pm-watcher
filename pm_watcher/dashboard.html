@@ -1118,7 +1118,7 @@ function rcShareSVG(m){
   const W=1080, H=1350, cardX=50,cardY=50,cardW=980,cardH=1250, pad=72, inL=cardX+pad, inR=cardX+cardW-pad, midX=W/2;
   const FF="-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif";
   const hl=rcHeadline(m); const HLC=hl?({hit:"#1d9e75",upset:"#d85a30",div:"#ba7517",calib:"#888780"}[hl.type]):"#888780";
-  const HLBG=hl?({hit:"rgba(29,158,117,.12)",upset:"rgba(216,90,48,.12)",div:"rgba(186,117,23,.13)",calib:"rgba(136,135,128,.10)"}[hl.type]):"rgba(136,135,128,.10)";
+  const HLBG=hl?(({hit:"rgba(29,158,117,.12)",blowout:"rgba(29,158,117,.14)",upset:"rgba(216,90,48,.12)",div:"rgba(186,117,23,.13)",draw:"rgba(136,135,128,.12)",calib:"rgba(136,135,128,.10)"}[hl.type])||"rgba(136,135,128,.10)"):"rgba(136,135,128,.10)";
   const L_zh=LANG==="zh"; const qrUrl=SITE_URL+"#recap";
   const fe=t=>flag(t).replace(/<[^>]+>/g,"");   // 取出国旗 emoji（去掉 span）
   const date=m.kickoff? new Date(m.kickoff*1000).toLocaleDateString(loc(),{month:"short",day:"numeric",year:"numeric"}):L("tbd");
