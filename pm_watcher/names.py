@@ -40,7 +40,7 @@ _reg("Congo", "Congo Republic", "Republic of the Congo", "Congo-Brazzaville")
 _reg("Ivory Coast", "Côte d'Ivoire", "Cote d'Ivoire")
 _reg("Czechia", "Czech Republic")
 _reg("Bosnia & Herzegovina", "Bosnia and Herzegovina", "Bosnia-Herzegovina", "Bosnia")
-_reg("Cape Verde", "Cabo Verde")
+_reg("Cape Verde", "Cabo Verde", "Cape Verde Islands", "Cape Verde Is")
 _reg("Curaçao", "Curacao")
 _reg("Iran", "Iran Islamic Republic", "IR Iran")
 

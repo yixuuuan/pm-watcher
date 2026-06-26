@@ -177,18 +177,23 @@ class _Handler(BaseHTTPRequestHandler):
         elif self.path.startswith("/api/recap"):
             try:
                 from . import history
+                from .names import canonical_country
                 out = []
                 _cseries = history.champ_series()
                 for r in history.results():
-                    cl = history.closing_line(r["home"], r["away"], r["kickoff_ts"])
-                    odds = {p: [d.get(r["home"]), d.get("Draw"), d.get(r["away"])]
+                    home = canonical_country(r["home"]); away = canonical_country(r["away"])
+                    outcome = r["outcome"]
+                    if outcome and outcome != "Draw":
+                        outcome = canonical_country(outcome)
+                    cl = history.closing_line(home, away, r["kickoff_ts"])
+                    odds = {p: [d.get(home), d.get("Draw"), d.get(away)]
                             for p, d in cl.items()}
-                    res = "D" if r["outcome"] == "Draw" else ("A" if r["outcome"] == r["home"] else "B")
-                    out.append({"home": r["home"], "away": r["away"],
+                    res = "D" if outcome == "Draw" else ("A" if outcome == home else "B")
+                    out.append({"home": home, "away": away,
                                 "sa": r["home_score"], "sb": r["away_score"],
                                 "result": res, "kickoff": r["kickoff_ts"],
                                 "grp": r.get("grp"), "odds": odds,
-                                "movers": history.champ_movers(_cseries, r["home"], r["away"], r["kickoff_ts"])})
+                                "movers": history.champ_movers(_cseries, home, away, r["kickoff_ts"])})
                 out.sort(key=lambda m: m["kickoff"])
                 self._send(200, json.dumps({"matches": out}).encode("utf-8"),
                            "application/json; charset=utf-8")
