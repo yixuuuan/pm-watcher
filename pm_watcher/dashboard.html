@@ -272,6 +272,12 @@
   #recap .rcsec>summary::before{content:"\25b8";color:var(--hint);transition:transform .15s}
   #recap .rcsec[open]>summary::before{transform:rotate(90deg)}
   #recap .rcsec>.rcsecbody{padding:2px 2px 16px}
+  .foldsec{border-top:.5px solid var(--line);margin-top:18px}
+  .foldsec>summary{cursor:pointer;list-style:none;padding:14px 2px;font-weight:600;font-size:15px;display:flex;align-items:center;gap:8px;user-select:none}
+  .foldsec>summary::-webkit-details-marker{display:none}
+  .foldsec>summary::before{content:"\25b8";color:var(--hint);transition:transform .15s}
+  .foldsec[open]>summary::before{transform:rotate(90deg)}
+  .foldsec>.foldbody{padding:2px 2px 16px}
   #recap .rcday{margin:6px 0}
   #recap .rcday>summary{cursor:pointer;list-style:none;padding:9px 2px;font-weight:600;font-size:13.5px;display:flex;align-items:center;gap:8px;user-select:none;color:var(--ink)}
   #recap .rcday>summary::-webkit-details-marker{display:none}
@@ -324,18 +330,24 @@
   <div class="err" id="err"></div>
 
   <div id="extras">
-  <div style="margin-top:26px" class="row between">
-    <div><div class="team" style="font-size:15px" data-i18n="watch_head">My Watchlist</div><div class="sub" data-i18n="watch_sub">Tap a team below to add or remove; the line is each platform's odds history.</div></div>
-  </div>
-  <div class="chips" id="chips"></div>
-  <div class="watch" id="watch"></div>
-
-  <div style="margin-top:26px" class="row between">
-    <div><div class="team" style="font-size:15px" data-i18n="news_head">Live News × Odds Moves</div>
-      <div class="sub" data-i18n="news_sub">BBC / Guardian / ESPN / Sky football RSS + Dongqiudi (Chinese), filtered to the World Cup; ⚡ marks a consensus move the monitor caught. Timelines are shown side by side for you to compare — no automatic causal claims.</div></div>
-    <div class="ctl row"><button id="newsFav" class="" data-i18n="news_fav">Watchlist only</button></div>
-  </div>
-  <div id="news" style="margin-top:10px"></div>
+  <details class="foldsec" open id="foldWatch">
+    <summary><span data-i18n="watch_head">My Watchlist</span></summary>
+    <div class="foldbody">
+      <div class="sub" data-i18n="watch_sub">Tap a team below to add or remove; the line is each platform's odds history.</div>
+      <div class="chips" id="chips"></div>
+      <div class="watch" id="watch"></div>
+    </div>
+  </details>
+  <details class="foldsec" open id="foldNews">
+    <summary><span data-i18n="news_head">Live News × Odds Moves</span></summary>
+    <div class="foldbody">
+      <div class="row between" style="align-items:flex-start">
+        <div class="sub" data-i18n="news_sub" style="max-width:760px">BBC / Guardian / ESPN / Sky football RSS + Dongqiudi (Chinese), filtered to the World Cup; ⚡ marks a consensus move the monitor caught. Timelines are shown side by side for you to compare — no automatic causal claims.</div>
+        <div class="ctl row"><button id="newsFav" class="" data-i18n="news_fav">Watchlist only</button></div>
+      </div>
+      <div id="news" style="margin-top:10px"></div>
+    </div>
+  </details>
   </div>
 </div>
 
@@ -392,7 +404,7 @@ const I18N = {
     cacc_head:"Market consensus record",
     cacc_sub:"Across priced matches, did the consensus favourite actually win? Tap a number — or a slice of the ring — to filter the cards below.",
     rc_impact:"Post-match shift",
-    hero_tag:"Five prediction markets price the 2026 World Cup — here we score that pricing against what actually happened. Calibration, not prediction.",
+    hero_tag:"pm-watcher turns football matches into prediction-market replay material: what the market expected before kickoff, and how reality rewrote it after.",
     hero_cta_recap:"Start with Match Recap", hero_cta_team:"Explore Team Cards",
     cacc_acc:"hit rate",
     filter_all:"show all", filter_showing:"Showing",
@@ -1570,6 +1582,7 @@ function renderRecap(){
     `<div class="rcfilterbar">${L("filter_showing")}: <b>${RECAP_FILTER==="hit"?L("fav_hit"):L("fav_miss")}</b> (${shown.length}) · <span class="cclear" data-recapfilter="all">${L("filter_all")}</span></div>`;
   const _s1=LANG==="zh"?"比赛复盘":"Match recap", _s2=LANG==="zh"?"平台校准":"Platform calibration", _s3=LANG==="zh"?"球队名片":"Team cards";
   const MOB=matchMedia("(max-width:560px)").matches;
+  if(MOB && !window._foldInit){ window._foldInit=true; document.querySelectorAll(".foldsec[open]").forEach(d=>{ d.open=false; }); }
   const hero=`<div class="rchero"><div class="rchero-tag">${L("hero_tag")}</div><div class="rchero-cta"><button class="rcheroBtn primary" data-scrollto="rcmatch">${L("hero_cta_recap")} →</button><button class="rcheroBtn" data-scrollto="tcsec">${L("hero_cta_team")} →</button></div></div>`;
   const byDay={}, order=[], dmax={};
   shown.forEach(m=>{ const d=m.kickoff? new Date(m.kickoff*1000).toLocaleDateString(loc(),{month:"long",day:"numeric"}) : L("tbd"); if(!byDay[d]){byDay[d]=[];order.push(d);dmax[d]=0;} byDay[d].push(m); dmax[d]=Math.max(dmax[d],m.kickoff||0); });
