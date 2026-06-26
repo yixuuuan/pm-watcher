@@ -355,7 +355,11 @@
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><polygon id="tcstar" points="0,-8 1.88,-2.59 7.61,-2.47 3.04,0.99 4.70,6.47 0,3.2 -4.70,6.47 -3.04,0.99 -7.61,-2.47 -1.88,-2.59"/></defs></svg>
 <script>
 const SITE_URL="https://pm-watchers.up.railway.app/", SITE_HOST="pm-watchers.up.railway.app";
-let LANG = "en";   // 每次打开都先默认英文；切换仍在本次会话内生效
+let LANG = (function(){
+  try{ var s=load("pmw_lang"); if(s==="zh"||s==="en") return s; }catch(e){}      // 记忆上次手动选择
+  try{ var nv=(navigator.language||navigator.userLanguage||"").toLowerCase(); if(nv.indexOf("zh")>-1) return "zh"; }catch(e){}  // 浏览器语言含 zh → 中文
+  return "en";                                                                      // 其余一律英文
+})();
 const I18N = {
   en: {
     title:"pm-watcher · World Cup Cross-Platform Board", tab_champion:"Champion", tab_group:"Group Winner",
