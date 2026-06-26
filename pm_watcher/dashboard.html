@@ -1412,7 +1412,7 @@ function tcTexture(st, id){
   body+=`<rect width="${W}" height="${H}" fill="#fff" filter="url(#g${id})" opacity="0.05"/>`;
   return {defs, body};
 }
-function tcStars(n,x,y){let s="";for(let i=0;i<n;i++){s+=`<use href="#tcstar" x="${x+i*19}" y="${y}" fill="#ffd23d" stroke="#fff" stroke-width="1.2"/>`;}return s;}
+function tcStars(n,x,y,id){let s="";for(let i=0;i<n;i++){s+=`<use href="#star${id}" x="${x+i*19}" y="${y}" fill="#ffd23d" stroke="#fff" stroke-width="1.2"/>`;}return s;}
 function tcQRsvg(url,x,y,size){
   try{ if(typeof qrcode==="undefined") throw 0;
     const q=qrcode(0,'M'); q.addData(url); q.make(); const c=q.getModuleCount(); const m=size/c;
@@ -1481,14 +1481,14 @@ function tcCard(t, id, opts){
   const flagHref=("flagHref" in opts)?opts.flagHref:tcFlagHref(t.name);
   const exp=!!opts.exp, fontDefs=opts.fontCSS||"";
   return `<svg viewBox="0 0 360 548" xmlns="http://www.w3.org/2000/svg">
-  <defs>${fontDefs}${tex.defs}<clipPath id="cc${id}"><rect width="360" height="548" rx="24"/></clipPath><clipPath id="fl${id}"><rect x="28" y="40" width="46" height="33" rx="3"/></clipPath></defs>
+  <defs>${fontDefs}${tex.defs}<clipPath id="cc${id}"><rect width="360" height="548" rx="24"/></clipPath><clipPath id="fl${id}"><rect x="28" y="40" width="46" height="33" rx="3"/></clipPath><polygon id="star${id}" points="0,-8 1.88,-2.59 7.61,-2.47 3.04,0.99 4.70,6.47 0,3.2 -4.70,6.47 -3.04,0.99 -7.61,-2.47 -1.88,-2.59"/></defs>
   <g clip-path="url(#cc${id})">${tex.body}<rect x="0" y="300" width="360" height="248" fill="rgba(8,10,30,0.58)"/></g>
   <rect x="0.5" y="0.5" width="359" height="547" rx="24" fill="none" stroke="rgba(255,255,255,0.2)"/>
   ${flagHref?`<image href="${flagHref}" x="28" y="40" width="46" height="33" preserveAspectRatio="xMidYMid slice" clip-path="url(#fl${id})"/>`:""}
   <rect x="28" y="40" width="46" height="33" rx="3" fill="none" stroke="rgba(255,255,255,.5)"/>
   ${nameBlock}
   <text x="86" y="${subY}" font-family="FWCCond,${TC_CJK}" font-size="13" letter-spacing="0.5" fill="${st.sub}">${subLine}</text>
-  ${tcStars(t.stars,88,starsY)}
+  ${tcStars(t.stars,88,starsY,id)}
   <rect x="280" y="38" width="56" height="56" rx="14" fill="${st.accent}"/>
   <text x="308" y="73" text-anchor="middle" font-family="FWCBlack" font-size="24" fill="${badgeTxt}">${t.surprise}</text>
   <text x="308" y="88" text-anchor="middle" font-family="FWCCond" font-size="10" fill="${badgeTxt}">${TL('tier')} ${t.tier}</text>
