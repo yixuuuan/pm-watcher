@@ -192,6 +192,13 @@
   #recap .rcmv .rcmvit .rcmvn{color:var(--mut);font-variant-numeric:tabular-nums}
   #recap .rcmv .rcmvit b{font-variant-numeric:tabular-nums}
   #recap .rcmv .rcmvit.up b{color:#0a8a55} #recap .rcmv .rcmvit.dn b{color:#c0421c}
+  #recap .rchero{margin:4px 0 24px;padding:0 2px}
+  #recap .rchero-tag{font-size:14.5px;color:var(--mut);max-width:700px;margin-bottom:16px;line-height:1.55}
+  #recap .rchero-cta{display:flex;flex-wrap:wrap;gap:12px}
+  #recap .rcheroBtn{font-size:21px;font-weight:800;letter-spacing:-.01em;padding:14px 22px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;line-height:1.15;transition:transform .12s ease,box-shadow .12s ease}
+  #recap .rcheroBtn:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.08)}
+  #recap .rcheroBtn.primary{background:#1d9e75;border-color:#1d9e75;color:#fff}
+  @media(max-width:560px){ #recap .rcheroBtn{font-size:17px;padding:12px 16px;flex:1 1 100%;text-align:center} #recap .rchero-tag{font-size:13.5px} }
   @media(max-width:560px){
     .mxrow{gap:4px 10px;padding:12px 2px}
     .mxrow .mxtime{flex:1 1 100%;min-width:0;order:-1;font-size:11px;opacity:.8}
@@ -295,7 +302,7 @@
       <div class="sub" id="meta">Loading…</div></div>
     <div class="rcol">
       <div class="langsw"><button data-lang="en" class="on">EN</button><button data-lang="zh">中</button></div>
-      <div class="tabs row"><button data-tab="champion" class="on" data-i18n="tab_champion">Champion</button><button data-tab="group" data-i18n="tab_group" style="display:none">Group Winner</button><button data-tab="matches" data-i18n="tab_matches">Fixtures</button><button data-tab="recap" data-i18n="tab_recap">Recap</button><button data-tab="knockout" data-i18n="tab_knockout">Knockout</button></div>
+      <div class="tabs row"><button data-tab="recap" class="on" data-i18n="tab_recap">Recap</button><button data-tab="champion" data-i18n="tab_champion">Champion</button><button data-tab="matches" data-i18n="tab_matches">Fixtures</button><button data-tab="knockout" data-i18n="tab_knockout">Knockout</button><button data-tab="group" data-i18n="tab_group" style="display:none">Group Winner</button></div>
     </div>
   </div>
 
@@ -385,6 +392,8 @@ const I18N = {
     cacc_head:"Market consensus record",
     cacc_sub:"Across priced matches, did the consensus favourite actually win? Tap a number — or a slice of the ring — to filter the cards below.",
     rc_impact:"Post-match shift",
+    hero_tag:"Five prediction markets price the 2026 World Cup — here we score that pricing against what actually happened. Calibration, not prediction.",
+    hero_cta_recap:"Start with Match Recap", hero_cta_team:"Explore Team Cards",
     cacc_acc:"hit rate",
     filter_all:"show all", filter_showing:"Showing",
     rc_export:"save image", export_fail:"Couldn't export — try a screenshot instead.",
@@ -454,6 +463,8 @@ const I18N = {
     cacc_head:"共识热门战绩",
     cacc_sub:"在有定价的比赛里,共识看好的那一方最后赢了吗?点数字、或圆环的扇区,可筛选下方卡片。",
     rc_impact:"赛后变化",
+    hero_tag:"五个预测平台为 2026 世界杯定价,我们用真实赛果给这些定价打分。校准,而非预测。",
+    hero_cta_recap:"从赛事复盘开始", hero_cta_team:"探索球队名片",
     cacc_acc:"命中率",
     filter_all:"显示全部", filter_showing:"当前只看",
     rc_export:"存图", export_fail:"导出失败 —— 可以改用截图。",
@@ -524,7 +535,7 @@ function flag(team){
 // 是否真国家：有 ISO 国旗或细分旗。用于过滤掉球员名 / Other / No Winner / 大小写重复项。
 function hasFlag(team){ return !!(ISO[team] || FLAG_SPECIAL[team]); }
 function isWC48(team){ return !!TC_FLAG[team]; }   // 48强白名单（含别名），拦掉 Italy/球员/板球等
-let DATA=null, TAB="champion", SORT="consensus";
+let DATA=null, TAB="recap", SORT="consensus";
 let NEWS=[], NEWSFAV=load("pmw_newsfav", false);
 let EVENTS=load("pmw_events", []);   // 赔率异动事件 {ts,team,delta,plat}
 let WATCH = load("pmw_watch", FAV);
@@ -1558,6 +1569,7 @@ function renderRecap(){
   const banner = RECAP_FILTER==="all" ? "" :
     `<div class="rcfilterbar">${L("filter_showing")}: <b>${RECAP_FILTER==="hit"?L("fav_hit"):L("fav_miss")}</b> (${shown.length}) · <span class="cclear" data-recapfilter="all">${L("filter_all")}</span></div>`;
   const _s1=LANG==="zh"?"比赛复盘":"Match recap", _s2=LANG==="zh"?"平台校准":"Platform calibration", _s3=LANG==="zh"?"球队名片":"Team cards";
+  const hero=`<div class="rchero"><div class="rchero-tag">${L("hero_tag")}</div><div class="rchero-cta"><button class="rcheroBtn primary" data-scrollto="rcmatch">${L("hero_cta_recap")} →</button><button class="rcheroBtn" data-scrollto="tcsec">${L("hero_cta_team")} →</button></div></div>`;
   const byDay={}, order=[], dmax={};
   shown.forEach(m=>{ const d=m.kickoff? new Date(m.kickoff*1000).toLocaleDateString(loc(),{month:"long",day:"numeric"}) : L("tbd"); if(!byDay[d]){byDay[d]=[];order.push(d);dmax[d]=0;} byDay[d].push(m); dmax[d]=Math.max(dmax[d],m.kickoff||0); });
   let _ci=0, matchesBody;
@@ -1573,13 +1585,14 @@ function renderRecap(){
     }).join("");
     matchesBody=`<div class="rcdaytabs">${tabs}</div><div class="rcdaypanels">${panels}</div>`;
   }
-  host.innerHTML=`<details class="rcsec" open><summary>${_s3}</summary><div class="rcsecbody"><div id="tcsec"></div></div></details>`
+  host.innerHTML=`${hero}<details class="rcsec" open><summary>${_s3}</summary><div class="rcsecbody"><div id="tcsec"></div></div></details>`
     +`<details class="rcsec" open id="rcmatch"><summary>${_s1}</summary><div class="rcsecbody">${rcAccPanel()}<div class="sub" style="margin:10px 0;max-width:760px">${L("rc_lede")}</div>${rcHighlightsHtml()}${banner}${matchesBody}</div></details>`
     +`<details class="rcsec" open><summary>${_s2}</summary><div class="rcsecbody"><div id="rcrank"></div><div id="rccalib"></div></div></details>`;
   host.querySelectorAll(".recapgrid").forEach(g=>{ void g.offsetWidth; g.classList.add("intro"); });
   setTimeout(()=>host.querySelectorAll(".recapgrid.intro").forEach(g=>g.classList.remove("intro")),1300);
   document.getElementById("rcrank").innerHTML=rcRankHtml();
   document.getElementById("rccalib").innerHTML=rcCalibHtml();
+  host.querySelectorAll("[data-scrollto]").forEach(b=>b.onclick=()=>{const el=document.getElementById(b.dataset.scrollto); if(el) el.scrollIntoView({behavior:"smooth",block:"start"});});
   try{tcRenderSection();}catch(e){console.warn("tc",e);}
 }
 function mc(l,v,accent,small){return `<div class="mc" style="--accent:${accent||'#1d9e75'}"><div class="l">${l}</div><div class="v ${small?'small':''}">${v}</div></div>`}
