@@ -103,18 +103,51 @@ async def fetch_matches(clients) -> dict[str, list[Market]]:
     return out
 
 
+# 单场只取「全场胜平负(1X2 / Moneyline)」主盘。淘汰赛与小组赛同口径：
+# 90 分钟胜/平/负，含平局档。子盘(More Markets/Exact Score/Halftime/Player Props…)一律剔除。
+_MAIN_ALLOW = ("moneyline", "1x2", "match result", "match odds", "match winner",
+               "full time result", "fulltime", "full-time result",
+               "90 min", "90 minute", "regulation time")
+
+
+def _market_suffix(raw: str) -> tuple[str, str]:
+    """切出 'A vs B' 主体与其后缀。返回 (head, suffix_lower)；无后缀则 suffix=''。
+    分隔符两侧均带空格(' - '/' – '/' — '/': ')，故 Bosnia-Herzegovina 这类带连字符的队名不受影响。"""
+    seps = (" – ", " — ", " - ", ": ")
+    pos, chosen = -1, None
+    for sep in seps:
+        i = raw.find(sep)
+        if i != -1 and (pos == -1 or i < pos):
+            pos, chosen = i, sep
+    if pos == -1:
+        return raw, ""
+    return raw[:pos], raw[pos + len(chosen):].strip().lower()
+
+
+def _clean_label(nm: str) -> str:
+    """剥掉结果名里的市场前缀，如 'Reg Time: England' -> 'England'、'Reg Time: Tie' -> 'Tie'。"""
+    nm = (nm or "").strip()
+    if ": " in nm:
+        nm = nm.split(": ")[-1].strip()
+    return nm
+
+
 def build_matchboard(results: dict[str, list[Market]]) -> list[dict]:
     """
     跨平台归并单场比赛：key = 排序后的(规范队A, 规范队B)。
     每行: {teams:[A,B], title, kickoff, vol, odds:{platform:{A:p, Draw:p, B:p}}}
     kickoff 用市场收盘时间近似（诚实标注：收盘≈开球，非官方赛程）。
+    只采全场胜平负主盘：无后缀，或后缀属 _MAIN_ALLOW；其余子盘/未知后缀一律丢弃。
     """
     from .names import canonical_country
     from .polymarket import _split_vs
     rows: dict[tuple, dict] = {}
     for platform, markets in results.items():
         for m in markets:
-            sides = _split_vs(m.title or "")
+            head, suffix = _market_suffix(m.title or "")
+            if suffix and not any(k in suffix for k in _MAIN_ALLOW):
+                continue                       # 子盘 / 未知后缀 → 丢弃，避免污染
+            sides = _split_vs(head)
             if not sides:
                 continue
             a, b = canonical_country(sides[0]), canonical_country(sides[1])
@@ -123,14 +156,16 @@ def build_matchboard(results: dict[str, list[Market]]) -> list[dict]:
                                         "kickoff": None, "vol": 0.0, "odds": {}})
             od: dict[str, float] = {}
             for o in m.outcomes:
-                nm = o.name.strip()
                 if o.price is None:
                     continue
+                nm = _clean_label(o.name)      # 剥 'Reg Time:' 之类前缀
                 label = "Draw" if nm.lower() in ("draw", "tie") else canonical_country(nm)
                 if label in (a, b) or label == "Draw":
-                    od[label] = round(o.price * 100, 1)
+                    od.setdefault(label, round(o.price * 100, 1))
             if od:
-                row["odds"][platform] = od
+                dst = row["odds"].setdefault(platform, {})
+                for k, v in od.items():
+                    dst.setdefault(k, v)       # 同平台同对阵首个主盘为准，不被后续覆盖
             if m.close_ts and (row["kickoff"] is None or m.close_ts < row["kickoff"]):
                 row["kickoff"] = m.close_ts
             if m.volume:

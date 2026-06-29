@@ -12,6 +12,8 @@ Kalshi 只读适配器。
 """
 from __future__ import annotations
 
+import re
+
 import httpx
 
 from .model import Market, Outcome, PredictionClient, iso_to_ts, matches
@@ -80,8 +82,74 @@ class KalshiClient(PredictionClient):
                               close_ts=close))
         return out
 
-    async def search_markets(self, query: str, limit: int = 64,
-                             max_pages: int = 6) -> list[Market]:
+    async def _settled_match_events(self, pages: int = 20) -> list[dict]:
+        """KXWCGAME 已结算的单场事件(含 nested markets)，翻页取全。"""
+        out: list[dict] = []
+        cursor = None
+        for _ in range(pages):
+            params = {"series_ticker": self.MATCH_SERIES, "status": "settled",
+                      "with_nested_markets": "true", "limit": 200}
+            if cursor:
+                params["cursor"] = cursor
+            r = await self._http.get("/events", params=params)
+            r.raise_for_status()
+            j = r.json()
+            evs = j.get("events", [])
+            out.extend(evs)
+            cursor = j.get("cursor")
+            if not cursor or not evs:
+                break
+        return out
+
+    async def wc_closed_index(self) -> dict:
+        """{frozenset({canonA,canonB}): settled_event}。回填建一次、复用。"""
+        from .names import canonical_country
+        idx: dict = {}
+        for ev in await self._settled_match_events():
+            title = (ev.get("title") or "").strip()
+            parts = re.split(r"\s+vs\.?\s+", title, maxsplit=1, flags=re.I)
+            if len(parts) != 2:
+                continue
+            key = frozenset({canonical_country(parts[0]), canonical_country(parts[1])})
+            idx.setdefault(key, ev)
+        return idx
+
+    async def _closing_from_event(self, ev: dict, kickoff_ts: int,
+                                  period: int = 60) -> dict[str, tuple]:
+        """从一个已结算事件取每档开球前最后一根 K 线收盘价。返回 {规范 label:(price0_1, ts)}。"""
+        from .names import canonical_country
+        series = ev.get("series_ticker") or self.MATCH_SERIES
+        out: dict[str, tuple] = {}
+        for m in ev.get("markets", []):
+            nm = (m.get("yes_sub_title") or "").strip()
+            ticker = m.get("ticker")
+            if not nm or not ticker:
+                continue
+            label = "Draw" if nm.lower() in ("tie", "draw") else canonical_country(nm)
+            try:
+                r = await self._http.get(
+                    f"/series/{series}/markets/{ticker}/candlesticks",
+                    params={"start_ts": kickoff_ts - 7 * 86400,
+                            "end_ts": kickoff_ts, "period_interval": period})
+                r.raise_for_status()
+                cs = r.json().get("candlesticks") or []
+                pre = [c for c in cs if (c.get("end_period_ts") or 0) < kickoff_ts]
+                if pre:
+                    pr = _candle_price(pre[-1])
+                    if pr is not None:
+                        out[label] = (pr, int(pre[-1].get("end_period_ts")))
+            except Exception:
+                pass
+        return out
+
+    async def closing_for_match(self, home: str, away: str, kickoff_ts: int) -> dict[str, tuple]:
+        from .names import canonical_country
+        idx = await self.wc_closed_index()
+        ev = idx.get(frozenset({canonical_country(home), canonical_country(away)}))
+        return await self._closing_from_event(ev, kickoff_ts) if ev else {}
+
+    async def search_markets(self, query: str, limit: int = 10,
+                             max_pages: int = 5) -> list[Market]:
         q = query.lower()
 
         # 路径 0：命中已知系列（如小组第一）→ 每个事件出一个多结果市场
@@ -196,3 +264,44 @@ def _to_float(v):
         return float(v)
     except (TypeError, ValueError):
         return None
+
+
+def _candle_price(c: dict):
+    """Kalshi K线 → 0~1 价。
+    现行 API 的 price 子对象用 *_dollars（已是 0~1，不要再 /100）；
+    老格式用 close/mean（美分，需 /100）。最后回退 yes_bid/yes_ask 收盘中点。"""
+    pr = c.get("price") or {}
+    # 新格式：*_dollars，本身就是 0~1
+    for k in ("close_dollars", "mean_dollars", "previous_dollars", "open_dollars"):
+        v = pr.get(k)
+        if v is not None:
+            try:
+                return float(v)
+            except (TypeError, ValueError):
+                pass
+    # 老格式：美分 → /100
+    for k in ("close", "mean", "previous", "open"):
+        v = pr.get(k)
+        if v is not None:
+            try:
+                return float(v) / 100.0
+            except (TypeError, ValueError):
+                pass
+
+    # 回退：yes_bid / yes_ask 收盘中点（同样兼容 *_dollars 与美分）
+    def _leg(side: str):
+        s = c.get(side) or {}
+        for k in ("close_dollars", "close"):
+            v = s.get(k)
+            if v is not None:
+                try:
+                    fv = float(v)
+                    return fv if k.endswith("_dollars") else fv / 100.0
+                except (TypeError, ValueError):
+                    pass
+        return None
+
+    yb, ya = _leg("yes_bid"), _leg("yes_ask")
+    if yb is not None and ya is not None:
+        return (yb + ya) / 2.0
+    return None
