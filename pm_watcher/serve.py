@@ -195,7 +195,21 @@ class _Handler(BaseHTTPRequestHandler):
                                 "grp": r.get("grp"), "odds": odds,
                                 "movers": history.champ_movers(_cseries, home, away, r["kickoff_ts"])})
                 out.sort(key=lambda m: m["kickoff"])
-                self._send(200, json.dumps({"matches": out}).encode("utf-8"),
+                ko = []
+                for r in history.knockout_fixtures():
+                    h2 = canonical_country(r["home"]); a2 = canonical_country(r["away"])
+                    o2 = r["outcome"]
+                    if o2 and o2 != "Draw":
+                        o2 = canonical_country(o2)
+                    cl = history.closing_line(h2, a2, r["kickoff_ts"]) if (h2 and a2) else {}
+                    odds = {p: [d.get(h2), d.get("Draw"), d.get(a2)] for p, d in cl.items()}
+                    res2 = None
+                    if r["home_score"] is not None and o2:
+                        res2 = "D" if o2 == "Draw" else ("A" if o2 == h2 else "B")
+                    ko.append({"home": h2, "away": a2, "sa": r["home_score"], "sb": r["away_score"],
+                               "result": res2, "kickoff": r["kickoff_ts"], "round": r["grp"],
+                               "status": r["status"], "odds": odds})
+                self._send(200, json.dumps({"matches": out, "ko": ko}).encode("utf-8"),
                            "application/json; charset=utf-8")
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(),

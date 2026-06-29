@@ -191,6 +191,23 @@ def results() -> list[dict]:
     return [dict(zip(cols, r)) for r in rows]
 
 
+def knockout_fixtures() -> list[dict]:
+    """淘汰赛全部对阵（含未开赛），按轮次→开赛时间排序。供对阵图使用。
+    未开赛的场次 outcome 为空串、score 为 None。"""
+    order = {"R32": 0, "R16": 1, "QF": 2, "SF": 3, "3P": 4, "FIN": 5}
+    with _lock:
+        c = _db()
+        rows = c.execute(
+            """SELECT match_id, home, away, home_score, away_score,
+                      outcome, kickoff_ts, status, grp FROM result
+               WHERE grp IN ('R32','R16','QF','SF','3P','FIN')""").fetchall()
+    cols = ["match_id", "home", "away", "home_score", "away_score",
+            "outcome", "kickoff_ts", "status", "grp"]
+    res = [dict(zip(cols, r)) for r in rows]
+    res.sort(key=lambda m: (order.get(m["grp"], 9), m["kickoff_ts"]))
+    return res
+
+
 def record_backfill(scope: str, key: str, platform: str, price: float,
                     ts: int, src: str = "polymarket-history") -> bool:
     """把一条真实历史价写进 snap(price 为 0~1，与 live 快照同口径)，并记溯源。

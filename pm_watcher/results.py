@@ -50,10 +50,27 @@ def _outcome(home: str, away: str, hs: int | None, as_: int | None) -> str | Non
     return "Draw"
 
 
+# football-data stage → 看板轮次代码（小组赛用 A–L，淘汰赛用下列代码）
+KO_STAGE = {"LAST_32": "R32", "LAST_16": "R16", "QUARTER_FINALS": "QF",
+            "SEMI_FINALS": "SF", "THIRD_PLACE": "3P", "FINAL": "FIN"}
+KO_ROUNDS = frozenset(KO_STAGE.values())
+
+
+def _grp_of(m: dict) -> str | None:
+    """小组赛 → 'A'..'L'；淘汰赛 → 'R32'/'R16'/'QF'/'SF'/'3P'/'FIN'；其余 None。"""
+    g = m.get("group")
+    if g and g.upper().startswith("GROUP_"):
+        return g.split("_", 1)[1]
+    return KO_STAGE.get((m.get("stage") or "").upper())
+
+
 def fetch_finished() -> list[dict]:
-    """返回已结束比赛的规范化记录列表（不写库）。"""
+    """返回需要入库的比赛记录（不写库）：
+    - 小组赛：仅已结束（有比分）的场次；
+    - 淘汰赛：不论是否开赛都纳入（未踢的 score/outcome 为空），以便对阵图提前显示对阵、
+      之后由同一逻辑自动补上比分与赛果。"""
     with _client() as http:
-        r = http.get(f"/competitions/{COMP}/matches", params={"status": "FINISHED"})
+        r = http.get(f"/competitions/{COMP}/matches")   # 全部场次，不限状态
         r.raise_for_status()
         data = r.json()
 
@@ -65,15 +82,21 @@ def fetch_finished() -> list[dict]:
         hs, as_ = ft.get("home"), ft.get("away")
         outcome = _outcome(home, away, hs, as_)
         kickoff = iso_to_ts(m.get("utcDate"))
-        if outcome is None or kickoff is None:
-            continue   # 没比分或没开赛时间的，跳过，下次再补
-        grp = m.get("group")            # 例 "GROUP_F" → 存 "F"；非小组赛阶段为 None
-        if grp and grp.upper().startswith("GROUP_"):
-            grp = grp.split("_", 1)[1]
+        if kickoff is None:
+            continue
+        grp = _grp_of(m)
+        is_ko = grp in KO_ROUNDS
+        if not is_ko:
+            if outcome is None:
+                continue          # 小组赛没比分 → 先跳过，下次再补
+        else:
+            if not home and not away:
+                continue          # 淘汰赛对阵两边都未确定 → 暂不入库
         out.append({
             "match_id": int(m["id"]), "home": home, "away": away,
-            "home_score": hs, "away_score": as_, "outcome": outcome,
-            "kickoff_ts": int(kickoff), "status": m.get("status", "FINISHED"),
+            "home_score": hs, "away_score": as_,
+            "outcome": outcome or "",          # 未决出 → 空串（result.outcome NOT NULL）
+            "kickoff_ts": int(kickoff), "status": m.get("status", ""),
             "grp": grp,
         })
     return out
