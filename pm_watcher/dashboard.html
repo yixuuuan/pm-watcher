@@ -223,6 +223,8 @@
   .mxrow .mxteam{flex:1 1 auto;min-width:120px}
   .mxrow .mxsum{margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
   .mxrow .mxbk{flex:0 0 auto;white-space:nowrap}
+  .mxrow.hist .histsc{font-variant-numeric:tabular-nums;font-weight:700;margin:0 7px}
+  .histfold .mxrow{cursor:pointer}
   #recap .rcmv{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:4px 0 2px;padding:9px 11px;background:var(--card);border:.5px solid var(--line);border-radius:11px}
   #recap .rcmv .rcmvlab{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
   #recap .rcmv .rcmvit{font-size:13px;display:inline-flex;align-items:center;gap:5px}
@@ -412,6 +414,7 @@ const I18N = {
     matches_empty:"No comparable single-match markets. On --live, if this stays empty: match markets on Polymarket/Manifold may not be listed yet (they usually appear close to kickoff), or the network is unreachable.",
     tbd:"Time TBD", th_draw:"Draw", th_spread:"Spread", books:"books",
     matches_note:"Time shown is market close ≈ kickoff (not the official schedule); summary is the first platform's W/D/L %. Tap to expand the cross-platform comparison and both teams' news.",
+    hist_head:"Past matches", hist_sub:"Every finished match — teams, final score, and each platform's pre-match pricing. Tap a row to expand.",
     no_team_news:"No news for", team_news:"Related news", news_odds:"📈 odds around this", news_new:"New", danmaku:"Danmaku",
     loading_odds:"Loading odds ±3h around this news…",
     news_empty:"No matching news (needs your network to reach BBC/Guardian/ESPN/Sky and Dongqiudi; the “Watchlist only” toggle also filters many out).",
@@ -492,6 +495,7 @@ const I18N = {
     matches_empty:"暂无可比的单场比赛盘。--live 下若长期为空：Polymarket/Manifold 的比赛盘可能尚未上架（多在临近开球时出现），或网络未通。",
     tbd:"时间待定", th_draw:"平局", th_spread:"价差", books:"家",
     matches_note:"时间为市场收盘时间 ≈ 开球时间（非官方赛程）；概要为首家平台的 胜/平/负 %。点击展开跨平台对比与两队新闻。",
+    hist_head:"历史比赛", hist_sub:"全部已结束比赛 —— 对阵、最终比分,以及各平台赛前定价。点击任意一行展开。",
     no_team_news:"暂无相关新闻：", team_news:"两队相关新闻", news_odds:"📈 前后赔率", news_new:"新闻", danmaku:"弹幕",
     loading_odds:"加载该新闻前后 ±3 小时的赔率…",
     news_empty:"暂无匹配的新闻（拉取需要你的网络可达 BBC/Guardian/ESPN/Sky 与懂球帝；“只看我关注的队”也会过滤掉很多）。",
@@ -887,12 +891,13 @@ async function loadRecap(){
   RECAP_LOADING=false;
   if(TAB==="recap") renderRecap();
   else if(TAB==="knockout") renderKnockout();
+  else if(TAB==="matches") renderMatches();
 }
 function recapSig(){ return (RECAP||[]).reduce((s,m)=>s+(m.kickoff||0)+Object.keys(m.odds||{}).length*7, (RECAP||[]).length*1e6); }
 let RECAP_FETCHING=false;
 async function refreshRecap(){   // 定时重新拉取：比赛打完/回填后自动更新
   if(RECAP_FETCHING) return; RECAP_FETCHING=true;
-  try{ const r=await fetch("/api/recap",{cache:"no-store"}); const j=await r.json(); RECAP=j.matches||[]; RECAP_KO=j.ko||[]; if(TAB==="recap") renderRecap(); else if(TAB==="knockout") renderKnockout(); }
+  try{ const r=await fetch("/api/recap",{cache:"no-store"}); const j=await r.json(); RECAP=j.matches||[]; RECAP_KO=j.ko||[]; if(TAB==="recap") renderRecap(); else if(TAB==="knockout") renderKnockout(); else if(TAB==="matches") renderMatches(); }
   catch(e){}
   RECAP_FETCHING=false;
 }
@@ -1302,6 +1307,7 @@ function koStandings(){
   const G={};
   (typeof RECAP!=="undefined"?RECAP:[]).forEach(m=>{
     if(m.sa==null||m.sb==null||!m.grp) return;
+    if(!/^[A-L]$/.test(String(m.grp))) return;   // 只统计小组赛 A–L，排除淘汰赛(R32 等)
     const g=m.grp; (G[g]=G[g]||{});
     [[m.home,m.sa,m.sb],[m.away,m.sb,m.sa]].forEach(([t,gf,ga])=>{
       const s=(G[g][t]=G[g][t]||{t,p:0,pt:0,gf:0,ga:0});
@@ -1749,46 +1755,80 @@ function renderRecap(){
 function mc(l,v,accent,small){return `<div class="mc" style="--accent:${accent||'#1d9e75'}"><div class="l">${l}</div><div class="v ${small?'small':''}">${v}</div></div>`}
 
 let OPENMATCH = null;
+let HISTOPEN = false;   // 历史比赛折叠区展开态，跨重渲染保持
+const _KO_LBL={R32:"ko_r32",R16:"ko_r16",QF:"ko_qf",SF:"ko_sf",FIN:"ko_final"};
+// 共享：单场各平台赛前定价明细表。odds 形如 {平台:{A:%,Draw:%,B:%}}。
+function mxDetailHtml(A,B,odds,withNews){
+  const plats = Object.keys(odds);
+  const cols = [A,"Draw",B];
+  const sprd = {};
+  cols.forEach(c=>{ const vs=plats.map(p=>odds[p][c]).filter(v=>v!=null);
+    sprd[c]= vs.length>1 ? (Math.max(...vs)-Math.min(...vs)).toFixed(1) : null; });
+  return `<div style="background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 10px">
+    <table style="margin:0"><thead><tr><th>${L("platform")}</th><th class="r">${flag(A)} ${A}</th><th class="r">${L("th_draw")}</th><th class="r">${flag(B)} ${B}</th></tr></thead><tbody>
+    ${plats.map(p=>`<tr><td>${p}</td>${cols.map(c=>`<td class="r num">${odds[p][c]!=null?odds[p][c].toFixed(1)+"%":"—"}</td>`).join("")}</tr>`).join("")}
+    ${plats.length>1?`<tr><td class="sub">${L("th_spread")}</td>${cols.map(c=>`<td class="r sub">${sprd[c]?sprd[c]+"pt":"—"}</td>`).join("")}</tr>`:""}
+    </tbody></table>${withNews?`<div style="margin-top:10px">${matchNews(A,B)}</div>`:""}</div>`;
+}
 function renderMatches(){
+  if(typeof RECAP==="undefined" || RECAP===null) loadRecap();   // 懒加载历史比赛数据
   const ms = DATA.matches||[];
   const el = document.getElementById("matches");
-  if(!ms.length){
-    el.innerHTML = `<div class="sub" style="padding:14px 4px">${L("matches_empty")}</div>`;
-    return;
-  }
   const fmtT = ts => ts? new Date(ts*1000).toLocaleString(loc(),{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
+  let live;
+  if(!ms.length){
+    live = `<div class="sub" style="padding:14px 4px">${L("matches_empty")}</div>`;
+  } else {
+    const byDay = {};
+    ms.forEach(m=>{ const d = m.kickoff? new Date(m.kickoff*1000).toLocaleDateString(loc(),{month:"long",day:"numeric"}) : L("tbd");
+      (byDay[d]=byDay[d]||[]).push(m); });
+    live = Object.entries(byDay).map(([day,list])=>{
+      const rows = list.map(m=>{
+        const key = m.teams.join("|");
+        const open = OPENMATCH===key;
+        const [A,B]=m.teams;
+        const p0 = Object.values(m.odds)[0]||{};
+        const sum = `<span class="num">${p0[A]!=null?p0[A].toFixed(0):"–"}</span><span class="sub"> / </span><span class="num">${p0["Draw"]!=null?p0["Draw"].toFixed(0):"–"}</span><span class="sub"> / </span><span class="num">${p0[B]!=null?p0[B].toFixed(0):"–"}</span>`;
+        const detail = open ? mxDetailHtml(A,B,m.odds,true) : "";
+        return `<div class="mxrow" data-match="${key}">
+            <span class="sub mxtime">${fmtT(m.kickoff)}</span>
+            <span class="team mxteam">${flag(A)} ${A} <span class="sub">vs</span> ${flag(B)} ${B}</span>
+            <span class="mxsum">${sum}</span>
+            <span class="sub mxbk">${Object.keys(m.odds).length} ${LANG==="zh"?"个平台":"platforms"}</span></div>${detail}`;
+      }).join("");
+      return `<div class="sub" style="margin-top:14px;font-weight:500">${day}</div>${rows}`;
+    }).join("");
+  }
+  el.innerHTML = live + `<div class="sub" style="margin-top:12px">${L("matches_note")}</div>` + historyMatchesHtml();
+  const _hf = el.querySelector(".histfold");
+  if(_hf) _hf.addEventListener("toggle", ()=>{ HISTOPEN = _hf.open; });
+}
+// 历史比赛：所有已结束(小组+淘汰)，按日期，默认折叠；每行对阵+比分，可展开看各平台赛前定价
+function historyMatchesHtml(){
+  const fin = (RECAP||[]).filter(m=>m.sa!=null && m.sb!=null).slice()
+    .sort((a,b)=>(b.kickoff||0)-(a.kickoff||0));   // 最新在前
+  if(!fin.length) return "";
   const byDay = {};
-  ms.forEach(m=>{ const d = m.kickoff? new Date(m.kickoff*1000).toLocaleDateString(loc(),{month:"long",day:"numeric"}) : L("tbd");
+  fin.forEach(m=>{ const d = m.kickoff? new Date(m.kickoff*1000).toLocaleDateString(loc(),{month:"long",day:"numeric"}) : L("tbd");
     (byDay[d]=byDay[d]||[]).push(m); });
-  el.innerHTML = Object.entries(byDay).map(([day,list])=>{
+  const body = Object.entries(byDay).map(([day,list])=>{
     const rows = list.map(m=>{
-      const key = m.teams.join("|");
-      const open = OPENMATCH===key;
-      const [A,B]=m.teams;
-      const p0 = Object.values(m.odds)[0]||{};
-      const sum = `<span class="num">${p0[A]!=null?p0[A].toFixed(0):"–"}</span><span class="sub"> / </span><span class="num">${p0["Draw"]!=null?p0["Draw"].toFixed(0):"–"}</span><span class="sub"> / </span><span class="num">${p0[B]!=null?p0[B].toFixed(0):"–"}</span>`;
-      let detail = "";
-      if(open){
-        const plats = Object.keys(m.odds);
-        const cols = [A,"Draw",B];
-        const sprd = {};
-        cols.forEach(c=>{ const vs=plats.map(p=>m.odds[p][c]).filter(v=>v!=null);
-          sprd[c]= vs.length>1 ? (Math.max(...vs)-Math.min(...vs)).toFixed(1) : null; });
-        detail = `<div style="background:var(--card);border:.5px solid var(--line);border-radius:12px;padding:12px 14px;margin:6px 0 10px">
-          <table style="margin:0"><thead><tr><th>${L("platform")}</th><th class="r">${flag(A)} ${A}</th><th class="r">${L("th_draw")}</th><th class="r">${flag(B)} ${B}</th></tr></thead><tbody>
-          ${plats.map(p=>`<tr><td>${p}</td>${cols.map(c=>`<td class="r num">${m.odds[p][c]!=null?m.odds[p][c].toFixed(1)+"%":"—"}</td>`).join("")}</tr>`).join("")}
-          ${plats.length>1?`<tr><td class="sub">${L("th_spread")}</td>${cols.map(c=>`<td class="r sub">${sprd[c]?sprd[c]+"pt":"—"}</td>`).join("")}</tr>`:""}
-          </tbody></table>
-          <div style="margin-top:10px">${matchNews(A,B)}</div></div>`;
-      }
-      return `<div class="mxrow" data-match="${key}">
-          <span class="sub mxtime">${fmtT(m.kickoff)}</span>
-          <span class="team mxteam">${flag(A)} ${A} <span class="sub">vs</span> ${flag(B)} ${B}</span>
-          <span class="mxsum">${sum}</span>
-          <span class="sub mxbk">${Object.keys(m.odds).length} ${LANG==="zh"?"个平台":"platforms"}</span></div>${detail}`;
+      const A=m.home, B=m.away, key="h:"+A+"|"+B, open=OPENMATCH===key;
+      const od={};
+      Object.entries(m.odds||{}).forEach(([p,a])=>{ if(a && (a[0]!=null||a[1]!=null||a[2]!=null)) od[p]={[A]:a[0],"Draw":a[1],[B]:a[2]}; });
+      const np=Object.keys(od).length;
+      const detail = open ? mxDetailHtml(A,B,od,false) : "";
+      const tag = /^[A-L]$/.test(String(m.grp||"")) ? `${L("ko_grp")} ${m.grp}` : (m.grp&&_KO_LBL[m.grp]?L(_KO_LBL[m.grp]):(m.grp||""));
+      const meta = np ? `${np} ${LANG==="zh"?"个平台":"platforms"}` : L("ko_nopricing");
+      return `<div class="mxrow hist" data-match="${key}">
+          <span class="sub mxtime">${tag}</span>
+          <span class="team mxteam">${flag(A)} ${A} <b class="histsc">${m.sa}–${m.sb}</b> ${flag(B)} ${B}</span>
+          <span class="sub mxbk">${meta}</span></div>${detail}`;
     }).join("");
     return `<div class="sub" style="margin-top:14px;font-weight:500">${day}</div>${rows}`;
-  }).join("") + `<div class="sub" style="margin-top:12px">${L("matches_note")}</div>`;
+  }).join("");
+  return `<details class="foldsec histfold" ${HISTOPEN?"open":""}><summary>${L("hist_head")} <span class="hint" style="font-weight:400">· ${fin.length} ${L("ko_ties")}</span></summary>`
+    +`<div class="sub" style="margin:2px 0 2px;max-width:680px">${L("hist_sub")}</div>${body}</details>`;
 }
 function koFixturesHtml(){
   const rounds=KO_ROUNDS.map(r=>{
