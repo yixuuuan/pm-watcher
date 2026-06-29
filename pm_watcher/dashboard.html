@@ -188,6 +188,34 @@
   #knockout .koslot.real .barwrap{height:22px}
   #knockout .koslot.real .barcap{margin-top:5px}
   #knockout .koslot.real .kohint{font-size:10.5px;color:var(--hint);padding:3px 0 1px}
+  /* 平行宇宙 预留 hero */
+  #knockout .koPU{position:relative;margin:2px 0 26px;padding:22px 22px;border-radius:18px;border:1.5px solid var(--line);background:linear-gradient(135deg,var(--card),rgba(124,92,255,.07));overflow:hidden}
+  #knockout .koPU .koPUtag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7c5cff;background:rgba(124,92,255,.12);padding:3px 9px;border-radius:999px;margin-bottom:11px}
+  #knockout .koPU h3{font-size:23px;font-weight:800;letter-spacing:-.01em;margin:0 0 8px}
+  #knockout .koPU p{font-size:13.5px;color:var(--mut);max-width:560px;line-height:1.55;margin:0}
+  /* 小组赛汇总 */
+  #knockout .koGwrap .kggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:0 20px;margin-top:4px}
+  #knockout .kgrow{display:flex;align-items:center;gap:8px;padding:7px 2px;border-top:.5px solid var(--line);font-size:13px}
+  #knockout .kgrow .kgg{flex:0 0 auto;font-size:10.5px;color:var(--hint);min-width:46px;text-transform:uppercase;letter-spacing:.04em}
+  #knockout .kgrow .kgt{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:5px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+  #knockout .kgrow .kgt.r{justify-content:flex-end;text-align:right}
+  #knockout .kgrow .kgt.w{font-weight:700}
+  #knockout .kgrow .kgsc{flex:0 0 auto;font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);padding:0 4px}
+  /* 对阵路径图 */
+  #knockout .kopath{overflow-x:auto;-webkit-overflow-scrolling:touch;padding:4px 0 10px}
+  #knockout .kopathsvg{display:block}
+  #knockout .kofo{width:100%;height:100%;box-sizing:border-box}
+  #knockout .kobx{box-sizing:border-box;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px;background:var(--card);border:.5px solid var(--line);border-radius:9px;padding:4px 8px}
+  #knockout .kobx.tbd{border-style:dashed}
+  #knockout .kobx .kor{display:flex;align-items:center;gap:5px;font-size:12px;line-height:1.25;min-width:0}
+  #knockout .kobx .kor .kof{flex:0 0 auto}
+  #knockout .kobx .kor .kon{flex:1 1 0;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--mut)}
+  #knockout .kobx .kor .kosc{flex:0 0 auto;min-width:14px;text-align:right;font-variant-numeric:tabular-nums;color:var(--hint)}
+  #knockout .kobx .kor.win .kon{color:var(--ink);font-weight:700}
+  #knockout .kobx .kor.win .kosc{color:var(--ink);font-weight:700}
+  #knockout .kobx.champ{flex-direction:row;align-items:center;justify-content:center;gap:6px;border-color:#d8b24a;background:linear-gradient(135deg,rgba(216,178,74,.18),var(--card))}
+  #knockout .kobx.champ .kon{flex:0 0 auto;font-weight:800;color:var(--ink)}
+  #knockout .kobx.champ .kotrophy{font-size:15px}
   .tblscroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
   #matches{overflow-x:auto;-webkit-overflow-scrolling:touch}
   .mxrow{display:flex;gap:10px 12px;align-items:baseline;padding:10px 4px;border-top:.5px solid var(--line);cursor:pointer;flex-wrap:wrap}
@@ -438,6 +466,14 @@ const I18N = {
     ko_await:"Awaiting the Round of 32. Each slot becomes a pre-match-pricing-vs-result node — the same atom as Recap — as ties are played.",
     ko_team_a:"Team A", ko_team_b:"Team B", ko_tbd:"TBD", ko_vs:"vs",
     ko_await_res:"awaiting result", ko_nopricing:"no pre-match pricing captured",
+    ko_head:"Knockout stage",
+    ko_pu_title:"My World Cup · Parallel Universe",
+    ko_pu_sub:"The flagship shareable feature — coming soon. The most striking way to replay how the markets saw this tournament.",
+    ko_pu_tag:"in the works",
+    ko_group_head:"Group stage", ko_group_sub:"Completed — final scores only.",
+    ko_quali_label:"Qualification tracker",
+    ko_champ:"Champion", ko_path:"Path to the title",
+    ko_path_note:"Round of 32 from the live draw; later rounds stay reserved until each round is set. Only flags, names and the (reserved) final score are shown here — the priced replay lives in Recap.",
     ko_r32:"Round of 32", ko_r16:"Round of 16", ko_qf:"Quarter-finals", ko_sf:"Semi-finals", ko_final:"Final",
     ko_ties:"ties", ko_fixtures_head:"Knockout stage — reserved",
     ko_fixtures_note:"Bracket not drawn yet. Placeholder slots in the same card format; they fill in automatically once the Round of 32 is set."
@@ -510,6 +546,14 @@ const I18N = {
     ko_await:"等待 32 强开打。每个格子会变成一个「赛前定价 vs 结果」节点 —— 和复盘是同一个原子 —— 随对阵打完而填入。",
     ko_team_a:"甲队", ko_team_b:"乙队", ko_tbd:"待定", ko_vs:"vs",
     ko_await_res:"待采集赛果", ko_nopricing:"未采集到赛前定价",
+    ko_head:"淘汰赛",
+    ko_pu_title:"我的世界杯 · 平行宇宙",
+    ko_pu_sub:"最具视觉冲击和传播力的重点专题 —— 即将上线。用最直观的方式,重放市场眼中的这届世界杯。",
+    ko_pu_tag:"筹备中",
+    ko_group_head:"小组赛", ko_group_sub:"已结束 —— 仅展示对阵与最终比分。",
+    ko_quali_label:"出线追踪",
+    ko_champ:"冠军", ko_path:"通往冠军之路",
+    ko_path_note:"32 强取自实时抽签;后续轮次在抽签确定前保持预留。此处只展示国旗、队名与(预留的)最终比分 —— 带定价的复盘在「复盘」板块。",
     ko_r32:"32 强", ko_r16:"16 强", ko_qf:"八强", ko_sf:"四强", ko_final:"决赛",
     ko_ties:"场", ko_fixtures_head:"淘汰赛 · 预留",
     ko_fixtures_note:"对阵图尚未抽签。这些是同款卡片格式的占位,32 强确定后自动填入。"
@@ -1303,50 +1347,92 @@ function koQualiHtml(){
   }).join("");
   return `<div class="kqwrap"><div class="lab" style="margin-bottom:8px">${L("ko_quali_head").replace("{n}",nq)}</div><div class="kqgrid">${cards}</div></div>`;
 }
-const KO_KEY2CODE={r32:"R32",r16:"R16",qf:"QF",sf:"SF",final:"FIN"};
-function koOddsRows(odds){ return Object.values(odds||{}).filter(rcComparable); }
-function koSig(){ return (RECAP_KO||[]).reduce((s,m)=>s+(m.kickoff||0)+(m.result?9:0)+(m.sa!=null?1:0)+Object.keys(m.odds||{}).length,0); }
-function koRealSlot(m){
-  const rows=koOddsRows(m.odds);
-  const played = m.result!=null && m.sa!=null;
-  const resIdx = m.result==="A"?0:(m.result==="D"?1:(m.result==="B"?2:-1));
-  const na=rcName(m.home), nb=rcName(m.away);
-  const score = (m.sa!=null&&m.sb!=null) ? `${m.sa}–${m.sb}` : L("ko_vs");
-  let body="";
-  if(rows.length){
-    const {bar,favHit}=koConsBar(rows, played?resIdx:-1);
-    const cap = played
-      ? `<div class="barcap"><span class="mk ${favHit?'good':'bad'}">${favHit?L("fav_hit"):L("fav_miss")}</span></div>`
-      : `<div class="barcap"><span class="hint">${L("prematch")} · ${L("ko_await_res")}</span></div>`;
-    body=`<div class="barwrap">${bar}</div>${cap}`;
-  } else {
-    body=`<div class="kohint">${L("ko_nopricing")}</div>`;
-  }
-  return `<div class="koslot real ${played?'played':'upc'}">
-    <div class="kfixr"><span class="kt">${flag(m.home)} ${na}</span><b class="ksc">${score}</b><span class="kt r">${nb} ${flag(m.away)}</span></div>
-    ${body}</div>`;
+function koSig(){ return (RECAP_KO||[]).reduce((s,m)=>s+(m.kickoff||0)+(m.result?9:0)+(m.sa!=null?1:0),0); }
+function koRoundMatches(code){ return (RECAP_KO||[]).filter(m=>m.round===code).sort((a,b)=>(a.kickoff||0)-(b.kickoff||0)); }
+
+// 小组赛汇总：已结束的小组赛（grp A–L），仅对阵 + 比分
+function koGroupRows(){
+  const ms=(RECAP||[]).filter(m=>/^[A-L]$/.test(String(m.grp||"")) && m.sa!=null && m.sb!=null)
+    .sort((a,b)=>(a.grp<b.grp?-1:a.grp>b.grp?1:0)||((a.kickoff||0)-(b.kickoff||0)));
+  if(!ms.length) return {n:0, html:""};
+  const rows=ms.map(m=>{
+    const wA=m.sa>m.sb, wB=m.sb>m.sa;
+    return `<div class="kgrow"><span class="kgg">${L("ko_grp")} ${m.grp}</span>`
+      +`<span class="kgt ${wA?'w':''}">${flag(m.home)} ${rcName(m.home)}</span>`
+      +`<span class="kgsc">${m.sa}–${m.sb}</span>`
+      +`<span class="kgt r ${wB?'w':''}">${rcName(m.away)} ${flag(m.away)}</span></div>`;
+  }).join("");
+  return {n:ms.length, html:`<div class="kggrid">${rows}</div>`};
 }
+
+// 路径图节点（一个对阵 = 两行：国旗+队名+预留比分）
+function koBoxHTML(m){
+  if(!m) return `<div xmlns="http://www.w3.org/1999/xhtml" class="kofo"><div class="kobx tbd"><span class="kor"><span class="kon">${L("ko_tbd")}</span></span><span class="kor"><span class="kon">${L("ko_tbd")}</span></span></div></div>`;
+  const played=m.sa!=null && m.sb!=null;
+  const row=(t,sc,win)=>`<span class="kor ${win?'win':''}"><span class="kof">${flag(t)}</span><span class="kon">${rcName(t)}</span><span class="kosc">${sc!=null?sc:''}</span></span>`;
+  return `<div xmlns="http://www.w3.org/1999/xhtml" class="kofo"><div class="kobx ${played?'done':'up'}">${row(m.home,m.sa,m.result==='A')}${row(m.away,m.sb,m.result==='B')}</div></div>`;
+}
+function koChampHTML(team){
+  const inner = team
+    ? `<div class="kobx champ done"><span class="kor win"><span class="kof">${flag(team)}</span><span class="kon">${rcName(team)}</span></span></div>`
+    : `<div class="kobx champ tbd"><span class="kotrophy">🏆</span><span class="kon">${L("ko_champ")}</span></div>`;
+  return `<div xmlns="http://www.w3.org/1999/xhtml" class="kofo">${inner}</div>`;
+}
+
+// 对阵路径图：左 16 / 右 16 收束至中央冠军格
+function koBracketSVG(){
+  const NW=140, NH=50, colStep=158, pitch=64, topPad=20, padX=8, padB=24;
+  const rounds=["R32","R16","QF","SF"];
+  const cen=[]; cen[0]=Array.from({length:8},(_,i)=>topPad+(i+0.5)*pitch);
+  for(let r=1;r<4;r++){ const p=cen[r-1], a=[]; for(let i=0;i<p.length;i+=2) a.push((p[i]+p[i+1])/2); cen[r]=a; }
+  const leftH=8*pitch, midY=topPad+leftH/2;
+  const lX=r=>padX+r*colStep, xF=padX+4*colStep, rX=r=>xF+(4-r)*colStep;
+  const W=rX(0)+NW+padX, H=topPad+leftH+padB;
+  const fill={};
+  rounds.forEach((code,r)=>{ const ms=koRoundMatches(code), n=cen[r].length;
+    fill[code]={L:Array.from({length:n},(_,i)=>ms[i]||null), R:Array.from({length:n},(_,i)=>ms[n+i]||null)}; });
+  const finalM=koRoundMatches("FIN")[0]||null;
+  const champTeam=(finalM&&finalM.result)?(finalM.result==='A'?finalM.home:(finalM.result==='B'?finalM.away:null)):null;
+  const C="var(--line)";
+  const elbow=(x1,y1,x2,y2)=>{ const mx=(x1+x2)/2; return `<path d="M${x1} ${y1} H${mx} V${y2} H${x2}" fill="none" stroke="${C}" stroke-width="1"/>`; };
+  const place=(x,y,m)=>`<foreignObject x="${x}" y="${(y-NH/2).toFixed(1)}" width="${NW}" height="${NH}">${koBoxHTML(m)}</foreignObject>`;
+  let nodes="", lines="";
+  for(let r=0;r<4;r++){ cen[r].forEach((y,i)=>{ nodes+=place(lX(r),y,fill[rounds[r]].L[i]);
+    if(r<3) lines+=elbow(lX(r)+NW,y,lX(r+1),cen[r+1][Math.floor(i/2)]);
+    else lines+=elbow(lX(3)+NW,y,xF,midY); }); }
+  for(let r=0;r<4;r++){ cen[r].forEach((y,i)=>{ nodes+=place(rX(r),y,fill[rounds[r]].R[i]);
+    if(r<3) lines+=elbow(rX(r),y,rX(r+1)+NW,cen[r+1][Math.floor(i/2)]);
+    else lines+=elbow(rX(3),y,xF+NW,midY); }); }
+  nodes+=place(xF,midY,finalM);
+  const champCy=midY-NH-28;
+  lines+=`<path d="M${xF+NW/2} ${champCy+NH/2} V${midY-NH/2}" fill="none" stroke="${C}" stroke-width="1"/>`;
+  nodes+=`<foreignObject x="${xF}" y="${champCy-NH/2}" width="${NW}" height="${NH}">${koChampHTML(champTeam)}</foreignObject>`;
+  return `<div class="kopath"><svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" class="kopathsvg"><g>${lines}</g>${nodes}</svg></div>`;
+}
+
 function renderKnockout(){
   const host=document.getElementById("knockout");
   if(RECAP===null){ host.innerHTML=`<div class="sub" style="padding:14px 4px">${L("loading")}</div>`; loadRecap(); return; }
-  const kkey=LANG+"|"+((typeof RECAP!=="undefined"&&RECAP.length)||0)+"|"+(RECAP_KO.length)+"|"+koSig();
-  if(KO_VIEWKEY===kkey && host.querySelector(".kobracket")) return;   // 骨架+出线状态：数据或语言变化才重建
+  const kkey=LANG+"|"+((RECAP&&RECAP.length)||0)+"|"+(RECAP_KO.length)+"|"+koSig();
+  if(KO_VIEWKEY===kkey && host.querySelector(".kopath")) return;
   KO_VIEWKEY=kkey;
-  const cols=KO_ROUNDS.map(r=>{
-    const code=KO_KEY2CODE[r.key];
-    const real=(RECAP_KO||[]).filter(m=>m.round===code).sort((a,b)=>(a.kickoff||0)-(b.kickoff||0));
-    const slots = real.length
-      ? real.map(koRealSlot).join("")
-      : Array.from({length:r.slots},(_,i)=>koSlot(r.key,i)).join("");
-    const cnt = real.length || r.slots;
-    return `<div class="koround"><div class="korh">${L("ko_"+r.key)} <span class="hint">· ${cnt}</span></div>${slots}</div>`;
-  }).join("");
-  host.innerHTML=`<div class="sub" style="margin-bottom:14px;max-width:760px">${L("ko_lede")}</div>
-    ${koQualiHtml()}
-    <div class="koexwrap"><div class="korh" style="margin-bottom:8px">${L("ko_example")}</div>${koExampleSlot()}<div class="foot">${L("ko_ex_note")}</div></div>
-    <div class="lab" style="margin-bottom:8px">${L("ko_bracket")}</div>
-    <div class="kobracket">${cols}</div>
-    <div class="foot" style="max-width:680px">${L("ko_await")}</div>`;
+  const grp=koGroupRows();
+  const groupSec = grp.n
+    ? `<details class="foldsec koGwrap"><summary>${L("ko_group_head")} <span class="hint" style="font-weight:400">· ${grp.n} ${L("ko_ties")}</span></summary><div class="sub" style="margin:2px 0 4px">${L("ko_group_sub")}</div>${grp.html}</details>`
+    : "";
+  const qual=koQualiHtml();
+  const qualSec = qual
+    ? `<details class="foldsec"><summary>${L("ko_quali_label")}</summary><div style="margin-top:8px">${qual}</div></details>`
+    : "";
+  host.innerHTML=`
+    <section class="koPU"><span class="koPUtag">${L("ko_pu_tag")}</span><h3>${L("ko_pu_title")}</h3><p>${L("ko_pu_sub")}</p></section>
+    ${groupSec}
+    <div class="lab" style="margin:28px 0 6px">${L("ko_head")}</div>
+    <div class="sub" style="max-width:760px;margin-bottom:6px">${L("ko_lede")}</div>
+    ${qualSec}
+    <div class="lab" style="margin:24px 0 4px">${L("ko_path")}</div>
+    ${koBracketSVG()}
+    <div class="foot" style="max-width:720px">${L("ko_path_note")}</div>`;
 }
 function rcBurst(seg){
   const r=seg.getBoundingClientRect(), good=seg.classList.contains("good");
@@ -1702,7 +1788,7 @@ function renderMatches(){
           <span class="sub mxbk">${Object.keys(m.odds).length} ${LANG==="zh"?"个平台":"platforms"}</span></div>${detail}`;
     }).join("");
     return `<div class="sub" style="margin-top:14px;font-weight:500">${day}</div>${rows}`;
-  }).join("") + `<div class="sub" style="margin-top:12px">${L("matches_note")}</div>` + koFixturesHtml();
+  }).join("") + `<div class="sub" style="margin-top:12px">${L("matches_note")}</div>`;
 }
 function koFixturesHtml(){
   const rounds=KO_ROUNDS.map(r=>{
