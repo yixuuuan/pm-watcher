@@ -207,6 +207,8 @@
   #knockout .kofo{width:100%;height:100%;box-sizing:border-box}
   #knockout .kobx{box-sizing:border-box;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2px;background:var(--card);border:.5px solid var(--line);border-radius:9px;padding:4px 8px}
   #knockout .kobx.tbd{border-style:dashed}
+  #knockout .kobx.proj{border-style:dashed;border-color:var(--pu,#7c5cff);background:linear-gradient(135deg,rgba(124,92,255,.06),var(--card))}
+  #knockout .kobx.proj .kor .kon{color:var(--ink)}
   #knockout .kobx .kor{display:flex;align-items:center;gap:5px;font-size:12px;line-height:1.25;min-width:0}
   #knockout .kobx .kor .kof{flex:0 0 auto}
   #knockout .kobx .kor .kon{flex:1 1 0;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:var(--mut)}
@@ -1371,13 +1373,20 @@ function koGroupRows(){
   return {n:ms.length, html:`<div class="kggrid">${rows}</div>`};
 }
 
-// 路径图节点（一个对阵 = 两行：国旗+队名+预留比分）
+// 路径图节点（一个对阵 = 两行：国旗+队名+预留比分）。支持「已推进」半填充格。
 function koBoxHTML(m){
   if(!m) return `<div xmlns="http://www.w3.org/1999/xhtml" class="kofo"><div class="kobx tbd"><span class="kor"><span class="kon">${L("ko_tbd")}</span></span><span class="kor"><span class="kon">${L("ko_tbd")}</span></span></div></div>`;
   const played=m.sa!=null && m.sb!=null;
-  const row=(t,sc,win)=>`<span class="kor ${win?'win':''}"><span class="kof">${flag(t)}</span><span class="kon">${rcName(t)}</span><span class="kosc">${sc!=null?sc:''}</span></span>`;
-  return `<div xmlns="http://www.w3.org/1999/xhtml" class="kofo"><div class="kobx ${played?'done':'up'}">${row(m.home,m.sa,m.result==='A')}${row(m.away,m.sb,m.result==='B')}</div></div>`;
+  const proj=!!m.projected && !played;
+  const row=(t,sc,win)=> t
+    ? `<span class="kor ${win?'win':''}"><span class="kof">${flag(t)}</span><span class="kon">${rcName(t)}</span><span class="kosc">${sc!=null?sc:''}</span></span>`
+    : `<span class="kor"><span class="kon">${L("ko_tbd")}</span></span>`;
+  const cls = played?'done':(proj?'proj':'up');
+  return `<div xmlns="http://www.w3.org/1999/xhtml" class="kofo"><div class="kobx ${cls}">${row(m.home,m.sa,m.result==='A')}${row(m.away,m.sb,m.result==='B')}</div></div>`;
 }
+// 判定一场对阵的胜者（先看 result，再看比分）
+function koWinner(m){ if(!m) return null; if(m.result==='A') return m.home; if(m.result==='B') return m.away;
+  if(m.sa!=null && m.sb!=null){ if(m.sa>m.sb) return m.home; if(m.sb>m.sa) return m.away; } return null; }
 function koChampHTML(team){
   const inner = team
     ? `<div class="kobx champ done"><span class="kor win"><span class="kof">${flag(team)}</span><span class="kon">${rcName(team)}</span></span></div>`
@@ -1397,7 +1406,19 @@ function koBracketSVG(){
   const fill={};
   rounds.forEach((code,r)=>{ const ms=koRoundMatches(code), n=cen[r].length;
     fill[code]={L:Array.from({length:n},(_,i)=>ms[i]||null), R:Array.from({length:n},(_,i)=>ms[n+i]||null)}; });
-  const finalM=koRoundMatches("FIN")[0]||null;
+  // 向前推进：已决出的胜者填入下一轮空位（甲/乙由序号奇偶决定），标记为 projected（虚线）
+  const advance=(side)=>{ for(let r=0;r<3;r++){ const cur=fill[rounds[r]][side], nxt=fill[rounds[r+1]][side];
+    cur.forEach((m,i)=>{ const w=koWinner(m); if(!w) return; const ni=i>>1;
+      let nm=nxt[ni]; if(!nm){ nm={home:null,away:null,sa:null,sb:null,projected:true}; nxt[ni]=nm; }
+      if(nm.sa!=null) return; // 该轮已有真实赛果，不覆盖
+      if(i%2===0){ if(nm.home==null){ nm.home=w; nm.projected=true; } }
+      else       { if(nm.away==null){ nm.away=w; nm.projected=true; } }
+    }); } };
+  advance("L"); advance("R");
+  let finalM=koRoundMatches("FIN")[0]||null;
+  // 决赛未创建时，用两个半决赛胜者投影出对阵
+  if(!finalM){ const lw=koWinner(fill["SF"].L[0]), rw=koWinner(fill["SF"].R[0]);
+    if(lw||rw) finalM={home:lw||null,away:rw||null,sa:null,sb:null,projected:true}; }
   const champTeam=(finalM&&finalM.result)?(finalM.result==='A'?finalM.home:(finalM.result==='B'?finalM.away:null)):null;
   const C="var(--line)";
   const elbow=(x1,y1,x2,y2)=>{ const mx=(x1+x2)/2; return `<path d="M${x1} ${y1} H${mx} V${y2} H${x2}" fill="none" stroke="${C}" stroke-width="1"/>`; };
