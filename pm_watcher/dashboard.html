@@ -1403,9 +1403,24 @@ function koBracketSVG(){
   const leftH=8*pitch, midY=topPad+leftH/2;
   const lX=r=>padX+r*colStep, xF=padX+4*colStep, rX=r=>xF+(4-r)*colStep;
   const W=rX(0)+NW+padX, H=topPad+leftH+padB;
+  // 真实分区种子表（2026 R32 对阵，上半区 8 + 下半区 8，与官方对阵图一致）
+  const KO_SEED=[["Germany","Paraguay"],["France","Sweden"],["South Africa","Canada"],["Netherlands","Morocco"],
+    ["Portugal","Croatia"],["Spain","Austria"],["USA","Bosnia"],["Belgium","Senegal"],
+    ["Brazil","Japan"],["Ivory Coast","Norway"],["Mexico","Ecuador"],["England","DR Congo"],
+    ["Argentina","Cape Verde"],["Australia","Egypt"],["Switzerland","Algeria"],["Colombia","Ghana"]];
+  const SEEDIX={}; KO_SEED.forEach((p,i)=>{SEEDIX[p[0]]=i;SEEDIX[p[1]]=i;});
+  const RLVL={R32:0,R16:1,QF:2,SF:3}, PERHALF={R32:8,R16:4,QF:2,SF:1};
   const fill={};
-  rounds.forEach((code,r)=>{ const ms=koRoundMatches(code), n=cen[r].length;
-    fill[code]={L:Array.from({length:n},(_,i)=>ms[i]||null), R:Array.from({length:n},(_,i)=>ms[n+i]||null)}; });
+  rounds.forEach((code,r)=>{ const n=cen[r].length; fill[code]={L:Array(n).fill(null),R:Array(n).fill(null)}; });
+  // 按真实种子把每场放进它应在的槽位（连线与内容因此一致）；无法识别的队名回退到出场顺序
+  rounds.forEach(code=>{ const spill=[]; koRoundMatches(code).forEach(m=>{
+    const gi=SEEDIX[m.home]!=null?SEEDIX[m.home]:SEEDIX[m.away];
+    if(gi==null){ spill.push(m); return; }
+    const gslot=gi>>RLVL[code], ph=PERHALF[code], side=gslot<ph?"L":"R", local=gslot%ph;
+    if(fill[code][side][local]==null) fill[code][side][local]=m; else spill.push(m); });
+    // 回退：未识别的场次按序补空位
+    let si=0; ["L","R"].forEach(side=>fill[code][side].forEach((v,idx)=>{ if(v==null&&si<spill.length) fill[code][side][idx]=spill[si++]; }));
+  });
   // 向前推进：已决出的胜者填入下一轮空位（甲/乙由序号奇偶决定），标记为 projected（虚线）
   const advance=(side)=>{ for(let r=0;r<3;r++){ const cur=fill[rounds[r]][side], nxt=fill[rounds[r+1]][side];
     cur.forEach((m,i)=>{ const w=koWinner(m); if(!w) return; const ni=i>>1;
