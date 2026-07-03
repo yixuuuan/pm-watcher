@@ -193,8 +193,10 @@
   #knockout .koPU .koPUtag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7c5cff;background:rgba(124,92,255,.12);padding:3px 9px;border-radius:999px;margin-bottom:11px}
   #knockout .koPU h3{font-size:23px;font-weight:800;letter-spacing:-.01em;margin:0 0 8px}
   #knockout .koPU p{font-size:13.5px;color:var(--mut);max-width:560px;line-height:1.55;margin:0}
-  #knockout .koPU .koPUcta{display:inline-block;margin-top:14px;padding:9px 18px;border-radius:999px;background:#7c5cff;color:#fff;font-size:13.5px;font-weight:700;text-decoration:none;letter-spacing:.02em;box-shadow:0 6px 18px rgba(124,92,255,.35);transition:transform .15s,box-shadow .15s}
-  #knockout .koPU .koPUcta:hover{transform:translateY(-1px);box-shadow:0 9px 24px rgba(124,92,255,.45)}
+  #knockout .koPU .koPUfull{position:absolute;top:18px;right:20px;font-size:12.5px;font-weight:700;color:#7c5cff;text-decoration:none;padding:6px 12px;border-radius:999px;background:rgba(124,92,255,.10)}
+  #knockout .koPU .koPUfull:hover{background:rgba(124,92,255,.18)}
+  #knockout .koPU .koPUwrap{margin-top:16px;border-radius:16px;overflow:hidden;border:1.5px solid var(--line);background:var(--card)}
+  #knockout .koPU .koPUwrap iframe{display:block;width:100%;border:0;height:980px}
   /* 小组赛汇总 */
   #knockout .koGwrap .kggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:0 20px;margin-top:4px}
   #knockout .kgrow{display:flex;align-items:center;gap:8px;padding:7px 2px;border-top:.5px solid var(--line);font-size:13px}
@@ -476,7 +478,7 @@ const I18N = {
     ko_head:"Knockout stage",
     ko_pu_title:"My World Cup · Parallel Universe",
     ko_pu_sub:"Pick a champion, get your parallel-universe ticket — five verdicts, market prices, rarity tier. Now live.",
-    ko_pu_cta:"Open the Champion Machine →",
+    ko_pu_cta:"Open full-screen ↗",
     ko_pu_tag:"in the works",
     ko_group_head:"Group stage", ko_group_sub:"Completed — final scores only.",
     ko_quali_label:"Qualification tracker",
@@ -558,7 +560,7 @@ const I18N = {
     ko_head:"淘汰赛",
     ko_pu_title:"我的世界杯 · 平行宇宙",
     ko_pu_sub:"选一支球队,领一张平行宇宙冠军通行票——五道判决、市场定价、稀有度分层。现已上线。",
-    ko_pu_cta:"进入冠军机 →",
+    ko_pu_cta:"全屏打开 ↗",
     ko_pu_tag:"筹备中",
     ko_group_head:"小组赛", ko_group_sub:"已结束 —— 仅展示对阵与最终比分。",
     ko_quali_label:"出线追踪",
@@ -1456,10 +1458,19 @@ function koBracketSVG(){
   return `<div class="kopath"><svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg" class="kopathsvg"><g>${lines}</g>${nodes}</svg></div>`;
 }
 
+function puAutosize(){
+  const f=document.getElementById("puFrame"); if(!f||f.__wired) return; f.__wired=true;
+  f.addEventListener("load",()=>{ try{
+    const d=f.contentDocument; if(!d) return;
+    const fit=()=>{ const h=Math.max(720, d.documentElement.scrollHeight); f.style.height=h+"px"; };
+    fit(); new ResizeObserver(fit).observe(d.body);
+  }catch(e){} });
+}
 function renderKnockout(){
   const host=document.getElementById("knockout");
   if(RECAP===null){ host.innerHTML=`<div class="sub" style="padding:14px 4px">${L("loading")}</div>`; loadRecap(); return; }
   const kkey=LANG+"|"+((RECAP&&RECAP.length)||0)+"|"+(RECAP_KO.length)+"|"+koSig();
+  puAutosize();
   if(KO_VIEWKEY===kkey && host.querySelector(".kopath")) return;
   KO_VIEWKEY=kkey;
   const grp=koGroupRows();
@@ -1471,7 +1482,7 @@ function renderKnockout(){
     ? `<details class="foldsec"><summary>${L("ko_quali_label")}</summary><div style="margin-top:8px">${qual}</div></details>`
     : "";
   host.innerHTML=`
-    <section class="koPU"><span class="koPUtag">${L("ko_pu_tag")}</span><h3>${L("ko_pu_title")}</h3><p>${L("ko_pu_sub")}</p><a class="koPUcta" href="parallel-universe.html">${L("ko_pu_cta")}</a></section>
+    <section class="koPU"><a class="koPUfull" href="parallel-universe.html?lang=${LANG}" target="_blank" rel="noopener">${L("ko_pu_cta")}</a><span class="koPUtag">${L("ko_pu_tag")}</span><h3>${L("ko_pu_title")}</h3><p>${L("ko_pu_sub")}</p><div class="koPUwrap"><iframe id="puFrame" src="parallel-universe.html?lang=${LANG}" loading="lazy" title="Parallel Universe Champion Machine"></iframe></div></section>
     ${groupSec}
     <div class="lab" style="margin:28px 0 6px">${L("ko_head")}</div>
     <div class="sub" style="max-width:760px;margin-bottom:6px">${L("ko_lede")}</div>
@@ -1479,6 +1490,7 @@ function renderKnockout(){
     <div class="lab" style="margin:24px 0 4px">${L("ko_path")}</div>
     ${koBracketSVG()}
     <div class="foot" style="max-width:720px">${L("ko_path_note")}</div>`;
+  puAutosize();
 }
 function rcBurst(seg){
   const r=seg.getBoundingClientRect(), good=seg.classList.contains("good");
