@@ -8,15 +8,17 @@ One World Cup, five prediction markets, five different answers. pm-watcher puts 
 
 ![Champion board with divergence heatmap](docs/board_en.png)
 
-> ▶️ **Live board: https://pm-watchers.up.railway.app/** — explore the two flagship views:
-> the **Match Recap board** (how each finished match was *priced vs. how it ended*) and the
-> collectible **48-nation team cards**. Read-only, no prediction, no betting.
+> ▶️ **Live board: https://pm-watchers.up.railway.app/** — explore the flagship views:
+> the **Match Recap board** (how each finished match was *priced vs. how it ended*), the
+> collectible **48-nation team cards**, and the knockout-stage
+> **Parallel-Universe Champion Machine**. Read-only, no prediction, no betting.
 
 ## What it shows
 
 - **Champion board** — title odds for all 48 teams, five platforms side by side, plus a consensus price and a divergence heatmap (darker = the platforms disagree more)
 - **Group winner** — qualifying odds for all 12 groups (live data from Kalshi and 42)
 - **Fixtures** — a schedule of ~80 group-stage matches, auto-generated from the platforms' own markets; tap any match for a cross-platform Win / Draw / Loss comparison and the spread
+- **Knockout** — the road-to-the-final bracket with **true two-half seeding** and a qualification tracker that **forward-propagates decided winners** into the next round; also home to the Parallel-Universe Champion Machine (below)
 - **Live news × odds** — a BBC / Guardian / ESPN / Sky football feed plus Dongqiudi (Chinese), filtered by team; **tap a story to see that team's per-platform odds for ±3 hours around it** (the dashed red line marks the news timestamp)
 - **News danmaku** — recent and newly arrived headlines drift across the top as bullet-screen pills; hover to pause and read, click to open, and a top-right button toggles the stream off
 - **Persisted history** — every odds change is written to a local SQLite file (change-driven: nothing is stored while a price holds steady). When the tournament ends, `history.db` is a complete record of how five markets priced 104 matches
@@ -43,9 +45,29 @@ One World Cup, five prediction markets, five different answers. pm-watcher puts 
 
 ![Watchlist with per-team odds history](docs/watchlist_en.png)
 
-## 🆕 New in this release — retrospective board & team cards
+## 🆕 New in this release — the Parallel-Universe Champion Machine
 
-Once a match is over, the question changes from *"what will happen"* to ***"who priced it right — and how wrong were the rest?"*** This release adds a retrospective layer under the project's guiding idea: **calibration, not prediction**.
+The knockout rounds turn every fan into a counterfactual thinker: *what would it take for **my** team to win it all?* The Champion Machine answers with a collectible artifact. Pick any of the **32 knockout teams** on a radial sci-fi selector; the machine reverse-derives that team's championship path **along the real bracket** — five rounds, five opponents — and stamps the whole story onto a die-cut **champion's match ticket** you can download and share.
+
+![Parallel-Universe Champion Machine](docs/pu_board_en.png)
+
+**Five verdicts on a ticket.** Each round of the path is a stamped module: the opponent, a meme-grade verdict in a double-printed rubber stamp (drawn from a hand-built corpus of player lore, tactical folklore and football superstition), a one-line story, two derivative hashtags, a parallel-universe scoreline (AET and penalty drama included) — and the market's pre-match price for that opponent, struck through and stamped **MISPRICED** or **BROKEN**.
+
+**Rarity as a blind-box tier.** The joint probability of the whole path sets the tier — STANDARD / RARE / EPIC / **LEGENDARY** (gold-foil frame) — and eliminated teams mint as **HIDDEN**: a universe that has already ended in reality is the rarest kind you can hold.
+
+**A ticket that stays alive.** Every ticket carries a **universe lifeline**: as real results land, legs the team actually won are stamped **✓ VERIFIED** and the lifeline reads *alive · 2/5 verified* — or *ended @ Round of 16*. A share becomes a reason to come back after every matchday.
+
+**National identity in the texture.** Every nation gets a signature motif woven into the ticket — seigaiha waves for Japan, a sunburst for Argentina, the šahovnica check for Croatia, zellige stars for Morocco, the Aztec greca for Mexico, St George's cross for England… — plus a punched perforation line, a barcode stub, and a triangular die-cut edge.
+
+**Built to be shared.** One-tap PNG export; a bilingual, auto-generated caption (team, rarity tier, final verdict, alive/ended hook) is copied to the clipboard the moment the download finishes. Every ticket also carries its **price-snapshot timestamp** — calibration language, not prophecy.
+
+![A downloadable champion's ticket](docs/pu_ticket_en.png)
+
+> The Champion Machine is entertainment built on market data. Rarity measures **how the five markets jointly priced a path**, not how good a team is. A built-in banned-words lint keeps every generated line — verdicts, stories, captions — free of betting language. Calibration, not prediction, all the way down.
+
+## Retrospective board & team cards
+
+Once a match is over, the question changes from *"what will happen"* to ***"who priced it right — and how wrong were the rest?"*** A retrospective layer under the project's guiding idea: **calibration, not prediction**.
 
 ### Match Recap board
 
@@ -83,6 +105,7 @@ pip install -r requirements.txt
 # Web dashboard (recommended):
 python3 -m pm_watcher.serve --live --interval 30
 # then open http://127.0.0.1:8765
+# the Champion Machine lives under the Knockout tab (or /parallel-universe.html)
 
 # Or command line:
 python3 -m pm_watcher.watch --query "World Cup" --board --live
@@ -103,6 +126,7 @@ Cross-platform price comparison sounds like "put a few numbers next to each othe
 5. **Predict.fun's official API needs a key, but its web frontend uses an open GraphQL endpoint.** Introspection is enabled — following the schema surfaced a full World Cup fixtures interface (80 matches, real kickoff times). The richest source was the one outside the documentation.
 6. **42's single-match markets are exact-score markets** (e.g. `NED 0–1 JPN`), not win/draw/loss. This project aggregates the score-level probabilities into a three-way price; outcomes it cannot classify are dropped honestly, so 42's three-way total can fall slightly below 100% rather than being force-normalized.
 7. **One team has five different names across five platforms.** Türkiye/Turkey, Korea Republic/South Korea, Cabo Verde/Cape Verde, two spellings of Bosnia. Without canonicalization, a cross-platform comparison treats one team as two.
+8. **SVG masks are not portable.** The ticket's punched perforation was first cut with a `<mask>`; browsers apply masks by luminance, some rasterizers by alpha — the same file punched holes in one renderer and ignored them in another. Rebuilding the holes as `clip-rule="evenodd"` sub-paths made the die-cut pure geometry, identical everywhere.
 
 ## A few observations (as the group stage opens)
 
@@ -114,23 +138,26 @@ Cross-platform price comparison sounds like "put a few numbers next to each othe
 
 ```
 pm_watcher/
-├── model.py        # Market/Outcome models + client base class
-├── polymarket.py   # Gamma API (public REST)
-├── kalshi.py       # trade-api v2 (public REST; KXWCGAME matches / KXWCGROUPWIN groups)
-├── fortytwo.py     # rest.ft.42.space (public REST; score market → three-way derivation)
-├── manifold.py     # public REST (play-money forecaster consensus)
-├── predict.py      # frontend public GraphQL (includes 80-match schedule)
-├── names.py        # country-name canonicalization + 48-team list
-├── aggregator.py   # cross-platform merge (boards / fixtures)
-├── history.py      # SQLite change-driven persistence
-├── news.py         # BBC/Guardian/ESPN/Sky RSS + Dongqiudi, filtered by World Cup / team
-├── notifier.py     # Telegram push
-├── serve.py        # local dashboard server (http://127.0.0.1:8765)
-├── dashboard.html  # single-page dashboard (no frontend build step)
-└── watch.py        # command-line mode
+├── model.py                 # Market/Outcome models + client base class
+├── polymarket.py            # Gamma API (public REST)
+├── kalshi.py                # trade-api v2 (public REST; KXWCGAME matches / KXWCGROUPWIN groups)
+├── fortytwo.py              # rest.ft.42.space (public REST; score market → three-way derivation)
+├── manifold.py              # public REST (play-money forecaster consensus)
+├── predict.py               # frontend public GraphQL (includes 80-match schedule)
+├── names.py                 # country-name canonicalization + 48-team list
+├── aggregator.py            # cross-platform merge (boards / fixtures)
+├── history.py               # SQLite change-driven persistence
+├── news.py                  # BBC/Guardian/ESPN/Sky RSS + Dongqiudi, filtered by World Cup / team
+├── notifier.py              # Telegram push
+├── serve.py                 # local dashboard server (http://127.0.0.1:8765)
+├── dashboard.html           # single-page dashboard (no frontend build step)
+├── parallel-universe.html   # the Champion Machine (self-contained page, ~90 KB)
+├── fonts-subset/            # subset WC26 display fonts (woff2, ~88 KB total)
+├── fonts/ · flags/          # full display fonts + 62 national-flag SVGs
+└── watch.py                 # command-line mode
 ```
 
-The only dependency is `httpx` (plus optional `python-dotenv`). The dashboard is a self-contained HTML file with no frontend build chain.
+The only dependency is `httpx` (plus optional `python-dotenv`). Both pages are self-contained HTML files with no frontend build chain; the Champion Machine embeds its fonts and flags into the exported PNG at download time.
 
 ## Data sources
 
@@ -145,6 +172,7 @@ The only dependency is `httpx` (plus optional `python-dotenv`). The dashboard is
 ## Honest boundaries
 
 - **This is not an arbitrage tool.** Most of the spreads it shows are not executable: fees, settlement differences, capital lock-up, the unfillability of thin books, and platform and contract risk all consume the nominal gap. Its value is **understanding how markets price an event**, not extracting money from one.
+- **The Champion Machine is entertainment built on market data.** Its rarity tiers measure how five markets jointly priced a path — not team strength — and every generated line passes a banned-words lint that keeps betting language out.
 - Platform availability varies significantly by jurisdiction. Verify the law where you are and each platform's terms yourself. This project only reads public market data; it involves no registration, trading or funds.
 - The news × odds chart shows a **temporal relationship, not a causal conclusion.**
 - Nothing here is investment advice.

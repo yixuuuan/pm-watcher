@@ -578,14 +578,37 @@ const TEAM_TAG={
  "DR Congo":T2("法甲雇佣兵团，被你偷家","the Ligue-1 mercenaries, undone"),
  "Australia":T2("袋鼠附加赛公式，被除以零","the Socceroo formula, divided by zero"),
 };
+function rollOf(R){const p=String(R.seed||"").split("|");const n=parseInt(p[p.length-1],10);return isNaN(n)?0:n;}
+function legPool(R,leg){const bank=OPP_EVENT[leg.opp];
+  let arr=bank?((bank[leg.round]||[]).concat(bank._any||[])).slice():[];
+  if(LANG==="zh"&&typeof CORPUS_ZH!=="undefined"){
+    const co=(CORPUS_ZH.opp[leg.opp]||[]).filter(e=>!e.r||e.r.indexOf(leg.round)>=0);
+    const cc=(CORPUS_ZH.champ[R.champion]||[]).filter(e=>!e.r||e.r.indexOf(leg.round)>=0);
+    for(const e of co.concat(cc))arr.push({tag:{zh:e.t,en:e.t},exp:{zh:e.e,en:e.e}});
+  }
+  return arr;}
 function legEvent(R,leg,i){
-  const opp=nameOf(leg.opp);const bank=OPP_EVENT[leg.opp];
-  if(bank){const arr=bank[leg.round]||bank._any;const c=pk(arr,R.seed+":ev"+i+leg.round);if(c)return{tag:c.tag[LANG],exp:c.exp[LANG]};}
-  const nk=TEAM_TAG[leg.opp]?TEAM_TAG[leg.opp][LANG]:(LANG==="zh"?("硬吃"+opp):("outlast "+opp));
-  const hk=(HOOK[leg.opp]&&HOOK[leg.opp][LANG])?HOOK[leg.opp][LANG]:HOOK._default[LANG](opp);
-  return{tag:nk,exp:hk};
+  if(!R.__ev)R.__ev={};const ck=LANG+":"+i;if(R.__ev[ck])return R.__ev[ck];
+  // 先确定 0..i-1 的取词（去重的确定性依赖顺序）
+  const usedTags=[];for(let j=0;j<i;j++)usedTags.push(legEvent(R,R.path[j],j).tag);
+  const arr=legPool(R,leg);let out=null;
+  if(arr.length){
+    const base=Math.floor(seeded(R.champion+"|"+leg.opp+"|"+leg.round+"|"+i)*997);
+    const roll=rollOf(R);
+    for(let k=0;k<arr.length;k++){
+      const c=arr[(base+roll+k)%arr.length];
+      if(usedTags.indexOf(c.tag[LANG])<0){out={tag:c.tag[LANG],exp:c.exp[LANG]};break;}}
+    if(!out){const c=arr[(base+roll)%arr.length];out={tag:c.tag[LANG],exp:c.exp[LANG]};}
+  }else{
+    const opp=nameOf(leg.opp);
+    const nk=TEAM_TAG[leg.opp]?TEAM_TAG[leg.opp][LANG]:(LANG==="zh"?("硬吃"+opp):("outlast "+opp));
+    const hk=(HOOK[leg.opp]&&HOOK[leg.opp][LANG])?HOOK[leg.opp][LANG]:HOOK._default[LANG](opp);
+    out={tag:nk,exp:hk};
+  }
+  R.__ev[ck]=out;return out;
 }
 function legCopy(R,leg,i){const e=legEvent(R,leg,i);return e.tag+(LANG==="zh"?"——":" — ")+e.exp;}
+const CORPUS_ZH={champ:{"Spain":[{"t":"慢刀子绝杀","e":"1/8 决赛西班牙式慢刀子开局：控球攥到发白，只等禁区前沿露出一厘米缝隙；一脚小比分绝杀，把主流路线钉死在比分牌上。","r":["R32","R16"]},{"t":"传控断电","e":"1/4 决赛西班牙把球权攥到发白，传球像刷屏一样密，禁区却像断电；120 分钟传控越漂亮，点球点的沉默越刺耳。","r":["R16","QF"]}],"Argentina":[{"t":"巨星梦魇续集","e":"1/8 决赛比赛被踢成 2022 决赛续集：3:3 的疯狂、点球梦魇的窒息、巨星剧本的互相撕扯，全都被塞进同一个平行宇宙，比分牌像随时要爆雷。","r":["R32","R16"]},{"t":"红牌复刻","e":"决赛第80分钟红牌亮起，1998 英阿旧录像突然回放；少打一人的英格兰在补时阶段被无情偷家，点球点像提前写好的死亡组。","r":["SF","Final"]},{"t":"巨星高温","e":"迈阿密热浪把节奏压下来，阿根廷却像见过所有梦魇的老主角；巨星一脚任意球擦过人墙，禁区前沿瞬间发烫，热门线又被钉回主线。","r":["R16","QF"]},{"t":"童话翻车","e":"如果佛得角真把卫冕冠军拖进低比分泥潭，那就是童话撞航母：每一次解围都像电影慢镜头，热门队的主角光当场断电。","r":["R32","QF"]}],"Morocco":[{"t":"铁桶阵砸热门","e":"1/8 决赛摩洛哥低位铁桶阵再次竖起来，禁区像装了防盗门；葡萄牙式狂轰滥炸越打越急，最后只剩一次高高跃起的头球把热门剧本砸碎，全场先沉默后爆雷。","r":["R32","R16"]},{"t":"高温鬼门关","e":"蒙特雷高温像第 12 名防守队员，节奏被烤到发烫；谁先在边路丢半步，谁就会被反击一路推进鬼门关。","r":["R32","R16"]},{"t":"边路绝杀","e":"比赛拖到最后十分钟，边路冲刺已经像黑天鹅开盲盒；一个倒三角横传、一脚绝杀，名场面和欧洲热门线一起当场翻车。","r":["R16","QF"]}],"Croatia":[{"t":"玄学加时副本","e":"1/8 决赛被克罗地亚拖进 120 分钟，就像进了玄学老头乐副本；场面不漂亮，但每一次解围都在磨掉豪门锋线最后一点电量。","r":["R32","R16"]}],"Netherlands":[{"t":"补时暗号绝杀","e":"1/8 决赛补时任意球前，全场以为要直接轰门，结果荷兰补时暗号短传突然复刻；人墙愣住，球网开始抖，弹幕当场刷起定位球阴谋论。","r":["R32","R16"]},{"t":"高温鬼门关","e":"蒙特雷高温像第 12 名防守队员，节奏被烤到发烫；谁先在边路丢半步，谁就会被反击一路推进鬼门关。","r":["R32","R16"]},{"t":"边路绝杀","e":"比赛拖到最后十分钟，边路冲刺已经像黑天鹅开盲盒；一个倒三角横传、一脚绝杀，名场面和欧洲热门线一起当场翻车。","r":["R16","QF"]}],"Belgium":[{"t":"内讧黄金一代","e":"1/4 决赛比利时黄金一代的旧裂缝又被放大：中场回追像慢动作，更衣室内讧梗从弹幕飞进草皮，热门路线被一脚反击踢到翻车。","r":["R16","QF"]}],"France":[{"t":"更衣室内讧","e":"1/4 决赛法国 2010 那种更衣室警报突然响起：训练场沉默、队友眼神不对，场上零传球感拉满，被对手一次偷家直接打穿。","r":["R16","QF"]},{"t":"红牌决赛回放","e":"决赛第110分钟，2006 决赛红牌名场面闪回；巨星退场，队友还没缓过神，冠军剧本已经被补时风暴无情改写。","r":["SF","Final"]}],"Germany":[{"t":"巨人翻车","e":"1/4 决赛德国战车又像开进死亡组雾区，控球很多、射门很多、表情越来越空；球迷熟悉的“巨人早退”梗再次从弹幕区爬出来，比分牌越看越断电。","r":["R16","QF"]}],"Brazil":[{"t":"桑巴翻车","e":"1/4 决赛巴西式华丽进攻突然变成压力测试，桑巴节奏越快，后场空当越大；一次反击就把豪门脸面踢到裂开。","r":["R16","QF"]},{"t":"旧仇偷家","e":"友谊赛赢过巴西这条旧账一被翻出来，日本球迷就有了弹幕底气；真到补时反击偷家，桑巴快乐足球会瞬间断电。","r":["R32","QF"]}],"England":[{"t":"点球魔咒","e":"半决赛毫无悬念地拖进点球大战，英格兰梦魇准时打卡：第一脚打横梁，第二脚被门将开挂扑掉，第三脚直接飞向看台，整条热门路线当场断电。","r":["QF","SF"]},{"t":"红牌复刻","e":"决赛第80分钟红牌亮起，1998 英阿旧录像突然回放；少打一人的英格兰在补时阶段被无情偷家，点球点像提前写好的死亡组。","r":["SF","Final"]}],"Ghana":[{"t":"非洲神秘力量","e":"半决赛加纳玄学梗重新上线，2010 门线手球旧账像阴影压到禁区；一记横梁、一声叹息，整条黑天鹅路线突然有了灵魂。","r":["QF","SF"]},{"t":"非洲神秘力量","e":"决赛加纳玄学梗重新上线，2010 门线手球旧账像阴影压到禁区；一记横梁、一声叹息，整条黑天鹅路线突然有了灵魂。","r":["SF","Final"]}],"Senegal":[{"t":"黑马断电","e":"决赛塞内加尔 2002 的黑马预言回声又响了，热门队控球很多，却被一次简洁反击敲到沉默，整条主线剧本直接断电。","r":["SF","Final"]}],"Canada":[{"t":"主场鬼门关","e":"如果这条主场线继续往前滚，热门队就会发现：这里不是普通客场，是整座看台一起上抢的鬼门关，翻车声会被放大到天花板。","r":["QF","SF"]}],"Algeria":[{"t":"死亡组裂开","e":"阿尔及利亚和奥地利把 3-3 踢成死亡组互捅现场，另一边伊朗只能看着比分牌裂开；这不是一场比赛，是三队命运同时断线。","r":["R32","R16"]},{"t":"补时暗号","e":"这类球队最可怕的不是控球，是你刚低头看一眼手机，补时暗号一响，反击就把剧情剪成梦魇版；签表旁边会多出一道新裂缝。","r":["R32","QF"]}],"Austria":[{"t":"死亡组裂开","e":"阿尔及利亚和奥地利把 3-3 踢成死亡组互捅现场，另一边伊朗只能看着比分牌裂开；这不是一场比赛，是三队命运同时断线。","r":["R32","R16"]},{"t":"补时暗号","e":"这类球队最可怕的不是控球，是你刚低头看一眼手机，补时暗号一响，反击就把剧情剪成梦魇版；签表旁边会多出一道新裂缝。","r":["R32","QF"]}],"Cape Verde":[{"t":"童话翻车","e":"如果佛得角真把卫冕冠军拖进低比分泥潭，那就是童话撞航母：每一次解围都像电影慢镜头，热门队的主角光当场断电。","r":["R32","QF"]}],"Japan":[{"t":"旧仇偷家","e":"友谊赛赢过巴西这条旧账一被翻出来，日本球迷就有了弹幕底气；真到补时反击偷家，桑巴快乐足球会瞬间断电。","r":["R32","QF"]}],"Portugal":[{"t":"低比分阴谋论","e":"迈阿密看台像嘉年华，场上却踢成低比分阴谋论：传球很多，射门很少，铁桶阵把所有期待都锁进了 0-0。","r":["R32","R16"]},{"t":"派对断电","e":"越是赛前排面拉满，越怕禁区突然断电；一场 0-0 之后，射门变少、小比分泥潭变深，低比分阴谋论会把豪门翻车味越熬越浓。","r":["R32","QF"]}],"Colombia":[{"t":"低比分阴谋论","e":"迈阿密看台像嘉年华，场上却踢成低比分阴谋论：传球很多，射门很少，铁桶阵把所有期待都锁进了 0-0。","r":["R32","R16"]},{"t":"派对断电","e":"越是赛前排面拉满，越怕禁区突然断电；一场 0-0 之后，射门变少、小比分泥潭变深，低比分阴谋论会把豪门翻车味越熬越浓。","r":["R32","QF"]}]},opp:{"Switzerland":[{"t":"替补开挂","e":"1/8 决赛替补席突然抽出一张狠牌，葡萄牙替补中锋帽子戏法旧梗上身；巨星光环还在场边发亮，年轻前锋已经把比分牌踢到发烫。","r":["R32","R16"]}],"Argentina":[{"t":"越位陷阱开挂","e":"1/8 决赛沙特式高位造越位再次上身，热门队单刀刚起跑就被旗子按住；看台还在算概率，比分牌已经先把剧本翻了面。","r":["R32","R16"]},{"t":"补时暗号绝杀","e":"1/4 决赛补时任意球前，全场以为要直接轰门，结果荷兰补时暗号短传突然复刻；人墙愣住，球网开始抖，弹幕当场刷起定位球阴谋论。","r":["R16","QF"]},{"t":"黑马开挂","e":"1/4 决赛喀麦隆 1990 的黑马记忆被翻出来，防守硬得像铁，反击狠得像刀；卫冕冠军光环在一次身体对抗后开始冒烟，冷门 Buff 当场开挂。","r":["R16","QF"]},{"t":"小国黑天鹅","e":"佛得角靠三场不服输把童话带进淘汰赛，禁区前沿一排铁桶阵压下来，热门队看台先发懵：这不是弱旅，是一座会让豪门翻车的黑天鹅城堡。","r":["R32","R16"]}],"Japan":[{"t":"补时反击偷家","e":"1/4 决赛补时最后一次角球后，Belgium-Japan 2018 的反击幽灵复活；全队一脚一脚往前推，最后一刀把看似稳住的路线直接偷家。","r":["R16","QF"]},{"t":"点球鬼门关","e":"半决赛点球点前，日本队像又撞见 2022 克罗地亚门神旧影；连续主罚被读心，克罗地亚的十二码玄学直接把路线从悬崖边拉回。","r":["QF","SF"]},{"t":"巨星压力","e":"巴西带着小组头名进场，桑巴线条看起来顺得像默认选项；但淘汰赛第一脚传丢，压力就会从看台一路滚到禁区。","r":["R32","R16"]}],"Spain":[{"t":"VAR 一厘米","e":"1/4 决赛底线旁那一厘米 VAR 玄学又来了，屏幕把全场按进静音键；球像贴着宇宙边缘活了下来，日本路线也在这条细线旁边改命。","r":["R16","QF"]},{"t":"点球梦魇","e":"1/4 决赛被摩洛哥拖进点球点，西班牙式传控突然变成 120 分钟传球一千次、十二码一个没进的点球梦魇，控球越多越窒息。","r":["R16","QF"]},{"t":"童话比分牌","e":"0-0 本来像一张白纸，另一块比分牌却突然替佛得角写上续命暗号；这种童话不是进球砸出来的，是全场一起盯屏盯出来的。","r":["R32","R16"]}],"Brazil":[{"t":"加时断电","e":"1/4 决赛加时最后几分钟，克罗地亚像把巴西 2022 的伤口重新撕开：热门队刚准备庆祝，反击一脚把全场节奏踢到断电。","r":["R16","QF"]},{"t":"加时断电","e":"1/4 决赛加时最后几分钟，克罗地亚像把巴西 2022 的伤口重新撕开：热门队刚准备庆祝，反击一脚把全场节奏踢到断电。","r":["R16","QF"]},{"t":"蓝武士鬼门关","e":"日本不需要玄学图案，只要一次干净反击和一次门将救球；蓝武士把巴西拖进鬼门关，黑天鹅就会从边路冲出来。","r":["R32","QF"]}],"France":[{"t":"黑马断电","e":"1/4 决赛塞内加尔 2002 的黑马预言回声又响了，热门队控球很多，却被一次简洁反击敲到沉默，整条主线剧本直接断电。","r":["R16","QF"]},{"t":"点球高射炮","e":"半决赛最后时刻又来到十二码点，2022 英法点球高射炮的 PTSD 被全场想起；主罚者一抬头，看台先捂脸，热门剧本随后翻车。","r":["QF","SF"]},{"t":"门神开挂","e":"半决赛补时最后一次单刀，2022 决赛门神式神扑突然降临；那一伸腿不是救球，是把冠军从鬼门关硬生生拽回来。","r":["QF","SF"]},{"t":"点球梦魇回放","e":"半决赛法国队又被拖进十二码点，姆巴佩那脚决胜点球的点球梦魇在看台低声回响；门将一扑，热门路线当场熄火。","r":["QF","SF"]}],"Germany":[{"t":"主场断电","e":"1/4 决赛主场压力像潮水一样压下来，巴西式防线突然断线；看台越大声，后场越慌，比分牌像失控一样往上滚。","r":["R16","QF"]},{"t":"7-1 翻车","e":"决赛巴西 7-1 的噩梦被重新按下播放键；防线像突然断网，比分牌一格一格往上跳，热门队的体面被当场拆成碎片。","r":["SF","Final"]}],"Croatia":[{"t":"点球鬼门关","e":"半决赛点球点前，日本队像又撞见 2022 克罗地亚门神旧影；连续主罚被读心，克罗地亚的十二码玄学直接把路线从悬崖边拉回。","r":["QF","SF"]}],"Portugal":[{"t":"铁桶阵砸热门","e":"决赛摩洛哥低位铁桶阵再次竖起来，禁区像装了防盗门；葡萄牙式狂轰滥炸越打越急，最后只剩一次高高跃起的头球把热门剧本砸碎，全场先沉默后爆雷。","r":["SF","Final"]},{"t":"非洲神秘力量","e":"1/8 决赛加纳玄学梗重新上线，2010 门线手球旧账像阴影压到禁区；一记横梁、一声叹息，整条黑天鹅路线突然有了灵魂。","r":["R32","R16"]}],"South Africa":[{"t":"补时偷家","e":"第 92 分钟比分牌还像被冻住，加拿大一脚凌空把主场 Buff 点满；看台先愣半秒，随后整座球场像被补时绝杀点燃。","r":["R32","R16"]},{"t":"低比分鬼门关","e":"90 分钟踢得像低比分悬疑片，禁区里每一次解围都在擦鬼门关；加拿大不是把对手打穿，是把终场哨硬生生磨出来。","r":["R32","R16"]}],"Cape Verde":[{"t":"巨星主角光","e":"阿根廷九分收工，卫冕主角光亮到晃眼；巨星刚从替补席起身，弱旅童话就要先回答一个问题：能不能扛住第一波压下来。","r":["R32","R16"]}],"Netherlands":[{"t":"黑天鹅旧影","e":"摩洛哥在蒙特雷的旧影被重新点亮，看台像提前知道会有名场面；荷兰每一次传中被解围，黑天鹅的翅膀就更响一声。","r":["R32","QF"]}]}};
 // 通用衍生梗（对手无关，玄学/市场向，兜底保证每关有衍生话题）
 const UNIV_TAG=[
  {zh:"章鱼帝已盖章",en:"the oracle octopus approves"},
@@ -597,16 +620,21 @@ const UNIV_TAG=[
  {zh:"黑天鹅提前起飞",en:"the black swan takes off early"},
  {zh:"市场集体眨眼",en:"the whole market blinks"}
 ];
-// 衍生话题：合并该对手全部梗池，去重后确定性抽取，保证只要池子里有货就能出
-function legEventAlt(R,leg,i,k,ex){const bank=OPP_EVENT[leg.opp];let pool=[];
+// 衍生话题：全池（含语料）去重后按 roll 轮换抽取
+function legEventAlt(R,leg,i,k,ex){
+  let pool=[];const bank=OPP_EVENT[leg.opp];
   if(bank){pool=(bank._any||[]).slice();for(const rd of ["R32","R16","QF","SF","Final"])if(bank[rd])pool=pool.concat(bank[rd]);}
-  const tags=[],seen={};
+  let tags=[],seen={};
   for(const c of pool){const t=c.tag[LANG];if(!seen[t]&&ex.indexOf(t)<0){seen[t]=1;tags.push(t);}}
+  if(LANG==="zh"&&typeof CORPUS_ZH!=="undefined"){
+    for(const e of (CORPUS_ZH.opp[leg.opp]||[]).concat(CORPUS_ZH.champ[R.champion]||[])){
+      if(!seen[e.t]&&ex.indexOf(e.t)<0){seen[e.t]=1;tags.push(e.t);}}}
   const tt=TEAM_TAG[leg.opp]?TEAM_TAG[leg.opp][LANG]:null;
   if(tt&&!seen[tt]&&ex.indexOf(tt)<0){seen[tt]=1;tags.push(tt);}
   for(const u of UNIV_TAG){const t=u[LANG];if(!seen[t]&&ex.indexOf(t)<0){seen[t]=1;tags.push(t);}}
   if(!tags.length)return null;
-  return tags[Math.floor(seeded(R.seed+":alt"+i+":"+k)*tags.length)%tags.length];}
+  const base=Math.floor(seeded(R.champion+"|"+leg.opp+"|alt"+i+":"+k)*997);
+  return tags[(base+rollOf(R))%tags.length];}
 
 function flowRuns(runs,x,y,width,fs,lh,colors,maxLines){
   const isNarrow=ch=>ch.charCodeAt(0)<0x2E80;
@@ -737,10 +765,17 @@ function buildSVG(R,opts){opts=opts||{};const Lz=LANG==="zh";const tm=TEAM[R.cha
     const rmap={R32:"R32",R16:"R16",QF:"QF",SF:"SF",Final:"FINAL"};const rdS=Lz?rd:(rmap[leg.round]||rd);
     // 轮次大数字水印
     const roundWM=`<text x="${MXR-6}" y="${y+98}" text-anchor="end" font-family="FWCNBlack" font-size="88" fill="${main}" opacity=".055">${i+1}</text>`;
-    // 平行宇宙比分章
-    const scR=seeded(R.seed+":sc"+i);let sa=1+Math.floor(seeded(R.seed+":sa"+i)*3),sb2=Math.max(0,sa-1-Math.floor(seeded(R.seed+":sb"+i)*2));
-    let scTxt;if(scR<0.15){const d=Math.floor(seeded(R.seed+":sd"+i)*3);scTxt=(Lz?"点球 ":"PENS ")+(4+d)+"–"+(3+d);}
-    else if(scR<0.33){scTxt=(Lz?"加时 ":"AET ")+(sa+1)+"–"+sa;}else scTxt=sa+"–"+sb2;
+    // 平行宇宙比分章（已应验的关卡显示真实赛果）
+    let scTxt;
+    if(i<R.survived){
+      const tie=BRACKET.L.concat(BRACKET.R).find(t=>(t[0]===R.champion&&t[1]===leg.opp)||(t[1]===R.champion&&t[0]===leg.opp));
+      if(tie&&tie[2]!=null){const cg=tie[0]===R.champion?tie[2]:tie[3],og=tie[0]===R.champion?tie[3]:tie[2];scTxt=cg+"–"+og;}
+    }
+    if(!scTxt){
+      const scR=seeded(R.seed+":sc"+i);let sa=1+Math.floor(seeded(R.seed+":sa"+i)*3),sb2=Math.max(0,sa-1-Math.floor(seeded(R.seed+":sb"+i)*2));
+      if(scR<0.15){const d=Math.floor(seeded(R.seed+":sd"+i)*3);scTxt=(Lz?"点球 ":"PENS ")+(4+d)+"–"+(3+d);}
+      else if(scR<0.33){scTxt=(Lz?"加时 ":"AET ")+(sa+1)+"–"+sa;}else scTxt=sa+"–"+sb2;
+    }
     const chw=scTxt.length*(Lz?11:8.5)+24;
     const chip=`<g><rect x="${MX+352}" y="${y+2}" width="${chw.toFixed(0)}" height="24" rx="12" fill="none" stroke="${stampCol}" stroke-width="1.6" opacity=".85"/>
       <text x="${(MX+352+chw/2).toFixed(1)}" y="${y+19}" text-anchor="middle" font-family="FWCBlack" font-size="13" fill="${stampCol}">${esc(scTxt)}</text></g>`;

@@ -230,7 +230,7 @@ class _Handler(BaseHTTPRequestHandler):
             except Exception as e:
                 self._send(500, json.dumps({"error": str(e)}).encode(),
                            "application/json")
-        elif self.path.startswith("/fonts/") or self.path.startswith("/flags/") or self.path.split("?")[0] == "/qrcode.js":
+        elif self.path.startswith("/fonts/") or self.path.startswith("/flags/") or self.path.startswith("/fonts-subset/") or self.path.split("?")[0] in ("/qrcode.js", "/parallel-universe.html"):
             try:
                 from pathlib import Path as _P
                 rel = self.path.lstrip("/").split("?")[0]
@@ -239,7 +239,8 @@ class _Handler(BaseHTTPRequestHandler):
                 if base in fp.parents and fp.is_file():
                     ext = fp.suffix.lower()
                     ctype = {".svg": "image/svg+xml", ".ttf": "font/ttf",
-                             ".woff2": "font/woff2", ".js": "text/javascript; charset=utf-8"}.get(ext, "application/octet-stream")
+                             ".woff2": "font/woff2", ".js": "text/javascript; charset=utf-8",
+                             ".html": "text/html; charset=utf-8"}.get(ext, "application/octet-stream")
                     self._send(200, fp.read_bytes(), ctype)
                 else:
                     self._send(404, b"not found", "text/plain")
