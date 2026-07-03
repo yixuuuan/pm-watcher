@@ -193,6 +193,8 @@
   #knockout .koPU .koPUtag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#7c5cff;background:rgba(124,92,255,.12);padding:3px 9px;border-radius:999px;margin-bottom:11px}
   #knockout .koPU h3{font-size:23px;font-weight:800;letter-spacing:-.01em;margin:0 0 8px}
   #knockout .koPU p{font-size:13.5px;color:var(--mut);max-width:560px;line-height:1.55;margin:0}
+  #knockout .koPU .koPUcta{display:inline-block;margin-top:14px;padding:9px 18px;border-radius:999px;background:#7c5cff;color:#fff;font-size:13.5px;font-weight:700;text-decoration:none;letter-spacing:.02em;box-shadow:0 6px 18px rgba(124,92,255,.35);transition:transform .15s,box-shadow .15s}
+  #knockout .koPU .koPUcta:hover{transform:translateY(-1px);box-shadow:0 9px 24px rgba(124,92,255,.45)}
   /* 小组赛汇总 */
   #knockout .koGwrap .kggrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:0 20px;margin-top:4px}
   #knockout .kgrow{display:flex;align-items:center;gap:8px;padding:7px 2px;border-top:.5px solid var(--line);font-size:13px}
@@ -473,7 +475,8 @@ const I18N = {
     ko_await_res:"awaiting result", ko_nopricing:"no pre-match pricing captured",
     ko_head:"Knockout stage",
     ko_pu_title:"My World Cup · Parallel Universe",
-    ko_pu_sub:"The flagship shareable feature — coming soon. The most striking way to replay how the markets saw this tournament.",
+    ko_pu_sub:"Pick a champion, get your parallel-universe ticket — five verdicts, market prices, rarity tier. Now live.",
+    ko_pu_cta:"Open the Champion Machine →",
     ko_pu_tag:"in the works",
     ko_group_head:"Group stage", ko_group_sub:"Completed — final scores only.",
     ko_quali_label:"Qualification tracker",
@@ -554,7 +557,8 @@ const I18N = {
     ko_await_res:"待采集赛果", ko_nopricing:"未采集到赛前定价",
     ko_head:"淘汰赛",
     ko_pu_title:"我的世界杯 · 平行宇宙",
-    ko_pu_sub:"最具视觉冲击和传播力的重点专题 —— 即将上线。用最直观的方式,重放市场眼中的这届世界杯。",
+    ko_pu_sub:"选一支球队,领一张平行宇宙冠军通行票——五道判决、市场定价、稀有度分层。现已上线。",
+    ko_pu_cta:"进入冠军机 →",
     ko_pu_tag:"筹备中",
     ko_group_head:"小组赛", ko_group_sub:"已结束 —— 仅展示对阵与最终比分。",
     ko_quali_label:"出线追踪",
@@ -1467,7 +1471,7 @@ function renderKnockout(){
     ? `<details class="foldsec"><summary>${L("ko_quali_label")}</summary><div style="margin-top:8px">${qual}</div></details>`
     : "";
   host.innerHTML=`
-    <section class="koPU"><span class="koPUtag">${L("ko_pu_tag")}</span><h3>${L("ko_pu_title")}</h3><p>${L("ko_pu_sub")}</p></section>
+    <section class="koPU"><span class="koPUtag">${L("ko_pu_tag")}</span><h3>${L("ko_pu_title")}</h3><p>${L("ko_pu_sub")}</p><a class="koPUcta" href="parallel-universe.html">${L("ko_pu_cta")}</a></section>
     ${groupSec}
     <div class="lab" style="margin:28px 0 6px">${L("ko_head")}</div>
     <div class="sub" style="max-width:760px;margin-bottom:6px">${L("ko_lede")}</div>

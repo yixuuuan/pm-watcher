@@ -1,0 +1,1064 @@
+<!--
+  pm-watcher · 我的世界杯 平行宇宙冠军机 (preview v2)
+  - 第一步：左16/右16 真实签表选队，已淘汰队不可送上奖杯
+  - 全流程在一张交互卡内完成
+  - 视觉沿用 pm-watcher：浅色看板底 + 球队小卡 SVG 系统(皇家蓝/柠檬绿/FWC字体/斜杠数字/二维码/校准而非预测)
+  - 分享卡一键下载 (SVG→Canvas→PNG，内嵌字体)
+  接入说明：SNAPSHOT/BRACKET 换成真实 /api/board + RECAP_KO；FLAGS/字体已用项目同名资源。
+-->
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>平行宇宙冠军机 · Alternate Universe</title>
+
+<style>
+/* ====== 注入：FWC 字体(base64) ====== */
+@font-face{font-family:'FWCBlack';src:url('fonts-subset/FWC2026-Black.woff2') format('woff2');font-display:swap;}@font-face{font-family:'FWCNBlack';src:url('fonts-subset/FWC2026-NormalBlack.woff2') format('woff2');font-display:swap;}@font-face{font-family:'FWCNormal';src:url('fonts-subset/FWC2026-Normal.woff2') format('woff2');font-display:swap;}@font-face{font-family:'FWCCond';src:url('fonts-subset/FWC2026-UltraCond.woff2') format('woff2');font-display:swap;}@font-face{font-family:'FWCLight';src:url('fonts-subset/FWC2026-CondLight.woff2') format('woff2');font-display:swap;}
+:root{
+  --bg:#faf9f6; --card:#ffffff; --ink:#2c2c2a; --mut:#6b6a64; --hint:#9a988f;
+  --line:rgba(0,0,0,.10); --line2:rgba(0,0,0,.06);
+  --pu:#7c5cff; --pu-soft:rgba(124,92,255,.10);
+  --up:#1d9e75; --down:#d85a30;
+  --royal:#2b3fc4; --lime:#a9d52b;
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --fwc:"FWCBlack",var(--sans);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;line-height:1.5}
+.wrap{max-width:1000px;margin:0 auto;padding:22px 18px 70px}
+
+/* header */
+.top{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:18px}
+.brand h1{margin:0;font-size:21px;font-weight:800;letter-spacing:-.01em}
+.brand .sub{font-size:12.5px;color:var(--mut);margin-top:3px}
+.brand .pu{color:var(--pu);font-weight:700}
+.langtog{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;font-size:12.5px}
+.langtog button{background:transparent;color:var(--mut);border:0;padding:6px 14px;cursor:pointer;font-family:inherit}
+.langtog button[aria-pressed="true"]{background:var(--ink);color:#fff}
+
+/* ===== ONE card ===== */
+.machine{border:1.5px solid var(--line);border-radius:20px;background:
+  linear-gradient(135deg,var(--card),rgba(124,92,255,.045));overflow:hidden;position:relative}
+.mhead{padding:20px 22px 0}
+.mtag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--pu);background:var(--pu-soft);padding:3px 10px;border-radius:999px}
+.mhead h2{margin:11px 0 6px;font-size:23px;font-weight:800;letter-spacing:-.01em}
+.mhead p{margin:0;font-size:13px;color:var(--mut);max-width:600px}
+.stepnav{display:flex;gap:7px;margin:16px 0 0;padding:0 22px}
+.stepnav .s{font-size:11px;color:var(--hint);display:flex;align-items:center;gap:6px}
+.stepnav .s b{width:18px;height:18px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;
+  font-size:10.5px;font-weight:700;color:var(--hint)}
+.stepnav .s.on b{background:var(--pu);border-color:var(--pu);color:#fff}
+.stepnav .s.on{color:var(--ink);font-weight:600}
+.stepnav .arr{color:var(--line)}
+
+/* ===== Stage 1: bracket picker ===== */
+.stage{padding:18px 22px 24px}
+.brkt{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.col{display:flex;flex-direction:column;gap:7px}
+.tie{border:.5px solid var(--line);border-radius:10px;background:var(--card);overflow:hidden}
+.row{display:flex;align-items:center;gap:7px;padding:7px 9px;cursor:pointer;transition:background .14s;border:none;background:transparent;width:100%;font-family:inherit;text-align:left;color:var(--ink)}
+.col.r .row{flex-direction:row-reverse;text-align:right}
+.row+.row{border-top:.5px solid var(--line2)}
+.row:hover:not(.elim){background:var(--pu-soft)}
+.row .fg{width:22px;height:15px;border-radius:2px;flex:0 0 auto;object-fit:cover;box-shadow:0 0 0 .5px var(--line)}
+.row .nm{flex:1 1 auto;min-width:0;font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .sc{font-size:12px;color:var(--mut);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.row.win .nm{font-weight:700}
+.row.win .sc{color:var(--ink)}
+.row.elim{opacity:.55}
+.row.elim .nm{text-decoration:line-through}
+.row.elim:hover{background:rgba(216,90,48,.06)}
+.read .exittag{font-size:12px;font-weight:700;color:var(--pu);background:var(--pu-soft);display:inline-block;padding:4px 11px;border-radius:8px;margin-bottom:11px;line-height:1.4}
+.read .exitstory{font-size:13.5px;color:var(--ink);line-height:1.62;margin:6px 0 12px}
+.row.sel{background:linear-gradient(90deg,var(--pu-soft),transparent)}
+.col.r .row.sel{background:linear-gradient(270deg,var(--pu-soft),transparent)}
+.row.sel .nm{color:var(--pu);font-weight:800}
+.row .pr{font-size:10px;color:var(--hint);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.center{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:120px}
+.trophy{width:118px;min-height:92px;border:1.5px dashed var(--line);border-radius:14px;
+  background:linear-gradient(135deg,#fff,var(--pu-soft));display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:5px;text-align:center;padding:10px;transition:.16s}
+.trophy.armed{border-style:solid;border-color:var(--pu);box-shadow:0 6px 22px rgba(124,92,255,.18)}
+.trophy.drop{border-color:var(--pu);background:var(--pu-soft)}
+.trophy .ic{font-size:26px;line-height:1}
+.trophy .lbl{font-size:11px;color:var(--hint);font-weight:600}
+.trophy .pick{font-size:14px;font-weight:800;color:var(--pu)}
+.trophy .fg{width:30px;height:20px;border-radius:3px;box-shadow:0 0 0 .5px var(--line)}
+.picknote{font-size:11px;color:var(--hint);text-align:center;max-width:130px}
+.radialwrap{max-width:600px;margin:0 auto;text-align:center;border-radius:24px;
+  background:radial-gradient(60% 60% at 50% 45%,#141a3e,#0a0e24);
+  box-shadow:0 18px 60px rgba(10,14,40,.5),inset 0 0 0 1px rgba(139,123,255,.12);padding:6px}
+.radialwrap svg{width:100%;height:auto;display:block;touch-action:none}
+.radialwrap .lf .lfbg{transform-box:fill-box;transform-origin:center;transition:transform .14s,filter .14s}
+.radialwrap .lf:hover .lfbg{transform:scale(1.12)}
+.baseedge{stroke:rgba(150,175,255,.16);stroke-width:1.3;transition:stroke .18s,stroke-width .18s}
+.baseedge.prev{stroke:rgba(139,123,255,.8);stroke-width:2.4}
+.litedge{stroke:#8b7bff;stroke-width:3.4;stroke-linecap:round;stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw .5s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.radialwrap .halo{animation:halo 1.7s ease-in-out infinite}
+@keyframes halo{0%,100%{opacity:.4;stroke-width:2}50%{opacity:.9;stroke-width:4}}
+.dragline{animation:dashflow .55s linear infinite}
+@keyframes dashflow{to{stroke-dashoffset:-26}}
+.dragline.snap{stroke:#4dffd0;stroke-width:4.5}
+.radialwrap .spin{transform-origin:380px 380px;animation:spin 60s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.radialwrap .pulse{transform-origin:380px 380px;animation:pulse 2.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.85;transform:scale(1)}50%{opacity:1;transform:scale(1.06)}}
+.pickcap{font-size:13.5px;color:#c9d1ff;margin:2px 0 12px;min-height:20px}
+.pickcap b{color:#a99bff;font-weight:800}
+@media(prefers-reduced-motion:reduce){.litedge{animation:none;stroke-dashoffset:0}.spin,.pulse{animation:none}}
+
+.runbar{display:flex;gap:10px;align-items:center;margin-top:20px;flex-wrap:wrap;justify-content:center}
+.btn{font-family:inherit;font-weight:600;font-size:14px;border-radius:10px;border:1px solid transparent;padding:11px 20px;cursor:pointer;transition:.14s}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-pu{background:var(--pu);color:#fff}.btn-pu:hover:not(:disabled){filter:brightness(1.06)}
+.btn-dark{background:var(--ink);color:#fff}.btn-dark:hover:not(:disabled){filter:brightness(1.12)}
+.btn-ghost{background:transparent;color:var(--ink);border-color:var(--line)}.btn-ghost:hover{border-color:var(--mut)}
+
+/* ===== Stage 2: result (single column, landscape card) ===== */
+.result1{max-width:1000px;margin:0 auto}
+.cardwrap{position:relative;filter:drop-shadow(0 16px 40px rgba(20,16,50,.30));animation:cardin .55s cubic-bezier(.2,.7,.2,1)}
+@keyframes cardin{from{opacity:0;transform:translateY(16px) scale(.985)}to{opacity:1;transform:none}}
+.cardwrap::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.22) 48%,transparent 62%);
+  transform:translateX(-120%);animation:sheen 1.1s ease .35s 1}
+@keyframes sheen{to{transform:translateX(120%)}}
+.cardwrap svg{width:100%;height:auto;display:block}
+.result1 .mod{animation:modin .45s both cubic-bezier(.2,.7,.2,1)}
+.result1 .mod:nth-child(1){animation-delay:.05s}.result1 .mod:nth-child(2){animation-delay:.12s}
+.result1 .mod:nth-child(3){animation-delay:.19s}.result1 .mod:nth-child(4){animation-delay:.26s}
+.result1 .mod:nth-child(5){animation-delay:.33s}
+@keyframes modin{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+.cardactions{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0 6px;justify-content:center}
+.explore{font-size:11.5px;color:var(--hint);width:100%;text-align:center;margin-top:2px}
+.explore b{color:var(--pu)}
+.read{max-width:680px;margin:22px auto 0}
+.read .exittag{font-size:13px;font-weight:700;color:var(--pu);background:var(--pu-soft);display:inline-block;padding:5px 12px;border-radius:8px;margin-bottom:12px;line-height:1.4}
+.read .lead{font-size:19px;font-weight:700;line-height:1.45;margin-bottom:4px}
+.read .lead .hl{color:var(--pu)}
+.read .leadsub{font-size:12.5px;color:var(--mut);margin-bottom:14px}
+.read .leadsub b{color:var(--down)}
+.elimnote{font-size:12.5px;color:var(--mut);background:rgba(216,90,48,.06);border:1px solid rgba(216,90,48,.22);
+  border-radius:10px;padding:9px 12px;margin-bottom:14px;line-height:1.55}
+.elimnote .tag{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#fff;background:var(--down);
+  border-radius:5px;padding:2px 7px;margin-right:6px}
+.elimnote b{color:var(--ink)}
+.routelbl{font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--hint);margin:2px 0 12px}
+/* 路径断点：封条 + 市场原价 + 判决章 */
+.mods{display:flex;flex-direction:column;gap:0;margin:0 0 16px}
+.mod{padding:14px 0;border-bottom:1px dashed var(--line);position:relative}
+.mod::after{content:"";position:absolute;left:38%;bottom:-4px;width:7px;height:7px;border-radius:50%;background:var(--pu);opacity:.5}
+.mod:last-child{border-bottom:0}
+.mod:last-child::after{display:none}
+.modtop{display:flex;align-items:center;gap:9px;margin-bottom:9px}
+.mod .rc{font-size:11px;font-weight:800;color:#fff;background:var(--pu);padding:3px 12px 3px 9px;letter-spacing:.02em;clip-path:polygon(0 0,100% 0,88% 50%,100% 100%,0 100%);transform:rotate(-2deg)}
+.mod.def .rc{background:var(--down)}
+.mod .mf{width:23px;height:15px;border-radius:2px;object-fit:cover;box-shadow:0 0 0 .5px var(--line)}
+.mod .mo{font-size:14px;font-weight:800;color:var(--ink)}
+.mod .mp{margin-left:auto;font-size:11.5px;font-weight:600;color:var(--mut);font-variant-numeric:tabular-nums;text-decoration:line-through;text-decoration-color:var(--down);text-decoration-thickness:1.5px}
+.mod .mp b{color:var(--down);font-weight:800;text-decoration:none;margin-left:5px;font-size:10.5px}
+.mtag{display:inline-block;font-size:16.5px;font-weight:800;line-height:1.3;color:var(--pu);border:2px solid var(--pu);border-radius:6px;padding:5px 11px;margin:1px 0 7px;transform:rotate(-.6deg);box-shadow:2px 2px 0 var(--pu-soft)}
+.mod.def .mtag{color:var(--down);border-color:var(--down);box-shadow:2px 2px 0 rgba(216,90,48,.12)}
+.mod .mexp{font-size:12.5px;color:var(--mut);line-height:1.55}
+.punch{font-size:12.5px;color:var(--mut);line-height:1.6}
+.punch .sk{color:var(--down);font-weight:600}.punch .al{color:var(--pu);font-weight:600}
+.guard{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;letter-spacing:.06em;color:var(--up);
+  border:1px solid rgba(29,158,117,.3);border-radius:999px;padding:4px 10px;margin-top:10px}
+@media(max-width:720px){.brkt{font-size:12px}.story{font-size:14.5px}}
+
+/* modal */
+.scrim{position:fixed;inset:0;background:rgba(20,18,30,.45);backdrop-filter:blur(4px);display:none;align-items:center;justify-content:center;padding:20px;z-index:50}
+.scrim.on{display:flex}
+.modal{width:min(380px,100%);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.modal h3{margin:0 0 6px;font-size:18px;font-weight:800}
+.modal p{margin:0 0 16px;font-size:12.5px;color:var(--mut)}
+.modal label{display:block;font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--hint);margin-bottom:7px}
+.modal input{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:9px;padding:11px 13px;font-size:15px;font-family:inherit;color:var(--ink)}
+.modal input:focus{outline:2px solid var(--pu);outline-offset:1px;border-color:transparent}
+.modal .row2{display:flex;gap:9px;margin-top:18px}.modal .row2 .btn{flex:1}
+
+.cappanel{max-width:760px;margin:10px auto 0;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:9px}
+.cappanel .caphead{font-size:12.5px;color:var(--mut);letter-spacing:.03em}
+.cappanel textarea{width:100%;box-sizing:border-box;resize:vertical;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:13.5px;line-height:1.55;color:var(--ink);background:var(--bg);font-family:inherit}
+.cappanel .btn{align-self:flex-end}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(16px);background:var(--ink);color:#fff;font-size:13px;padding:10px 17px;border-radius:9px;opacity:0;transition:.2s;pointer-events:none;z-index:60}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.ctaline{text-align:center;margin-top:30px;padding-top:22px;border-top:1px solid var(--line);font-size:15px;color:var(--pu);font-weight:600}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <h1>我的世界杯 · <span class="pu">平行宇宙</span></h1>
+      <div class="sub" data-i="subtitle"></div>
+    </div>
+    <div class="langtog" role="group" aria-label="language">
+      <button id="zh" aria-pressed="true">中</button>
+      <button id="en" aria-pressed="false">EN</button>
+    </div>
+  </div>
+
+  <div class="machine">
+    <div class="mhead">
+      <span class="mtag" data-i="tag"></span>
+      <h2 data-i="title"></h2>
+      <p data-i="lede"></p>
+    </div>
+    <div class="stepnav" id="stepnav"></div>
+    <div class="stage" id="stage"></div>
+  </div>
+
+  <div class="ctaline" id="ctaline"></div>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="modal">
+    <h3 data-i="mintTitle"></h3>
+    <p data-i="mintSub"></p>
+    <label data-i="nickLabel"></label>
+    <input id="nick" maxlength="14" autocomplete="off" />
+    <div class="row2">
+      <button class="btn btn-ghost" id="mintCancel" data-i="cancel"></button>
+      <button class="btn btn-pu" id="mintGo" data-i="mintGo"></button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===== injected flags (code -> dataURI) ===== */
+const FLAGS = {"es": "flags/es.svg", "ar": "flags/ar.svg", "fr": "flags/fr.svg", "gb-eng": "flags/gb-eng.svg", "br": "flags/br.svg", "pt": "flags/pt.svg", "de": "flags/de.svg", "nl": "flags/nl.svg", "be": "flags/be.svg", "eg": "flags/eg.svg", "ma": "flags/ma.svg", "hr": "flags/hr.svg", "us": "flags/us.svg", "gh": "flags/gh.svg", "jp": "flags/jp.svg", "co": "flags/co.svg", "mx": "flags/mx.svg", "no": "flags/no.svg", "sn": "flags/sn.svg", "ch": "flags/ch.svg", "se": "flags/se.svg", "ci": "flags/ci.svg", "dz": "flags/dz.svg", "ec": "flags/ec.svg", "at": "flags/at.svg", "py": "flags/py.svg", "ba": "flags/ba.svg", "au": "flags/au.svg", "cd": "flags/cd.svg", "cv": "flags/cv.svg", "za": "flags/za.svg", "ca": "flags/ca.svg"};
+
+/* ========================= I18N ========================= */
+const I18N={
+  subtitle:{zh:"校准而非预测 · 看市场如何想象这届世界杯",en:"Calibration, not prediction · how the market imagines this Cup"},
+  tag:{zh:"重点专题 · 平行宇宙冠军机",en:"Feature · Alternate-Universe Champion Machine"},
+  title:{zh:"把一支球队送上奖杯，看它需要一个多离谱的宇宙",en:"Send a team to the trophy — see how absurd a universe it needs"},
+  lede:{zh:"从真实签表里选一支还没出局的球队送上冠军位，系统倒推这条夺冠路线：每一场对谁、市场给对手定了多高的价、你这条线有多稀有。",
+        en:"Pick a team still alive in the real bracket and send it to the trophy. The machine reverse-derives the route: who it meets each round, how high the market priced each foe, and how rare your line is."},
+  step1:{zh:"选冠军",en:"Pick"},step2:{zh:"推演",en:"Run"},step3:{zh:"铸卡",en:"Mint"},
+  pickTrophyIdle:{zh:"把球队送到这里",en:"Send a team here"},
+  pickTrophyLbl:{zh:"🏆 冠军",en:"🏆 Champion"},
+  picknote:{zh:"点选或拖入任意球队 · 划线队现实已止步，仍可推演它本可以走的平行宇宙",en:"Tap or drag any team · struck-through teams are out, but you can still run the universe they could have walked"},
+  run:{zh:"推演这个宇宙",en:"Run this universe"},
+  reroll:{zh:"再抽一个宇宙",en:"Roll again"},
+  back:{zh:"换一支队",en:"Pick another"},
+  mintBtn:{zh:"命名并铸卡",en:"Name & mint"},
+  download:{zh:"下载分享卡",en:"Download card"},
+  explore:{zh:n=>`已探索 <b>${n}</b> 个平行宇宙`,en:n=>`<b>${n}</b> universe${n>1?"s":""} explored`},
+  marketProb:{zh:"市场夺冠概率",en:"Market title prob."},
+  rareProb:{zh:"宇宙稀有度",en:"Universe rarity"},
+  lead:{zh:(p,r)=>`只有 <span class="hl">${p}</span> 的${r}，和你进入了同一个平行宇宙。`,
+        en:(p,r)=>`Only <span class="hl">${p}</span> of ${r} entered the same universe as you.`},
+  leadsub:{zh:(m,n)=>`市场夺冠概率 <b>${m}</b> · 这条线要成真，市场得连错 ${n} 次。`,
+           en:(m,n)=>`Market title prob <b>${m}</b> · for this to hold, the market misreads you ${n}×.`},
+  routeLabel:{zh:"夺冠路线 · 每一场",en:"The route · leg by leg"},
+  aftT:{zh:"若这条线成真",en:"If this line holds"},
+  guard:{zh:"校准守则 ✓ 无赌博词",en:"Calibration guardrail ✓"},
+  mintTitle:{zh:"铸成你的平行宇宙通行证",en:"Mint your Alternate-Universe Pass"},
+  mintSub:{zh:"留个昵称，卡上会带你的名字，并冻结此刻市场快照——一条可分享、可复现的档案。",
+           en:"Leave a nickname — the card takes your name and freezes the current market snapshot."},
+  nickLabel:{zh:"昵称",en:"Nickname"},cancel:{zh:"再想想",en:"Not yet"},mintGo:{zh:"铸卡",en:"Mint"},
+  cta:{zh:"快来看看你在平行宇宙中的世界杯夺冠之路 ↗",en:"See your path to the World Cup trophy in a parallel universe ↗"},
+  dlToast:{zh:"分享卡已下载",en:"Card downloaded"},
+  anon:{zh:"无名造梦者",en:"anon dreamer"},
+  exitHead:{zh:"现实结局",en:"Reality"},
+  exitStop:{zh:"止步",en:"Out in the"},
+  exitTitleLbl:{zh:"市场赛前夺冠概率",en:"pre-tournament title prob"},
+  echoHint:{zh:"换一支没出局的队，能推演完整冠军路径。",en:"Pick a team still alive for a full title run."},
+  trophyReality:{zh:"📄 现实战报",en:"📄 Reality report"},
+  trophyElim:{zh:"🏆 冠军（现实已止步）",en:"🏆 Champion (out in reality)"},
+};
+let LANG="zh";
+function L(k,...a){const e=I18N[k];if(!e)return k;const v=e[LANG];return typeof v==="function"?v(...a):v;}
+
+/* ========================= market data (mock /api/board) ========================= */
+const PLAT={polymarket:{label:"Polymarket",w:1.0},kalshi:{label:"Kalshi",w:1.0},predict:{label:"Predict.fun",w:.95},"42":{label:"42",w:.8},manifold:{label:"Manifold",w:.7}};
+const SNAPSHOT={snapshotId:"2026-06-30T01:00Z",updated:"2026-06-30"};
+// en, zh, flagcode, [poly,kalshi,predict,42,manifold], teamMain, teamAccent
+const T=[
+ ["Spain","西班牙","es",18,17.5,17,16,19,"#e0241a","#ffd83d"],
+ ["Argentina","阿根廷","ar",16,15.5,15,14,17,"#2b3fc4","#a9d52b"],
+ ["France","法国","fr",15,14.5,14,13.5,14,"#2b3fc4","#e0241a"],
+ ["England","英格兰","gb-eng",12,11,11.5,10,13,"#e0241a","#2b3fc4"],
+ ["Brazil","巴西","br",11,10.5,10,9.5,12,"#089c4a","#ffd83d"],
+ ["Portugal","葡萄牙","pt",8,7.5,7,6.5,9,"#089c4a","#e0241a"],
+ ["Germany","德国","de",7,6.5,6,6,7.5,"#e0241a","#ffd83d"],
+ ["Netherlands","荷兰","nl",6,5.5,5.5,5,6.5,"#e8541e","#2b3fc4"],
+ ["Belgium","比利时","be",5,4.5,4.5,4,5.5,"#e0241a","#ffd83d"],
+ ["Egypt","埃及","eg",1.5,1.4,1.3,1.1,1.8,"#c8102e","#d4af37"],
+ ["Morocco","摩洛哥","ma",3.5,3,2.8,2.2,4.5,"#e0241a","#089c4a"],
+ ["Croatia","克罗地亚","hr",2.8,2.5,2.7,1.4,4.1,"#e0241a","#2b3fc4"],
+ ["USA","美国","us",2.5,2.2,2.4,2,3,"#2b3fc4","#e0241a"],
+ ["Ghana","加纳","gh",0.95,.85,.9,.7,1.2,"#ce1126","#fcd116"],
+ ["Japan","日本","jp",2,1.8,1.9,1.5,2.6,"#e0241a","#ffd83d"],
+ ["Colombia","哥伦比亚","co",1.8,1.6,1.7,1.3,2.2,"#ffd83d","#2b3fc4"],
+ ["Mexico","墨西哥","mx",1.6,1.5,1.4,1.3,1.9,"#089c4a","#e0241a"],
+ ["Norway","挪威","no",1.5,1.4,1.3,1.2,1.8,"#e0241a","#2b3fc4"],
+ ["Senegal","塞内加尔","sn",1.4,1.3,1.2,1.1,1.6,"#089c4a","#ffd83d"],
+ ["Switzerland","瑞士","ch",1.3,1.2,1.1,1,1.5,"#e0241a","#2bb9a0"],
+ ["Sweden","瑞典","se",1.2,1.1,1.0,.9,1.4,"#2b3fc4","#ffd83d"],
+ ["Ivory Coast","科特迪瓦","ci",1.1,1,.9,.8,1.3,"#e8541e","#089c4a"],
+ ["Algeria","阿尔及利亚","dz",1.05,.95,1.0,.8,1.3,"#0a7d3e","#e0241a"],
+ ["Ecuador","厄瓜多尔","ec",1,.9,.95,.8,1.2,"#ffd83d","#2b3fc4"],
+ ["Austria","奥地利","at",1,.9,.85,.8,1.1,"#e0241a","#2bb9a0"],
+ ["Paraguay","巴拉圭","py",1.0,.9,.95,.8,1.2,"#e0241a","#2b3fc4"],
+ ["Bosnia","波黑","ba",0.8,.7,.75,.6,1.0,"#1f2a78","#ffd83d"],
+ ["Australia","澳大利亚","au",.6,.5,.55,.45,.8,"#1f2a78","#ffd83d"],
+ ["DR Congo","刚果(金)","cd",.5,.4,.45,.35,.7,"#2b3fc4","#ffd83d"],
+ ["Cape Verde","佛得角","cv",.4,.3,.5,.2,.9,"#2b3fc4","#e0241a"],
+ ["South Africa","南非","za",.4,.3,.35,.3,.5,"#089c4a","#ffd83d"],
+];
+const TEAM={}; T.forEach(r=>TEAM[r[0]]={en:r[0],zh:r[1],code:r[2],
+  p:{polymarket:r[3],kalshi:r[4],predict:r[5],"42":r[6],manifold:r[7]},main:r[8],accent:r[9]});
+const nameOf=en=>TEAM[en]?TEAM[en][LANG]:en;
+
+/* bracket: 8 left ties + 8 right ties. [home,away, sa,sb] (sa/sb null = unplayed) */
+const BRACKET={
+ // 上半区（含 法国/西班牙/葡萄牙/比利时…）
+ L:[["Germany","Paraguay",4,5],["France","Sweden",2,0],["South Africa","Canada",0,1],
+    ["Netherlands","Morocco",1,2],["Portugal","Croatia",null,null],["Spain","Austria",null,null],
+    ["USA","Bosnia",null,null],["Belgium","Senegal",2,1]],
+ // 下半区（含 英格兰/阿根廷/巴西/哥伦比亚…）
+ R:[["Brazil","Japan",2,1],["Ivory Coast","Norway",1,2],["Mexico","Ecuador",2,0],
+    ["England","DR Congo",3,0],["Argentina","Cape Verde",null,null],["Australia","Egypt",null,null],
+    ["Switzerland","Algeria",null,null],["Colombia","Ghana",null,null]],
+};
+TEAM["Canada"]={en:"Canada",zh:"加拿大",code:"ca",p:{polymarket:.8,kalshi:.7,predict:.75,"42":.6,manifold:1.0},main:"#e0241a",accent:"#2bb9a0"};
+
+/* eliminated = lost a played tie */
+const ELIM=new Set();
+["L","R"].forEach(s=>BRACKET[s].forEach(t=>{ if(t[2]!=null&&t[3]!=null){ const loser=t[2]>t[3]?t[1]:t[0]; ELIM.add(loser);} }));
+const winnerOfTie=t=> t[2]==null?null:(t[2]>t[3]?t[0]:t[1]);
+
+/* ========================= probability model (trim of knockout-universe-model.js) ========================= */
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+function pct(v,d=1){if(!isFinite(v))return"—";const f=10**d,r=Math.round((v+1e-9)*f)/f;return(Number.isInteger(r)?r.toFixed(0):r)+"%";}
+const PERSONA=[
+ {id:"consensus_core",bw:28,rm:1,nm:{zh:"共识主宇宙",en:"Consensus Mainline"},ev:()=>({t:1})},
+ {id:"optimist_signal",bw:16,rm:.85,nm:{zh:"乐观信号宇宙",en:"Early-Signal"},ev:p=>{const g=p.high.prob-p.title;return g<1.2?0:{t:clamp(1+(g-1.2)/6,1,1.8)}}},
+ {id:"skeptic_shadow",bw:14,rm:.9,nm:{zh:"怀疑阴影宇宙",en:"Skeptic Shadow"},ev:p=>{const g=p.title-p.low.prob;return g<1.2?0:{t:clamp(1+(g-1.2)/6,1,1.8)}}},
+ {id:"two_poles",bw:12,rm:.65,nm:{zh:"两极撕裂宇宙",en:"Split Timeline"},ev:p=>{if(p.spread<8&&p.rel<.8)return 0;return{t:clamp(1+Math.max(p.spread/12,(p.rel-.8)/1.5,0),1,2.2)}}},
+ {id:"iron_curtain",bw:18,rm:1,nm:{zh:"资本铁幕宇宙",en:"Iron Curtain"},ev:p=>{if(p.spread>2)return 0;return{t:clamp(1+(2-p.spread)/4,1,1.5)}}},
+ {id:"lonely_signal",bw:8,rm:.6,nm:{zh:"孤独信号宇宙",en:"Lonely Signal"},ev:p=>{const g=p.high.prob-p.title;return g<4?0:{t:clamp(1+(g-4)/8,1,1.8)}}},
+ {id:"thin_market",bw:7,rm:.7,nm:{zh:"薄雾低估宇宙",en:"Thin-Market"},ev:p=>{const g=p.title-p.low.prob;if(p.low.key!=="42"||g<3)return 0;return{t:clamp(1+(g-3)/8,1,1.7)}}},
+ {id:"black_swan",bw:4,rm:.55,nm:{zh:"黑天鹅入场宇宙",en:"Black Swan"},ev:p=>{const dis=p.spread>=4||p.rel>=.8;if(p.title>=3||!dis)return 0;return{t:clamp(1+(3-p.title)/6+Math.max(p.spread/12,p.rel/2),1,2.5)}}},
+];
+function profile(en){const row=TEAM[en];const ps=Object.keys(PLAT).map(k=>({key:k,prob:row.p[k],w:PLAT[k].w})).filter(x=>isFinite(x.prob));
+  const ws=ps.reduce((s,x)=>s+x.w,0),wsum=ps.reduce((s,x)=>s+x.prob*x.w,0),title=wsum/ws;
+  const sorted=ps.slice().sort((a,b)=>a.prob-b.prob),low=sorted[0],high=sorted[sorted.length-1],spread=high.prob-low.prob;
+  return{en,title,low,high,spread,rel:spread/Math.max(title,.1),poolW:Math.pow(Math.max(title,.1),.72)};}
+const ALL=T.map(r=>r[0]).concat(["Canada"]);
+const PROF={}; ALL.forEach(en=>PROF[en]=profile(en));
+let VAR=[];
+ALL.forEach(en=>{const pr=PROF[en];PERSONA.forEach(r=>{const tr=r.ev(pr);if(!tr)return;
+  VAR.push({en,pid:r.id,pnm:r.nm,raw:pr.poolW*r.bw*tr.t*r.rm,title:pr.title,
+    ally:{key:pr.high.key,prob:pr.high.prob},skeptic:{key:pr.low.key,prob:pr.low.prob}});});});
+{const tot=VAR.reduce((s,v)=>s+v.raw,0);VAR.forEach(v=>v.cardProb=v.raw/tot*100);}
+function seeded(seed){let h=2166136261;const s=String(seed||"x");for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}h+=h<<13;h^=h>>>7;h+=h<<3;h^=h>>>17;h+=h<<5;return(h>>>0)/4294967296;}
+function draw(items,seed){const tot=items.reduce((s,i)=>s+Math.max(0,i.raw),0);if(!tot)return items[0];let c=seeded(seed)*tot;for(const it of items){c-=Math.max(0,it.raw);if(c<=0)return it;}return items[items.length-1];}
+const RARITY={legend:{zh:"传说级造梦者",en:"legendary dreamers"},certified:{zh:"疯狂造梦者",en:"certified dreamers"},minority:{zh:"少数派玩家",en:"minority players"},fellow:{zh:"同路观察者",en:"fellow watchers"}};
+const rkey=cp=>cp<.2?"legend":cp<.8?"certified":cp<2?"minority":"fellow";
+
+/* ========================= bracket router (walk real bracket) ========================= */
+const ROUNDS=[{id:"R32",zh:"1/16 决赛",en:"Round of 32"},{id:"R16",zh:"1/8 决赛",en:"Round of 16"},{id:"QF",zh:"1/4 决赛",en:"Quarter-final"},{id:"SF",zh:"半决赛",en:"Semi-final"},{id:"Final",zh:"决赛",en:"Final"}];
+// expected advancer of a sub-bracket range [a,b) of a side: actual winner if decided, else higher-title team
+function expectAdvance(side,a,b){
+  let best=null;
+  for(let i=a;i<b;i++){const tie=BRACKET[side][i];const w=winnerOfTie(tie);
+    const cands = (w?[w]:[tie[0],tie[1]]).filter(c=>!ELIM.has(c)); // 已淘汰队不可能是未来对手
+    cands.forEach(c=>{ if(!best||PROF[c].title>PROF[best].title) best=c; });}
+  return best;
+}
+function findTie(champion){
+  for(const side of["L","R"])for(let i=0;i<8;i++){const t=BRACKET[side][i];if(t[0]===champion||t[1]===champion)return{side,i};}
+  return null;
+}
+function buildPath(champion){
+  const pos=findTie(champion); if(!pos)return[];
+  const {side,i}=pos; const legs=[];
+  // R32 opponent = the other team in the tie
+  const t=BRACKET[side][i]; const r32opp=t[0]===champion?t[1]:t[0];
+  legs.push(mkLeg("R32",champion,r32opp));
+  // subsequent rounds: opponent = expected advancer of the sibling block
+  // block size doubles each round; champion's index within side = i
+  let lo=i, size=1;
+  for(let r=1;r<5;r++){
+    size*=2; const blockStart=Math.floor(lo/size)*size; const half=size/2;
+    const champHalf=Math.floor((lo-blockStart)/half); // 0 or 1
+    let oppA,oppB;
+    if(r<4){ // opponent comes from sibling half within this side
+      if(champHalf===0){oppA=blockStart+half;oppB=blockStart+size;} else {oppA=blockStart;oppB=blockStart+half;}
+      const opp=expectAdvance(side,oppA,oppB);
+      legs.push(mkLeg(ROUNDS[r].id,champion,opp));
+    } else { // Final: opponent = expected winner of the OTHER side entirely
+      const other=side==="L"?"R":"L";
+      const opp=expectAdvance(other,0,8);
+      legs.push(mkLeg("Final",champion,opp));
+    }
+  }
+  return legs;
+}
+function mkLeg(round,champ,opp){const op=PROF[opp].title,cp=PROF[champ].title;return{round,opp,oppProb:op,defied:op>cp,gap:Math.max(0,op-cp)};}
+
+/* ========================= corpus (话题度 · 球队梗/绰号/真实赛事叙事 · brand-safe) =========================
+   原则：球队层面的足球玄学与文化梗(出圈、可传播)，结合市场定价/打脸角度；
+   不给具名真实球员编造失败/争议情节，不碰政治/打假球/族裔刻板印象。素材取自用户语料库。 */
+const ROUND_OPENER={R32:{zh:"1/16 决赛，",en:"Round of 32 — "},R16:{zh:"1/8 决赛，",en:"Round of 16 — "},QF:{zh:"1/4 决赛，",en:"Quarter-final — "},SF:{zh:"半决赛，",en:"Semi-final — "},Final:{zh:"决赛，",en:"Final — "}};
+// 每个对手 = 一句出圈的「你怎么过掉他们」钩子（球队绰号 + 真实梗）
+const HOOK={
+ "Spain":{zh:"你在传控祖师爷的节拍器里凿出一道缝，把拉玛西亚写给球迷的情书，撕成了你的晋级通行证。",en:"You carve a crack in the tiki-taka metronome and turn the academy's love letter into your own ticket through."},
+ "Argentina":{zh:"你掀翻了正在跳最后一支探戈的卫冕冠军——潘帕斯的点球玄学剧本，这一夜没人接得住。",en:"You topple the holders mid-farewell-tango — the Pampas shootout magic finds no hands tonight."},
+ "France":{zh:"高卢雄鸡的更衣室那场传统内讧又上演了，巴黎帮和马赛帮还没吵完，你已经一脚偷家。",en:"Les Bleus' dressing-room feud flares up again; before the cliques stop bickering, you've already nicked it."},
+ "England":{zh:"三狮军团又把《足球回家》唱得震天响——然后在十二码前，那道三十年的点球魔咒，这次轮到他们自己应验。",en:"The Three Lions belt out \u201cit's coming home\u201d again — then at twelve yards, the thirty-year penalty curse comes home to them instead."},
+ "Brazil":{zh:"桑巴军团 28 年的饥饿感还没填满，你就在他们的集锦美学里，踢出一记最不讲道理的反击。",en:"Twenty-eight years of samba hunger still unfed — and you answer their highlight-reel beauty with one ruthless counter."},
+ "Portugal":{zh:"葡萄牙更衣室的戏精内讧提前上演——摊手的、摇头的、边路散步的，谁也没拦住你这一刀。",en:"Portugal's locker-room drama starts early — the shrug, the head-shake, the stroll down the wing; none of them stop your blade."},
+ "Germany":{zh:"德国战车刚找回所有零件，你就让那台工业级机器，在你面前又一次当场熄火。",en:"The German machine had just found all its parts — and you stall the whole industrial engine right in front of you."},
+ "Netherlands":{zh:"郁金香的无冕之王这顶帽子太重了，而你，正是那个把「从未被过」的神话撕开一道口子的人。",en:"The crown of the uncrowned kings weighs heavy — and you're the one who tears a hole in the \u201cnever dribbled past\u201d myth."},
+ "Belgium":{zh:"比利时黄金一代的挽歌还在唱，你提前替他们写好了墓志铭。",en:"The golden generation's elegy is still playing — and you write the epitaph early."},
+ "Italy":{zh:"你凿穿了蓝衣军团那条教科书般的链式防线，让亚平宁的混凝土第一次漏了水。",en:"You bore through the Azzurri's textbook catenaccio and make Italian concrete leak for once."},
+ "Morocco":{zh:"摩洛哥那堵上届四强砌起来的城墙，被你一砖一砖拆成了通往下一轮的门。",en:"The wall Morocco built on a semi-final run gets dismantled, brick by brick, into your door to the next round."},
+ "Croatia":{zh:"格子军团的加时玄学又灵了——但这一次，在十二码的结界里先窒息的，是他们自己。",en:"The checkerboard extra-time magic works again — but this time it's they who suffocate first inside the penalty ward."},
+ "USA":{zh:"你在二号东道主的主场哨声里活了下来——整座球场一起上抢，你偏偏赢的就是这口气。",en:"You survive the host whistle and the whole stadium pressing as one — and that held breath is exactly what you win."},
+ "Uruguay":{zh:"南美牛皮糖把比赛拖成两小时的困斗，你在最后十分钟，把它熬成了你的故事。",en:"The South American limpets drag it into a two-hour grind; in the final ten minutes you stew it into your story."},
+ "Japan":{zh:"蓝武士的八强破壁计划写到一半，被你按下了暂停键。",en:"The Samurai Blue's breakthrough plan, half-written, hits your pause button."},
+ "Colombia":{zh:"哥伦比亚的金左脚把灵气全压进这 90 分钟，你却把他们的搅局剧本，反手改写成自己的。",en:"Colombia pour all their flair into ninety minutes; you flip their spoiler script into your own."},
+ "Mexico":{zh:"草帽军团的「十六郎魔咒」这一次由你来续上——你没让他们走出那道门。",en:"The Round-of-16 curse gets another chapter, written by you — they don't get out the door."},
+ "Norway":{zh:"挪威的童话第一章还没用德语写完，你就把它的结局改成了你的语言。",en:"Norway's fairy tale, not even finished in its first chapter, gets its ending rewritten in your language."},
+ "Senegal":{zh:"塞内加尔的非洲肌肉洪流冲了过来，你用一记反击，在他们的复仇剧本里抢下最后一页。",en:"Senegal's wave of muscle crashes in; one counter steals the last page of their revenge script."},
+ "Switzerland":{zh:"瑞士那台精密仪器每个传球角度都像 CAD 画出来的，你偏偏在他们的图纸上，画了一道没人算到的对角线。",en:"Every Swiss pass angle looks CAD-drawn — so you sketch one diagonal nobody had computed onto their blueprint."},
+ "Sweden":{zh:"瑞典重卡沿着那条单一的高速公路压过来，你在唯一的出口，把它逼停了。",en:"The Swedish freight truck rolls down its one highway; at the only exit, you force it to a stop."},
+ "Ivory Coast":{zh:"科特迪瓦的故事本身就超越了足球，而你，在他们的奇迹章节里，写下了属于你的那一行。",en:"Côte d'Ivoire's story already transcends football — and inside their miracle chapter, you write your own line."},
+ "South Korea":{zh:"你撞上了那道「防魔人的说明书用韩文写」的防线，然后用一脚谁也没料到的远射，把说明书撕了。",en:"You run into the wall whose manual is written in Korean — then tear it up with one shot no one saw coming."},
+ "Ecuador":{zh:"厄瓜多尔离开了 3000 米的高原主场，你在低海拔，让高原之鹰的红色褪尽。",en:"Ecuador, away from their 3,000-metre altitude, fade to grey down at sea level."},
+ "Austria":{zh:"奥地利的红牛高位逼抢把你逼到后场冒汗，你却在被逼疯之前，先把他们逼疯了。",en:"Austria's Red Bull press has you sweating in your own half — but you crack them before they crack you."},
+ "Paraguay":{zh:"巴拉圭把比赛变成两小时的困斗，你在第 120 分钟，把这场闷局踢出了唯一的火花。",en:"Paraguay turn it into a two-hour siege; in the 120th minute, you strike the only spark."},
+ "Iran":{zh:"伊朗的铁血防线像沙漠里的一堵墙，你在终场前，从墙缝里挤出了通往下一轮的光。",en:"Iran's iron wall stands like desert stone; before the whistle, you squeeze light through the crack."},
+ "Australia":{zh:"袋鼠军团的「附加赛公式」又想生效，你在他们的远射落地之前，先一步偷走了剧本。",en:"The Socceroos' playoff formula tries to kick in; you steal the script before their long-range bid even lands."},
+ "DR Congo":{zh:"刚果金的法甲雇佣兵团用身体流跟你肉搏，你在被撞倒之前，先把球送进了网窝。",en:"DR Congo's Ligue-1 mercenaries trade bodies with you; before they bundle you over, the ball's already in."},
+ "Cape Verde":{zh:"佛得角那个 60 万人口的奇迹群岛差点把你逼到绝境，你赢的不是比分，是一身冷汗。",en:"Cape Verde's 600,000-strong island of miracles nearly corners you; what you win isn't the scoreline, it's a cold sweat."},
+ "Canada":{zh:"加拿大的枫叶闪电在左路飙到让中卫做噩梦的时速，你在被超车之前，先一步冲过了终点。",en:"Canada's maple lightning hits a speed that gives centre-backs nightmares; you cross the line just before it overtakes you."},
+};
+HOOK._default={zh:o=>`你在 ${o} 最擅长的节奏里，踢出了一记他们没演练过的剧本。`,en:o=>`In ${o}'s favourite rhythm, you play a script they never rehearsed.`};
+// ★据：对手梗本身就是真实足球叙事 → 标注来源，呼应「结合实际依据」
+const HOOK_SRC={"England":"三狮·点球魔咒","Croatia":"格子·加时玄学","Mexico":"草帽·十六郎魔咒","Brazil":"桑巴·28年等待","Argentina":"潘帕斯·最后一舞","Netherlands":"荷兰·从未被过","Spain":"拉玛西亚·传控霸权","Morocco":"摩洛哥·上届四强"};
+// 市场打脸 beat（结合真实定价）
+const MARKET_BEAT=[
+ {zh:p=>`Polymarket 赛前还把对面摆在高位，终场哨响时，这条线诡异地翻了过来。`,en:p=>`Polymarket had them priced high before kickoff; by the whistle, the line had eerily flipped.`},
+ {zh:p=>`五个平台没有一个站你，你把它们写给对面（${p}）的定价，一起按进了草皮。`,en:p=>`Not one of five platforms backed you; you press all their pricing for them (${p}) into the turf.`},
+ {zh:p=>`市场给对面的价越高（${p}），你这一脚就越响。`,en:p=>`The higher they price the other side (${p}), the louder your strike lands.`},
+];
+const AFTER=[
+ {zh:t=>`赛后所有写着「死亡之组」「传统豪门」的复盘报告，连夜撕了重写。`,en:t=>`Every post-mortem stamped \u201cgroup of death\u201d or \u201ctraditional power\u201d gets shredded and rewritten overnight.`},
+ {zh:t=>`最先沉默的不是看台，是那些把 ${t} 写进脚注的冷定价。`,en:t=>`The first to go quiet isn't the crowd — it's the cold prices that filed ${t} under a footnote.`},
+ {zh:t=>`这条线一旦亮起，明年所有人复盘这届世界杯，都得从这一格签表讲起。`,en:t=>`Once this lights up, every retelling of this Cup next year starts from this corner of the bracket.`},
+];
+const PUNCH=[
+ {zh:(sk,sp,al)=>`五个平台里最看空你的是 <span class="sk">${sk}（${sp}）</span>。这条线若成真，它欠你一个道歉。唯一没笑你的，是 <span class="al">${al}</span>。`,en:(sk,sp,al)=>`Of five platforms, <span class="sk">${sk}</span> priced you lowest at <span class="sk">${sp}</span>. If this holds it owes you an apology. The only one not laughing: <span class="al">${al}</span>.`},
+ {zh:(sk,sp,al)=>`<span class="sk">${sk}</span> 给你这条线定价最低，只有 <span class="sk">${sp}</span>；而 <span class="al">${al}</span> 早就把你抬高了——全网就它先信你。`,en:(sk,sp,al)=>`<span class="sk">${sk}</span> priced you lowest, just <span class="sk">${sp}</span>; <span class="al">${al}</span> lifted you long ago — it believed you first.`},
+];
+// 话题度 hashtag 标题（每张卡 1 条）
+function headline(R){const c=nameOf(R.champion);const big=R.path.reduce((a,b)=>b.gap>a.gap?b:a,R.path[0]);const bo=nameOf(big.opp);
+ const z=[`#${c}夺冠 #平行宇宙最离谱的一张通行证`,`#${c}掀翻${bo} #这条线市场连错${R.defied}次`,`#只有${pct(R.cardProb)}的人 和${c}进了同一个宇宙`];
+ const e=[`#${c}Champions #the most absurd pass in any universe`,`#${c}topples${bo} #the market misread this ${R.defied}x`,`#only${pct(R.cardProb)} entered ${c}'s universe`];
+ return (LANG==="zh"?z:e)[R.headIdx%3];}
+// 已淘汰 32 强 · 真实出局（话题度文案）
+const REAL_EXIT={
+ "Germany":{round:"R32",opp:"Paraguay",sc:"4–5",fav:true,
+   zh:"德国战车刚找回所有零件，就在 1/16 决赛和巴拉圭的铁桶反击踢出 4-5 的疯狂比分——传统豪门连续第三届的剧本，被南美牛皮糖一脚油门碾成了纪录片背景板。",
+   en:"The German machine had just found all its parts — then a wild 4–5 against Paraguay's bus-and-counter ended it in the Round of 32. A third straight tournament script, flattened.",
+   tagzh:"#德国4-5巴拉圭 #传统豪门连续第三届崩盘",tagen:"#Germany4-5Paraguay #third straight collapse"},
+ "Japan":{round:"R32",opp:"Brazil",sc:"1–2",fav:false,
+   zh:"蓝武士的八强破壁计划写到一半：边路快马差点凿穿桑巴防线，却在 1/16 决赛 1-2 惜败巴西——那部「14 秒」纪录片的续集，这次没能拍成。",
+   en:"The Samurai Blue's breakthrough plan got halfway: their flank speed nearly cracked the samba wall before a 1–2 exit to Brazil. The \u201c14-second\u201d sequel goes unfilmed.",
+   tagzh:"#日本止步16强 #八强破壁再延期",tagen:"#JapanOut #the breakthrough waits again"},
+ "South Africa":{round:"R32",opp:"Canada",sc:"0–1",fav:false,
+   zh:"班图雄狮重返世界杯的故事，倒在二号东道主加拿大的反击快刀下，0-1——呜呜祖拉的余音，停在了 1/16 决赛。",
+   en:"Bafana Bafana's return story falls to host-nation Canada's counter, 0–1 — the vuvuzela echo stops in the Round of 32.",
+   tagzh:"#南非止步16强 #呜呜祖拉余音停在1/16",tagen:"#SouthAfricaOut #the vuvuzela echo fades"},
+};
+const BANNED=[/下注/,/赌/,/赔率/,/套利/,/交易/,/钱包/,/爆仓/,/多头/,/杠杆/,/庄家/,/押注/,/彩票/,/\bbet\b/i,/\bodds\b/i,/\bwager/i,/\bgambl/i,/\bleverage/i,/\bliquidat/i,/\bpayout/i,/\bstake\b/i];
+function lint(arr){for(const s of arr)for(const re of BANNED)if(re.test(s))return{ok:false,hit:re};return{ok:true};}
+
+/* ========================= generate universe ========================= */
+function genUniverse(champion,seed){
+  // 现实进度：该队已在现实里赢下的淘汰赛轮数（当前 mock 只有 R32 有赛果）
+  const _ties=BRACKET.L.concat(BRACKET.R);const _t=_ties.find(x=>x[0]===champion||x[1]===champion);
+  const survived=(_t&&_t[2]!=null&&((_t[2]>_t[3]?_t[0]:_t[1])===champion))?1:0;
+  const tv=VAR.filter(v=>v.en===champion); const v=draw(tv,seed);
+  const path=buildPath(champion);
+  const defied=Math.max(1,path.filter(l=>l.defied).length);
+  const ridic=Math.round(clamp(58+defied*5+(3-Math.min(v.title,3))*5+(v.cardProb<.2?9:v.cardProb<.8?5:0),0,99));
+  const beatIdx=path.map((l,i)=>Math.floor(seeded(seed+":b"+i)*3));
+  const marketIdx=path.map((l,i)=>Math.floor(seeded(seed+":m"+i)*MARKET_BEAT.length));
+  const realExit=ELIM.has(champion)?(REAL_EXIT[champion]||{round:"R32",opp:"",sc:"—",tagzh:"",tagen:""}):null;
+  return{kind:"champ",champion,seed,pid:v.pid,pnm:v.pnm,title:v.title,cardProb:v.cardProb,rarity:rkey(v.cardProb),
+    ally:{label:PLAT[v.ally.key].label,prob:v.ally.prob},skeptic:{label:PLAT[v.skeptic.key].label,prob:v.skeptic.prob},
+    path,beatIdx,marketIdx,defied,ridic,aft:Math.floor(seeded(seed+":a")*AFTER.length),punch:Math.floor(seeded(seed+":p")*PUNCH.length),
+    headIdx:Math.floor(seeded(seed+":h")*3),eliminated:!!realExit,realExit,survived,snapshotId:SNAPSHOT.snapshotId,updated:SNAPSHOT.updated};
+}
+// 对手「话题标签 + 一句解释」事件库 v2（更多实名球员 / 真实梗绰号名场面 / 足球玄学 / 历史级足球政治趣闻）。
+// 边界：球员用真实梗/绰号/名场面（实名放开）；巫术=普适足球玄学诅咒文化；政治=历史级足球政治老梗(86上帝之手/98伊朗美国等)，中立、不点名在世政客、不站队现实争议；不编造刑事丑闻。
+const pk=(a,s)=>a&&a.length?a[Math.floor(seeded(s)*a.length)]:null;
+const T2=(zh,en)=>({zh,en});
+const OPP_EVENT={
+ "Argentina":{_any:[
+   {tag:T2("梅西的最后一舞，卡带","Messi's last dance jams"),exp:T2("全队又把球传给那个 39 岁的人，可这一夜连他的上帝视角都算不到你","the side funnels to the 39-year-old again, but even his god-view can't compute you")},
+   {tag:T2("大马丁的扑点玄学，失灵","Dibu's shootout voodoo fails"),exp:T2("那套连续封神的挑衅式扑点，这次在十二码前先软的是他自己","the taunting save-magic that made him a legend cracks at his own spot")},
+   {tag:T2("上帝之手的老账，你来结","the Hand of God ledger, you settle it"),exp:T2("1986 那记被历史反复播放的手球恩怨，被你在 90 分钟里干净利落地清算","the 1986 handball saga football keeps replaying — you close it cleanly in 90")}],
+  Final:[{tag:T2("诸神黄昏，为你而灭","the gods' twilight, for you"),exp:T2("梅西的探戈跳进决赛，全世界等加冕，谢幕的却是你","Messi tangos into the final and the world waits for a crowning — the curtain falls for you")}]},
+ "Spain":{_any:[
+   {tag:T2("亚马尔的弧线，擦柱","Yamal's worldie hits the post"),exp:T2("那记 17 岁就封神的外脚背弧线刚要绕死角，被你门将指尖蹭出底线","the outside-boot curl that made him a teen icon is fingertipped wide")},
+   {tag:T2("传控催眠，被你叫醒","tiki-taka trance, snapped"),exp:T2("倒脚过千还没进球，连自家球迷都快睡着，你在一厘米的缝里背叛拉玛西亚","a thousand passes, no goal — you betray the academy in one inch of space")}]},
+ "France":{_any:[
+   {tag:T2("姆巴佩的火箭脚，被读死","Mbappé's rockets, read early"),exp:T2("决赛灯下你的造越位陷阱，正等着这台世界第一速度机器一头撞进来","under the lights your offside trap waits for the world's fastest man to run into it")},
+   {tag:T2("巴黎马赛，又内讧","Paris vs Marseille, again"),exp:T2("被媒体翻炒 N 遍的更衣室派系戏码照常上演，全队没吵完你已偷家","the endlessly-reported faction saga flares; before they stop bickering, you nick it")},
+   {tag:T2("楚阿梅尼的黄牌，攒够了","the midfielder's cards catch up"),exp:T2("中场铁腰一贯的累积黄牌魔咒在最关键一场发作，少一人的高卢雄鸡被你打穿","the enforcer's yellow-card curse strikes at the worst time; a man down, Les Bleus crack")}]},
+ "England":{_any:[
+   {tag:T2("凯恩的点球，打上看台","Kane skies the penalty"),exp:T2("那记 2022 对法国踢飞的十二码阴影重演，三狮的无冠魔咒又续了一年","the 2022-vs-France miss returns in shadow; the Lions' trophy curse renews")},
+   {tag:T2("足球回家？回错门了","coming home — wrong door"),exp:T2("三狮把主题曲唱到十二码前，三十年点球魔咒精准落回自己头上","they sing it to the spot, where the 30-year hoodoo lands back on them")},
+   {tag:T2("贝林厄姆的绝杀脸，没来","Bellingham's late-magic, no-show"),exp:T2("那张标志性的补时绝杀庆祝这次没有兑现，你把他的剧本改成了你的","the trademark stoppage-time celebration never comes; you rewrite his script as yours")}]},
+ "Brazil":{_any:[
+   {tag:T2("维尼修斯的桑巴，被断电","Vinícius's samba, unplugged"),exp:T2("欧冠核心到了黄绿军团又变回争议先生，你替全场断了他的电","the UCL star reverts to controversy in yellow; you cut his power for the night")},
+   {tag:T2("桑巴 28 年之痒","28 years of samba itch"),exp:T2("集锦美学放到最得意那段，被你一记最不讲道理的反击掐断","the highlight reel hits its proudest frame before your ruthless counter cuts the feed")},
+   {tag:T2("内马尔的哭脸，提前预定","Neymar's tears, pre-booked"),exp:T2("那张世界杯经典哭脸又要出场，只是这次镜头给的是你的狂奔","the classic World Cup crying face returns — but the camera follows your run instead")}]},
+ "Portugal":{_any:[
+   {tag:T2("C 罗的谢幕，提前散场","CR7's farewell, cut short"),exp:T2("41 岁的传奇还在等一个加冕的结局，你让他的最后一届停在你脚下","the 41-year-old legend waits for a crowning ending; you end his last dance at your feet")},
+   {tag:T2("葡萄牙软脚症，又便秘","Portugal's cold feet, constipated"),exp:T2("外界越把他们列热门，他们越用一场便秘般的 0-0 回应你","the more you favourite them, the more they answer with a constipated 0-0")}]},
+ "Netherlands":{_any:[
+   {tag:T2("范戴克「从未被过」，除了今天","'never beaten' — until today"),exp:T2("你亲手撕开这个神话，橙衣防线的信仰当场崩塌","you tear the myth open and the Oranje's defensive faith collapses")},
+   {tag:T2("点球大战，郁金香又凋零","penalties, tulips wilt again"),exp:T2("从 98 到 2022，橙衣的点球噩梦一进十二码就发作，今晚由你兑现","from '98 to 2022 the Oranje shootout nightmare triggers at the spot; tonight you cash it")}]},
+ "Belgium":{_any:[
+   {tag:T2("黄金一代的葬礼，你主持","the golden generation's funeral, hosted by you"),exp:T2("德布劳内还在传，卢卡库还在吐饼，但这真是最后一集了","De Bruyne still threads it, Lukaku still spurns them — but this is the last episode")}]},
+ "Croatia":{_any:[
+   {tag:T2("格子的加时玄学，失灵","the extra-time magic misfires"),exp:T2("门神的扑点结界正要张开，可十二码前先窒息的是他们","the keeper's save-wall rises, but at twelve yards they suffocate first")}],
+  SF:[{tag:T2("莫德里奇的绝唱，被你截胡","Modrić's swan song, intercepted"),exp:T2("那记金球外脚背传中看一次少一次，全世界备好纸巾，你半路劫了道","the Ballon-d'Or outside-boot cross, fewer each time — the world reaches for tissues, and you mug it")}]},
+ "Italy":{_any:[
+   {tag:T2("链式防线，被你凿穿","catenaccio, bored through"),exp:T2("亚平宁的混凝土第一次漏水，2006 那股点球冷血没能再上线","Italian concrete leaks for once; the 2006 ice never arrives")}]},
+ "Morocco":{_any:[
+   {tag:T2("非洲鼓点与古老祝福，哑火","the drums and old blessings, silenced"),exp:T2("看台的鼓声想召唤上届四强的神迹，你用一记反击让玄学暂时下线","the stands drum for a repeat of the semi-final miracle; your counter puts the magic offline")},
+   {tag:T2("蒙特雷高温主场，被你拆墙","the Monterrey heat-wall, dismantled"),exp:T2("上届四强那堵城墙重新砌起，你一砖一砖拆成通往下一轮的门","they rebuild the semi-final wall; you take it apart, brick by brick, into a door")}]},
+ "USA":{_any:[
+   {tag:T2("山姆大叔的主场，分贝拉满","Uncle Sam's home roar, maxed out"),exp:T2("二号东道主整座球场的声浪像一场集会，你偏在噪音里冷静抽射","the co-host stadium roars like a rally; you finish coldly through the noise")}]},
+ "Uruguay":{_any:[
+   {tag:T2("苏亚雷斯门线手球的旧账，被清算","the Suárez goal-line handball, avenged"),exp:T2("2010 那记被念叨了十几年的门线手球，被你在最后十分钟连本带利讨回","the 2010 handline that's been chanted for a decade — you collect it, with interest, in the final ten")}]},
+ "Cape Verde":{_any:[
+   {tag:T2("60 万人的铁桶，差点困死你","600k-strong bus nearly traps you"),exp:T2("奇迹群岛的门将一战封神，你赢的不是比分，是一身冷汗","the island keeper ascends; you win a cold sweat, not a scoreline")}]},
+ "Japan":{_any:[
+   {tag:T2("三笘的 1 毫米，反噬","Mitoma's millimetre, backfires"),exp:T2("那条改写历史的 1 毫米边线球想再来一次，这次擦线出界的是他们","the history-changing millimetre wants a reprise; this time it's them who go out by a hair")}]},
+ "Germany":{_any:[
+   {tag:T2("德国战车，当场熄火","the German machine stalls"),exp:T2("连续两届小组出局的恐惧症还没治好，崩盘剧本又添你这一集","the back-to-back group-exit trauma lingers; another collapse chapter, starring you")}]},
+ "Norway":{_any:[
+   {tag:T2("哈兰德，被冻成冰雕","Haaland, frozen solid"),exp:T2("防住这台进球机器的说明书是用另一种语言写的，北欧童话第一章烂尾","the manual to stop the scoring machine is in another tongue; the Nordic tale stalls")}]},
+ "Senegal":{_any:[
+   {tag:T2("非洲雄狮的祖先加持，缺席","the Lions' ancestral blessing, absent"),exp:T2("鼓声与古老祝福没能召来神迹，非洲肌肉洪流被你一记反击拦腰截断","the drums and blessings summon no miracle; your counter cuts the muscle-wave in half")}]},
+ "Colombia":{_any:[
+   {tag:T2("J 罗的金左脚余光，被按灭","James's golden left, snuffed"),exp:T2("禁区前那记胸部停球世界波的预兆刚亮起，被你提前掐断","the chest-trap-worldie omen lights up at the box edge; you kill it early")}]},
+ "Paraguay":{_any:[
+   {tag:T2("南美牛皮糖，两小时困斗","two-hour South American siege"),exp:T2("你在第 120 分钟，把这场闷局踢出唯一的火花","in the 120th minute you strike the only spark")}]},
+ "Canada":{_any:[
+   {tag:T2("戴维斯的枫叶闪电，被抢线","Davies's maple lightning, out-sprinted"),exp:T2("那位左路飙到让中卫做噩梦的时速，被你先一步冲过终点","the left-back speed that gives centre-backs nightmares — you cross the line first")}]},
+};
+const TEAM_TAG={
+ "Egypt":T2("法老萨拉赫，被你锁死","the Pharaoh Salah, shackled"),
+ "Ghana":T2("黑星军团的古老诅咒，反噬","the Black Stars' old curse, backfires"),
+ "Algeria":T2("沙漠之狐，被你围猎","the Desert Foxes, hunted down"),
+ "Bosnia":T2("巴尔干铁血，被你凿开","the Balkan iron, chiselled open"),
+ "Iran":T2("波斯铁闸，被你捅穿","the Persian wall, punctured"),
+ "Switzerland":T2("瑞士精密仪器，被画歪","the Swiss machine, knocked off-axis"),
+ "Sweden":T2("北欧重卡，被你逼停","the Nordic freight, forced to stop"),
+ "Ecuador":T2("高原之鹰，落了地","the Andean eagle, grounded"),
+ "Austria":T2("红牛高位逼抢，被反逼疯","the Red Bull press, out-pressed"),
+ "Ivory Coast":T2("非洲大象，被你绕过","the Elephants, side-stepped"),
+ "South Korea":T2("说明书用韩文写的防线，被撕了","the Korean-manual defence, torn up"),
+ "Mexico":T2("十六郎魔咒，由你续订","the round-of-16 curse, renewed by you"),
+ "DR Congo":T2("法甲雇佣兵团，被你偷家","the Ligue-1 mercenaries, undone"),
+ "Australia":T2("袋鼠附加赛公式，被除以零","the Socceroo formula, divided by zero"),
+};
+function legEvent(R,leg,i){
+  const opp=nameOf(leg.opp);const bank=OPP_EVENT[leg.opp];
+  if(bank){const arr=bank[leg.round]||bank._any;const c=pk(arr,R.seed+":ev"+i+leg.round);if(c)return{tag:c.tag[LANG],exp:c.exp[LANG]};}
+  const nk=TEAM_TAG[leg.opp]?TEAM_TAG[leg.opp][LANG]:(LANG==="zh"?("硬吃"+opp):("outlast "+opp));
+  const hk=(HOOK[leg.opp]&&HOOK[leg.opp][LANG])?HOOK[leg.opp][LANG]:HOOK._default[LANG](opp);
+  return{tag:nk,exp:hk};
+}
+function legCopy(R,leg,i){const e=legEvent(R,leg,i);return e.tag+(LANG==="zh"?"——":" — ")+e.exp;}
+// 通用衍生梗（对手无关，玄学/市场向，兜底保证每关有衍生话题）
+const UNIV_TAG=[
+ {zh:"章鱼帝已盖章",en:"the oracle octopus approves"},
+ {zh:"玄学值拉满",en:"peak football voodoo"},
+ {zh:"解说员失声预警",en:"commentator voice-crack alert"},
+ {zh:"剧本组连夜加班",en:"the script writers pull an all-nighter"},
+ {zh:"概率论当场辞职",en:"probability theory resigns"},
+ {zh:"定价模型重启中",en:"the pricing model reboots"},
+ {zh:"黑天鹅提前起飞",en:"the black swan takes off early"},
+ {zh:"市场集体眨眼",en:"the whole market blinks"}
+];
+// 衍生话题：合并该对手全部梗池，去重后确定性抽取，保证只要池子里有货就能出
+function legEventAlt(R,leg,i,k,ex){const bank=OPP_EVENT[leg.opp];let pool=[];
+  if(bank){pool=(bank._any||[]).slice();for(const rd of ["R32","R16","QF","SF","Final"])if(bank[rd])pool=pool.concat(bank[rd]);}
+  const tags=[],seen={};
+  for(const c of pool){const t=c.tag[LANG];if(!seen[t]&&ex.indexOf(t)<0){seen[t]=1;tags.push(t);}}
+  const tt=TEAM_TAG[leg.opp]?TEAM_TAG[leg.opp][LANG]:null;
+  if(tt&&!seen[tt]&&ex.indexOf(tt)<0){seen[tt]=1;tags.push(tt);}
+  for(const u of UNIV_TAG){const t=u[LANG];if(!seen[t]&&ex.indexOf(t)<0){seen[t]=1;tags.push(t);}}
+  if(!tags.length)return null;
+  return tags[Math.floor(seeded(R.seed+":alt"+i+":"+k)*tags.length)%tags.length];}
+
+function flowRuns(runs,x,y,width,fs,lh,colors,maxLines){
+  const isNarrow=ch=>ch.charCodeAt(0)<0x2E80;
+  const wOf=ch=>isNarrow(ch)?fs*0.55:fs*1.0;
+  const lines=[];let cur=[],cw=0;
+  for(const r of runs){for(const ch of r.t){
+    if(ch==="\n"){lines.push(cur);cur=[];cw=0;continue;}
+    const w=wOf(ch);
+    if(cw+w>width&&ch!==" "){lines.push(cur);cur=[];cw=0;}
+    cur.push([ch,r.c]);cw+=w;
+  }}
+  if(cur.length)lines.push(cur);
+  const use=maxLines?lines.slice(0,maxLines):lines;let out="",yy=y;
+  for(const ln of use){let spans="",buf="",role=null;
+    const flush=()=>{if(buf!==""){spans+=`<tspan fill="${colors[role]||colors.base}">${esc(buf)}</tspan>`;buf="";}};
+    for(const [ch,c] of ln){if(c!==role){flush();role=c;}buf+=ch;}flush();
+    out+=`<text x="${x}" y="${yy.toFixed(1)}" font-family="FWCNormal,sans-serif" font-size="${fs}">${spans}</text>`;yy+=lh;}
+  return {svg:out,endY:yy};
+}
+/* ========================= SVG share card · 横版 · 球队小卡设计语言 ========================= */
+function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
+  if(f>0){r+=(255-r)*f;g+=(255-g)*f;b+=(255-b)*f;}else{r*=1+f;g*=1+f;b*=1+f;}
+  return"#"+[r,g,b].map(x=>Math.round(clamp(x,0,255)).toString(16).padStart(2,"0")).join("");}
+function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function lum(hex){const n=parseInt(hex.slice(1),16);return(0.299*((n>>16)&255)+0.587*((n>>8)&255)+0.114*(n&255))/255;}
+function qrSVG(x,y,sz,seed){let c="";const N=11,u=sz/N;for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+  const corner=(i<3&&j<3)||(i>N-4&&j<3)||(i<3&&j>N-4);
+  const fnd=corner&&!((i>0&&i<2&&j>0&&j<2)||(i>N-3&&i<N-1&&j>0&&j<2)||(i>0&&i<2&&j>N-3&&j<N-1));
+  if(fnd||(!corner&&seeded(seed+":q"+i+"-"+j)>.5)) c+=`<rect x="${(x+j*u).toFixed(1)}" y="${(y+i*u).toFixed(1)}" width="${u.toFixed(1)}" height="${u.toFixed(1)}"/>`;}
+  return`<g fill="#fff" opacity=".92">${c}</g>`;}
+function buildSVG(R,opts){opts=opts||{};const Lz=LANG==="zh";const tm=TEAM[R.champion];
+  const main=tm.main,acc=tm.accent;const W=1400,H=760,PL=500,R_=26;
+  const paper="#f4f1e6",ink="#2b2a26",inkMut="#7a7568",line="rgba(0,0,0,.13)",page="#faf9f6";
+  const stampCol=lum(main)<0.72?main:shade(main,-0.42);
+  const flagHref=FLAGS[tm.code]||"";const enName=tm.en;const nameSize=enName.length<=7?58:enName.length<=10?44:34;
+  const heroNum=pct(R.cardProb);const heroSize=heroNum.length>=5?104:heroNum.length>=4?128:heroNum.length>=3?146:168;const code3=(enName.replace(/[^A-Za-z]/g,"").slice(0,3)).toUpperCase();
+  const serial=code3+"·"+String(Math.floor(seeded((R.seed||R.champion)+":sn")*899999+100000));
+  // 锯齿路径生成
+  const jag=(x1,y1,x2,y2,amp,n,sd)=>{let p=`M${x1.toFixed(1)} ${y1.toFixed(1)}`;const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1;const nx=-dy/len,ny=dx/len;
+    for(let k=1;k<=n;k++){const t=k/n;const off=k===n?0:(seeded(sd+":"+k)*2-1)*amp;const x=x1+dx*t+nx*off,y=y1+dy*t+ny*off;p+=` L${x.toFixed(1)} ${y.toFixed(1)}`;}return p;};
+  // 冲击点爆裂
+  const burst=(ix,iy,c)=>[15,70,120,160].map(a=>{const rad=a*Math.PI/180,r=8;return `<line x1="${(ix-Math.cos(rad)*r).toFixed(1)}" y1="${(iy-Math.sin(rad)*r).toFixed(1)}" x2="${(ix+Math.cos(rad)*r).toFixed(1)}" y2="${(iy+Math.sin(rad)*r).toFixed(1)}" stroke="${c}" stroke-width="1.5" stroke-linecap="round"/>`;}).join("")+`<circle cx="${ix}" cy="${iy}" r="2.2" fill="${c}"/>`;
+
+  /* ---------- 国家特色纹理（motif） ---------- */
+  const MOTIF={Germany:"bars",Paraguay:"rays",France:"hex",Sweden:"nordic","South Africa":"chev",Canada:"maple",Netherlands:"diag",Morocco:"zellige",Portugal:"waves",Croatia:"check",Spain:"rays",Austria:"bars",USA:"stars",Bosnia:"pyramid",Belgium:"diag",Senegal:"stars",Brazil:"waves",Japan:"waves","Ivory Coast":"greca",Norway:"nordic",Mexico:"greca",Ecuador:"greca",England:"cross","DR Congo":"diag",Argentina:"rays","Cape Verde":"stars",Australia:"stars",Egypt:"pyramid",Switzerland:"cross",Algeria:"zellige",Colombia:"greca",Ghana:"stars"};
+  const starP=(cx,cy,r)=>{const p=[];for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*0.45:r;p.push((cx+Math.cos(a)*rr).toFixed(1)+","+(cy+Math.sin(a)*rr).toFixed(1));}return '<polygon fill="C" points="'+p.join(" ")+'"/>';};
+  const motifTile=t=>{switch(t){
+    case"waves":return{w:56,h:28,m:'<g fill="none" stroke="C" stroke-width="1.7">'+[0,28,56].map(x=>`<circle cx="${x}" cy="28" r="26"/><circle cx="${x}" cy="28" r="18"/><circle cx="${x}" cy="28" r="10"/>`).join("")+[14,42].map(x=>`<circle cx="${x}" cy="14" r="26"/><circle cx="${x}" cy="14" r="18"/><circle cx="${x}" cy="14" r="10"/>`).join("")+'</g>'};
+    case"zellige":return{w:52,h:52,m:'<g fill="none" stroke="C" stroke-width="1.6"><rect x="12" y="12" width="28" height="28"/><rect x="12" y="12" width="28" height="28" transform="rotate(45 26 26)"/><circle cx="26" cy="26" r="5"/></g>'};
+    case"greca":return{w:52,h:26,m:'<path d="M0 21 H8 V6 H21 V21 H34 V6 H47 V21 H52" fill="none" stroke="C" stroke-width="2.4"/>'};
+    case"cross":return{w:38,h:38,m:'<g fill="C"><rect x="16" y="5" width="6" height="28"/><rect x="5" y="16" width="28" height="6"/></g>'};
+    case"nordic":return{w:44,h:44,m:'<g stroke="C" stroke-width="5"><line x1="14" y1="0" x2="14" y2="44"/><line x1="0" y1="14" x2="44" y2="14"/></g>'};
+    case"check":return{w:34,h:34,m:'<g fill="C"><rect width="17" height="17"/><rect x="17" y="17" width="17" height="17"/></g>'};
+    case"stars":return{w:46,h:46,m:'<g>'+starP(23,23,9.5)+starP(4,45,4.5)+'</g>'};
+    case"maple":return{w:56,h:56,m:'<polygon fill="C" points="28,8 31,17 41,15 35,25 46,29 33,33 35,46 28,38 21,46 23,33 10,29 21,25 15,15 25,17"/>'};
+    case"hex":return{w:46,h:40,m:'<polygon fill="none" stroke="C" stroke-width="1.8" points="23,3 40,13 40,29 23,39 6,29 6,13"/>'};
+    case"diag":return{w:26,h:26,m:'<line x1="0" y1="26" x2="26" y2="0" stroke="C" stroke-width="6"/>'};
+    case"bars":return{w:28,h:28,m:'<rect width="10" height="28" fill="C"/>'};
+    case"pyramid":return{w:44,h:30,m:'<polygon points="0,30 22,4 44,30" fill="none" stroke="C" stroke-width="2.2"/>'};
+    case"chev":return{w:40,h:26,m:'<polyline points="0,22 20,6 40,22" fill="none" stroke="C" stroke-width="4.5"/>'};
+    default:return null;}};
+  const sunburst=(cx,cy,r0,r1,n,col,op)=>{let sb=`<g stroke="${col}" stroke-width="3.2" opacity="${op}">`;for(let k=0;k<n;k++){const a=k*2*Math.PI/n;sb+=`<line x1="${(cx+Math.cos(a)*r0).toFixed(1)}" y1="${(cy+Math.sin(a)*r0).toFixed(1)}" x2="${(cx+Math.cos(a)*r1).toFixed(1)}" y2="${(cy+Math.sin(a)*r1).toFixed(1)}"/>`;}return sb+`<circle cx="${cx}" cy="${cy}" r="${(r0*0.55).toFixed(1)}" fill="${col}" stroke="none"/></g>`;};
+  const mtype=MOTIF[R.champion]||null;const mt=mtype&&mtype!=="rays"?motifTile(mtype):null;
+  const motifDefs=mt?`<pattern id="mtw" width="${mt.w}" height="${mt.h}" patternUnits="userSpaceOnUse">${mt.m.split('C').join('#ffffff')}</pattern><pattern id="mtm" width="${mt.w}" height="${mt.h}" patternUnits="userSpaceOnUse">${mt.m.split('C').join(main)}</pattern>`:"";
+  const motifStub=mtype==="rays"?sunburst(PL-104,104,26,132,16,"#ffffff",.10):(mt?`<rect x="0" y="236" width="${PL}" height="${H-236}" fill="url(#mtw)" opacity=".08"/>`:"");
+  const motifPaper=mtype==="rays"?sunburst(W-128,H-198,20,104,14,main,.06):(mt?`<rect x="${W-440}" y="${H-340}" width="440" height="340" fill="url(#mtm)" opacity=".05"/>`:"");
+
+  /* ---------- 左：票根 stub（球队主色） ---------- */
+  const facets=`<rect x="0" y="0" width="${PL}" height="${H}" fill="${main}"/>
+    <polygon points="0,0 300,0 0,380" fill="${shade(main,.12)}"/>
+    <polygon points="0,${H} 0,${H-260} 240,${H}" fill="${shade(main,-.10)}"/>
+    <polygon points="${PL},0 ${PL},220 ${PL-170},0" fill="${shade(main,.08)}"/>
+    <polygon points="${PL},${H} ${PL},${H-190} ${PL-130},${H}" fill="${shade(main,-.07)}"/>
+    <g opacity=".5">${[0,1,2,3,4,5].map(i=>`<line x1="${-60+i*88}" y1="${H}" x2="${140+i*88}" y2="0" stroke="rgba(255,255,255,.06)" stroke-width="1"/>`).join("")}</g>
+    <polygon points="${PL*0.18},0 ${PL*0.46},0 ${PL*0.08},${H} ${-PL*0.22},${H}" fill="#fff" opacity=".055"/>
+    <polygon points="${PL-46},0 ${PL-16},0 ${PL-92},${H} ${PL-122},${H}" fill="${acc}" opacity=".14"/>
+    <polygon points="0,148 66,148 0,214" fill="${acc}" opacity=".55"/>`;
+  let guill="";for(let g=18;g<=182;g+=15)guill+=`<circle cx="152" cy="318" r="${g}" fill="none" stroke="rgba(255,255,255,.05)" stroke-width="1"/>`;
+  const codeWM=`<text x="30" y="${H-54}" font-family="FWCNBlack" font-size="132" fill="rgba(255,255,255,.06)" letter-spacing="4">${esc(code3)}</text>`;
+  const barW=Math.min(PL-160,Math.max(120,heroNum.length*heroSize*0.5));
+  /* ---------- 稀有度分层（盲盒档位） ---------- */
+  const TIER=R.eliminated?{k:"hidden",zh:"隐藏款",en:"HIDDEN"}
+    :(R.cardProb<0.7?{k:"legend",zh:"传说款",en:"LEGENDARY"}
+    :R.cardProb<1.0?{k:"epic",zh:"史诗款",en:"EPIC"}
+    :R.cardProb<2.8?{k:"rare",zh:"稀有款",en:"RARE"}:{k:"base",zh:"共识款",en:"STANDARD"});
+  const goldDef=`<linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e27a"/><stop offset=".5" stop-color="#d4af37"/><stop offset="1" stop-color="#9a7b23"/></linearGradient>`;
+  const isGold=TIER.k==="legend"||TIER.k==="hidden";
+  const frameStroke=isGold?'url(#gold)':(TIER.k==="epic"?acc:(TIER.k==="rare"?main:'rgba(0,0,0,.16)'));
+  const frameW=isGold?3.2:(TIER.k==="epic"?2.4:(TIER.k==="rare"?2:1.2));
+  const barFill=isGold?'url(#gold)':acc;
+  const tierRibbon=TIER.k==="base"?"":`<g transform="rotate(35 ${PL-58} 54)">
+    <rect x="${PL-128}" y="42" width="150" height="24" fill="${isGold?'url(#gold)':acc}"/>
+    <text x="${PL-53}" y="59" text-anchor="middle" font-family="FWCBlack" font-size="12.5" letter-spacing="1.5" fill="${isGold?'#3a2c07':'#0e0e2a'}">${esc(TIER[LANG]||TIER.en)}</text></g>`;
+  /* ---------- 宇宙生命线（现实存活状态） ---------- */
+  const deathIdx=R.eliminated?ROUNDS.findIndex(r=>r.id===R.realExit.round):-1;
+  const lifeY=H-142;
+  const lifeNodes=[0,1,2,3,4].map(i=>{const nx=52+i*46;
+    if(i<R.survived)return `<circle cx="${nx}" cy="${lifeY}" r="8" fill="${barFill}"/><path d="M ${nx-3.6} ${lifeY} l 2.6 3 l 5 -6" stroke="#0e0e2a" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+    if(i===deathIdx)return `<circle cx="${nx}" cy="${lifeY}" r="8" fill="none" stroke="#ffb3ab" stroke-width="2"/><path d="M ${nx-3.4} ${lifeY-3.4} l 6.8 6.8 M ${nx+3.4} ${lifeY-3.4} l -6.8 6.8" stroke="#ffb3ab" stroke-width="2" stroke-linecap="round"/>`;
+    return `<circle cx="${nx}" cy="${lifeY}" r="8" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="1.6"/>`;}).join("");
+  const lifeStatus=R.eliminated
+    ?(Lz?`宇宙已终结 @ ${ROUNDS.find(r=>r.id===R.realExit.round).zh}`:`UNIVERSE ENDED @ ${ROUNDS.find(r=>r.id===R.realExit.round).en}`)
+    :(Lz?`宇宙存活中 · 已应验 ${R.survived}/5`:`UNIVERSE ALIVE · ${R.survived}/5 VERIFIED`);
+  const lifeline=`<line x1="52" y1="${lifeY}" x2="${52+4*46}" y2="${lifeY}" stroke="rgba(255,255,255,.3)" stroke-width="1.4"/>${lifeNodes}
+    <text x="44" y="${lifeY+27}" font-family="FWCCond,sans-serif" font-size="12.5" letter-spacing="1.5" fill="${R.eliminated?'#ffb3ab':'rgba(255,255,255,.85)'}">${esc(lifeStatus)}</text>`;
+  const stub=`
+    <text x="44" y="42" font-family="FWCCond,sans-serif" font-size="11" letter-spacing="2.5" fill="rgba(255,255,255,.62)">${esc(Lz?'冠军通行球票 · ADMIT ONE':'CHAMPION PASS · ADMIT ONE')}</text>
+    ${flagHref?`<image href="${flagHref}" x="44" y="58" width="64" height="42" preserveAspectRatio="xMidYMid slice" clip-path="url(#fl)"/>`:""}
+    <rect x="44" y="58" width="64" height="42" rx="4" fill="none" stroke="rgba(255,255,255,.5)"/>
+    <text x="44" y="${enName.length>10?166:170}" font-family="FWCBlack" font-size="${nameSize}" fill="#fff">${esc(enName)}</text>
+    <text x="46" y="200" font-family="FWCCond,sans-serif" font-size="15.5" fill="rgba(255,255,255,.8)">${Lz?esc(tm.zh)+' · ':''}${esc(R.pnm[LANG])}</text>
+    <text x="46" y="250" font-family="FWCCond,sans-serif" font-size="13" letter-spacing="3" fill="rgba(255,255,255,.5)">${esc(Lz?'宇宙稀有度 · 盲盒级别':'UNIVERSE RARITY')} <tspan fill="${isGold?'#f2d367':'#ffffff'}" font-family="FWCBlack" letter-spacing="1">· ${esc(TIER[LANG]||TIER.en)}</tspan></text>
+    <text x="50" y="382" font-family="FWCNBlack" font-size="${heroSize}" fill="${acc}">${heroNum}</text>
+    <text x="44" y="374" font-family="FWCNBlack" font-size="${heroSize}" fill="#fff">${heroNum}</text>
+    <rect x="46" y="398" width="${barW.toFixed(0)}" height="10" fill="${barFill}"/>
+    <text x="46" y="450" font-family="FWCNBlack" font-size="44" fill="#fff">${R.ridic}<tspan font-family="FWCCond,sans-serif" font-size="13" dx="5" fill="rgba(255,255,255,.6)">${esc(Lz?'离谱指数':'ABSURD')}</tspan></text>
+    <text x="46" y="496" font-family="FWCNBlack" font-size="44" fill="#fff">${R.defied}<tspan font-family="FWCCond,sans-serif" font-size="13" dx="5" fill="rgba(255,255,255,.6)">${esc(Lz?'市场连错(次)':'MISREADS')}</tspan></text>
+    <rect x="46" y="528" width="6" height="52" rx="2" fill="${acc}"/>
+    <text x="64" y="552" font-family="FWCBlack" font-size="20" fill="#fff">${esc(Lz?'只有':'Only')} <tspan fill="${acc}" font-size="25">${heroNum}</tspan><tspan font-family="FWCCond,sans-serif" font-size="16" fill="rgba(255,255,255,.85)">${esc(Lz?(' 的'+RARITY[R.rarity].zh):(' of '+RARITY[R.rarity].en))}</tspan></text>
+    <text x="64" y="577" font-family="FWCBlack" font-size="20" fill="#fff">${esc(Lz?'和你进入同一个平行宇宙':'share your universe')}</text>
+    <text x="44" y="${H-46}" font-family="FWCNormal,sans-serif" font-size="11" letter-spacing="1" fill="rgba(255,255,255,.55)">№ ${esc(serial)} · ${esc(Lz?"定价快照 ":"SNAP ")}${esc(R.updated)}</text>
+    <text x="44" y="${H-28}" font-family="FWCLight,sans-serif" font-size="11.5" fill="rgba(255,255,255,.72)">pm-watcher · ${Lz?'校准而非预测':'calibration, not prediction'}</text>${tierRibbon}${lifeline}`;
+
+  /* ---------- 右：判决书 paper ---------- */
+  const MX=PL+26,MXR=W-40,y0=112,modH=116;
+  const mods=R.path.map((leg,i)=>{const e=legEvent(R,leg,i);const opp=nameOf(leg.opp);const oc=(TEAM[leg.opp]||{}).code;
+    const rd=ROUNDS.find(r=>r.id===leg.round)[LANG];const y=y0+i*modH;const price=pct(leg.oppProb);
+    const rmap={R32:"R32",R16:"R16",QF:"QF",SF:"SF",Final:"FINAL"};const rdS=Lz?rd:(rmap[leg.round]||rd);
+    // 轮次大数字水印
+    const roundWM=`<text x="${MXR-6}" y="${y+98}" text-anchor="end" font-family="FWCNBlack" font-size="88" fill="${main}" opacity=".055">${i+1}</text>`;
+    // 平行宇宙比分章
+    const scR=seeded(R.seed+":sc"+i);let sa=1+Math.floor(seeded(R.seed+":sa"+i)*3),sb2=Math.max(0,sa-1-Math.floor(seeded(R.seed+":sb"+i)*2));
+    let scTxt;if(scR<0.15){const d=Math.floor(seeded(R.seed+":sd"+i)*3);scTxt=(Lz?"点球 ":"PENS ")+(4+d)+"–"+(3+d);}
+    else if(scR<0.33){scTxt=(Lz?"加时 ":"AET ")+(sa+1)+"–"+sa;}else scTxt=sa+"–"+sb2;
+    const chw=scTxt.length*(Lz?11:8.5)+24;
+    const chip=`<g><rect x="${MX+352}" y="${y+2}" width="${chw.toFixed(0)}" height="24" rx="12" fill="none" stroke="${stampCol}" stroke-width="1.6" opacity=".85"/>
+      <text x="${(MX+352+chw/2).toFixed(1)}" y="${y+19}" text-anchor="middle" font-family="FWCBlack" font-size="13" fill="${stampCol}">${esc(scTxt)}</text></g>`;
+    // 已应验章：现实里已真实赢下的关
+    const vw=Lz?86:96;
+    const verified=i<R.survived?`<g><rect x="${(MX+352+chw+10).toFixed(0)}" y="${y+2}" width="${vw}" height="24" rx="12" fill="${main}"/>
+      <text x="${(MX+352+chw+10+vw/2).toFixed(1)}" y="${y+19}" text-anchor="middle" font-family="FWCBlack" font-size="12" fill="#fff">✓ ${esc(Lz?'已应验':'VERIFIED')}</text></g>`:"";
+    // 封条
+    const seal=`<g transform="rotate(-3.5 ${MX+40} ${y+15})">
+      <polygon points="${MX},${y+2} ${MX+84},${y+2} ${MX+94},${y+15} ${MX+84},${y+28} ${MX},${y+28} ${MX+9},${y+15}" fill="${main}"/>
+      <text x="${MX+46}" y="${y+20}" text-anchor="middle" font-family="FWCCond,sans-serif" font-size="13.5" letter-spacing=".6" fill="#fff">${esc(rdS)}</text></g>`;
+    // 对手
+    const oppLine=`${oc&&FLAGS[oc]?`<image href="${FLAGS[oc]}" x="${MX+108}" y="${y+3}" width="34" height="22" clip-path="url(#of${i})"/>`:''}
+      <text x="${MX+152}" y="${y+22}" font-family="FWCBlack" font-size="20" fill="${ink}">${esc(opp)}</text>`;
+    // 市场原价（右侧价格区）
+    const plab=(Lz?'市场定价 ':'MKT ')+price;const pw=(Lz?106:80);
+    const pr=`<text x="${MXR}" y="${y+19}" text-anchor="end" font-family="FWCNormal,sans-serif" font-size="13" fill="${inkMut}">${esc(plab)}</text>
+      <line x1="${MXR-pw}" y1="${y+15}" x2="${MXR+2}" y2="${y+15}" stroke="${main}" stroke-width="1.8"/>
+      <g transform="rotate(-9 ${MXR-30} ${y+37})"><text x="${MXR+2}" y="${y+38}" text-anchor="end" font-family="FWCBlack" font-size="12.5" fill="${main}">${esc(leg.defied?(Lz?'▶ 市场误判':'▶ MISPRICED'):(Lz?'▶ 定价击穿':'▶ BROKEN'))}</text></g>`;
+    // 判决章：文字宽度用 textLength 锁死安全右界（杜绝溢出）+ 粗描边 + 底色 + 重影
+    const priceColW=Lz?116:150;const textLeft=MX+16;const safeR=MXR-priceColW-16;const tlenMax=safeR-textLeft;
+    const baseF=Lz?22:18.5;const emFr=Lz?1.0:0.62;const rawW=Math.max(1,e.tag.length*emFr*baseF);
+    const tlen=Math.min(rawW,tlenMax);const tagFont=Math.max(13,baseF*Math.min(1,tlenMax/rawW));const sw=tlen+28;
+    const rot=i%2?1.2:-1.4;
+    const stamp=`<g transform="rotate(${rot} ${MX+10} ${y+57})">
+      <rect x="${MX}" y="${y+38}" width="${sw.toFixed(0)}" height="38" rx="6" fill="${main}" opacity=".06"/>
+      <rect x="${MX}" y="${y+38}" width="${sw.toFixed(0)}" height="38" rx="6" fill="none" stroke="${stampCol}" stroke-width="3.2"/>
+      <rect x="${MX+5}" y="${y+43}" width="${(sw-10).toFixed(0)}" height="28" rx="3.5" fill="none" stroke="${stampCol}" stroke-width="1" opacity=".5"/>
+      <text x="${(textLeft+2.5).toFixed(1)}" y="${y+67}" font-family="FWCBlack" font-size="${tagFont.toFixed(1)}" textLength="${tlen.toFixed(0)}" lengthAdjust="spacingAndGlyphs" letter-spacing=".2" fill="${stampCol}" opacity=".26">${esc(e.tag)}</text>
+      <text x="${textLeft}" y="${y+65.5}" font-family="FWCBlack" font-size="${tagFont.toFixed(1)}" textLength="${tlen.toFixed(0)}" lengthAdjust="spacingAndGlyphs" letter-spacing=".2" fill="${stampCol}">${esc(e.tag)}</text></g>`;
+    // 解释（单行截断）
+    const maxC=Lz?58:116;const exp1=e.exp.length>maxC?e.exp.slice(0,maxC-1)+"…":e.exp;
+    const exp=`<text x="${MX+2}" y="${y+92}" font-family="FWCNormal,sans-serif" font-size="12.5" fill="${inkMut}">${esc(exp1)}</text>`;
+    // 衍生话题（同库再取 2 条不重复梗）
+    const a1=legEventAlt(R,leg,i,1,[e.tag]);const a2=legEventAlt(R,leg,i,4,[e.tag,a1||""]);
+    let altRow="";const alts=[a1,a2].filter(Boolean).map(t=>"#"+t);
+    if(alts.length){let joined=alts.join("   ");const amx=Lz?44:94;if(joined.length>amx)joined=joined.slice(0,amx-1)+"…";
+      altRow=`<text x="${MX+2}" y="${y+110}" font-family="FWCCond,sans-serif" font-size="12" fill="${stampCol}" opacity=".8">${esc((Lz?'衍生话题  ':'MORE  ')+joined)}</text>`;}
+    // 断裂线 + 冲击点
+    let sep="";if(i<4){const sy=y+modH-1;const ix=MX+(MXR-MX)*(0.28+seeded(R.seed+":ix"+i)*0.4);
+      sep=`<path d="${jag(MX,sy,MXR,sy,4,13,R.seed+':sep'+i)}" fill="none" stroke="rgba(0,0,0,.20)" stroke-width="1.2"/>${burst(ix,sy,main)}`;}
+    return roundWM+seal+oppLine+chip+verified+pr+stamp+exp+altRow+sep;}).join("");
+  const paperHead=`<text x="${MX}" y="68" font-family="FWCCond,sans-serif" font-size="16" letter-spacing="2.5" fill="${ink}">${esc(Lz?'夺冠路线 · 五道判决':'THE ROUTE · FIVE VERDICTS')}</text>
+    <text x="${MXR}" y="68" text-anchor="end" font-family="FWCNormal,sans-serif" font-size="11.5" letter-spacing="1.5" fill="${inkMut}">${esc(Lz?'平行宇宙判决书':'PARALLEL-UNIVERSE VERDICTS')}</text>
+    <path d="${jag(MX,84,MXR,84,3,20,R.seed+':hl')}" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="1.4"/>`;
+
+  /* ---------- 右上角结果戳 ---------- */
+  let badge;
+  if(R.eliminated){const x=R.realExit;const rd=ROUNDS.find(r=>r.id===x.round)[LANG];
+    badge=`<g transform="rotate(-8 ${MXR-90} 96)"><rect x="${MXR-186}" y="76" width="186" height="42" rx="4" fill="none" stroke="${main}" stroke-width="2.6"/>
+      <text x="${MXR-93}" y="94" text-anchor="middle" font-family="FWCCond,sans-serif" font-size="10" letter-spacing="1.5" fill="${main}">${esc(Lz?'现实赛果 · 已止步':'REALITY · OUT')}</text>
+      <text x="${MXR-93}" y="111" text-anchor="middle" font-family="FWCBlack" font-size="15" fill="${main}">${esc(rd+' · '+x.sc)}</text></g>`;
+  } else badge="";
+
+  /* ---------- 模切边：三角齿 + 周期半圆咬口（参考票样） ---------- */
+  const sawtooth=(w,h,tw,td,cr)=>{const run=l=>{const n=Math.max(2,Math.round(l/tw));return{n,s:l/n};};const semi=i=>i%5===4;
+    let d=`M ${cr} 0`,e=run(w-2*cr);
+    for(let i=0;i<e.n;i++){const x=cr+i*e.s,r=(e.s/2).toFixed(1);d+=semi(i)?` A ${r} ${r} 0 0 0 ${(x+e.s).toFixed(1)} 0`:` L ${(x+e.s/2).toFixed(1)} ${td} L ${(x+e.s).toFixed(1)} 0`;}
+    d+=` L ${w-cr} 0 Q ${w} 0 ${w} ${cr}`;e=run(h-2*cr);
+    for(let i=0;i<e.n;i++){const y=cr+i*e.s,r=(e.s/2).toFixed(1);d+=semi(i)?` A ${r} ${r} 0 0 0 ${w} ${(y+e.s).toFixed(1)}`:` L ${w-td} ${(y+e.s/2).toFixed(1)} L ${w} ${(y+e.s).toFixed(1)}`;}
+    d+=` L ${w} ${h-cr} Q ${w} ${h} ${w-cr} ${h}`;e=run(w-2*cr);
+    for(let i=0;i<e.n;i++){const x=w-cr-i*e.s,r=(e.s/2).toFixed(1);d+=semi(i)?` A ${r} ${r} 0 0 0 ${(x-e.s).toFixed(1)} ${h}`:` L ${(x-e.s/2).toFixed(1)} ${h-td} L ${(x-e.s).toFixed(1)} ${h}`;}
+    d+=` L ${cr} ${h} Q 0 ${h} 0 ${h-cr}`;e=run(h-2*cr);
+    for(let i=0;i<e.n;i++){const y=h-cr-i*e.s,r=(e.s/2).toFixed(1);d+=semi(i)?` A ${r} ${r} 0 0 0 0 ${(y-e.s).toFixed(1)}`:` L ${td} ${(y-e.s/2).toFixed(1)} L 0 ${(y-e.s).toFixed(1)}`;}
+    d+=` L 0 ${cr} Q 0 0 ${cr} 0 Z`;return d;};
+  const scD=sawtooth(W,H,40,20,22);
+  /* 撕票分割：上下大半圆缺口 + 冲孔虚线（evenodd 几何打穿，浏览器/导出通吃） */
+  const NR=17;const perf=[];for(let py=NR+26;py<=H-NR-26;py+=17)perf.push(py);
+  const hole=(cx,cy,r)=>` M ${(cx-r).toFixed(1)} ${cy} a ${r} ${r} 0 1 0 ${(2*r).toFixed(1)} 0 a ${r} ${r} 0 1 0 ${(-2*r).toFixed(1)} 0`;
+  const punched=scD+hole(PL,0,NR)+hole(PL,H,NR)+perf.map(py=>hole(PL,py,2.7)).join("");
+  /* 票根条码（贴近撕线，白色码条 + 竖排序列号） */
+  let bars="",by=74;let bi=0;while(by<H-96){const t=2+seeded(R.seed+":bar"+bi)*5.5,g=2.5+seeded(R.seed+":gap"+bi)*4;bars+=`<rect x="${PL-66}" y="${by.toFixed(1)}" width="26" height="${t.toFixed(1)}" fill="#fff" opacity=".82"/>`;by+=t+g;bi++;}
+  const barcode=`${bars}<text x="${PL-16}" y="${H-96}" font-family="FWCCond,sans-serif" font-size="10.5" letter-spacing="2" fill="rgba(255,255,255,.65)" transform="rotate(-90 ${PL-16} ${H-96})">${esc(serial)}</text>`;
+  /* 纸面网点 + 加速箭头 */
+  let halftone="";for(let hr=0;hr<3;hr++)for(let hc=0;hc<14;hc++){const hx=MX+hc*15+(hr%2)*7,hy=28+hr*13;halftone+=`<circle cx="${hx}" cy="${hy}" r="${(3.4-hr*0.8).toFixed(1)}" fill="${main}" opacity=".09"/>`;}
+  const chevrons=[0,1,2].map(k=>`<polygon points="${MXR-64+k*22},26 ${MXR-50+k*22},34 ${MXR-64+k*22},42" fill="${acc}" opacity="${.9-k*.25}"/>`).join("");
+  const qr=opts.exp?qrSVG(MXR-46,H-70,46,R.seed):"";
+  const nick=opts.nick?`<text x="${MX}" y="${H-26}" font-family="FWCCond,sans-serif" font-size="12" fill="${inkMut}">${esc(opts.nick+' · '+L('explore',opts.explored).replace(/<[^>]+>/g,''))}</text>`:"";
+
+  return `<svg viewBox="-6 -6 ${W+12} ${H+12}" xmlns="http://www.w3.org/2000/svg">
+   <defs>__RT_DEFS__${goldDef}${motifDefs}<clipPath id="cc"><path clip-rule="evenodd" d="${punched}"/></clipPath><clipPath id="ccp"><path d="${scD}"/></clipPath><clipPath id="fl"><rect x="44" y="58" width="64" height="42" rx="4"/></clipPath>
+    <pattern id="grain" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(8)"><circle cx="1" cy="1.5" r="0.5" fill="#000" opacity=".055"/><circle cx="4.5" cy="3" r="0.45" fill="#000" opacity=".045"/><circle cx="2.5" cy="5.5" r="0.4" fill="#000" opacity=".05"/><circle cx="6" cy="6" r="0.4" fill="#fff" opacity=".05"/></pattern>
+    ${R.path.map((l,i)=>`<clipPath id="of${i}"><rect x="${MX+108}" y="${y0+i*modH+3}" width="34" height="22" rx="2"/></clipPath>`).join("")}
+    <clipPath id="stubc"><rect x="0" y="0" width="${PL}" height="${H}"/></clipPath></defs>
+   <g clip-path="url(#cc)">
+     <rect width="${W}" height="${H}" fill="${paper}"/>
+     <g>
+       <polygon points="${W},0 ${W},${(H*0.58).toFixed(0)} ${PL+150},${H}" fill="${main}" opacity=".03"/>
+       <polygon points="${W},0 ${W},${(H*0.32).toFixed(0)} ${W-300},0" fill="${main}" opacity=".04"/>
+       <polygon points="${PL+30},${H} ${PL+220},${H} ${PL+30},${H-200}" fill="${main}" opacity=".025"/>
+       <polygon points="${W},${(H*0.42).toFixed(0)} ${W},${(H*0.66).toFixed(0)} ${W-190},${(H*0.54).toFixed(0)}" fill="${acc}" opacity=".05"/>
+       <g opacity=".05">${[0,1,2,3,4,5,6,7].map(i=>`<line x1="${PL+50+i*140}" y1="0" x2="${PL-80+i*140}" y2="${H}" stroke="${main}" stroke-width="1"/>`).join("")}</g>
+       <g opacity=".05" fill="none" stroke="${main}" stroke-width="1">${[0,1,2,3,4].map(i=>`<circle cx="${W-80}" cy="120" r="${20+i*16}"/>`).join("")}</g>
+       <polygon points="${W},${H} ${W-160},${H} ${W},${H-160}" fill="${acc}" opacity=".11"/>
+       <text x="${W-22}" y="${H-22}" text-anchor="end" font-family="FWCNBlack" font-size="158" fill="${main}" opacity=".055">26</text>
+       ${motifPaper}
+     </g>
+     <g clip-path="url(#stubc)">${facets}${motifStub}<g>${guill}</g>${codeWM}${stub}${barcode}</g>
+     <rect width="${W}" height="${H}" fill="url(#grain)"/>
+     ${halftone}${chevrons}
+     ${paperHead}${mods}${badge}
+     ${qr}${nick}
+   </g>
+   <path d="${scD}" fill="none" stroke="${frameStroke}" stroke-width="${frameW}"/>
+   <g clip-path="url(#ccp)"><circle cx="${PL}" cy="0" r="${NR}" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1.2"/><circle cx="${PL}" cy="${H}" r="${NR}" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1.2"/></g>
+  </svg>`;}
+function wrapText(s,n){const out=[];let cur="";for(const ch of s){cur+=ch;if(cur.length>=n){out.push(cur);cur="";}}if(cur)out.push(cur);return out;}
+
+const ASSET_MODE="external";
+let __fontCss=null,__flagB64={};
+function __b64buf(buf){let r="";const a=new Uint8Array(buf);for(let i=0;i<a.length;i+=8192)r+=String.fromCharCode.apply(null,a.subarray(i,i+8192));return btoa(r);}
+async function embedForExport(svg){
+  if(ASSET_MODE!=="external")return svg;
+  if(!__fontCss){const specs=[["FWCBlack","fonts-subset/FWC2026-Black.woff2"],["FWCNBlack","fonts-subset/FWC2026-NormalBlack.woff2"],["FWCNormal","fonts-subset/FWC2026-Normal.woff2"],["FWCCond","fonts-subset/FWC2026-UltraCond.woff2"],["FWCLight","fonts-subset/FWC2026-CondLight.woff2"]];
+    let css="";for(const p of specs){try{const b=await fetch(p[1]).then(r=>r.arrayBuffer());css+="@font-face{font-family:'"+p[0]+"';src:url(data:font/woff2;base64,"+__b64buf(b)+") format('woff2');}";}catch(e){}}
+    __fontCss=css;}
+  svg=svg.split("__RT_DEFS__").join("<style>"+__fontCss+"</style>");
+  const used=[...new Set([...svg.matchAll(/href="(flags\/[a-z-]+\.svg)"/g)].map(m=>m[1]))];
+  for(const u of used){if(!__flagB64[u]){try{const b=await fetch(u).then(r=>r.arrayBuffer());__flagB64[u]="data:image/svg+xml;base64,"+__b64buf(b);}catch(e){__flagB64[u]=u;}}
+    svg=svg.split('href="'+u+'"').join('href="'+__flagB64[u]+'"');}
+  return svg;}
+/* ========================= STATE + UI ========================= */
+const $=s=>document.querySelector(s);
+const reduced=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const STATE={stage:"pick",champion:null,current:null,explored:0,nonce:0,nick:"",minted:false};
+
+function applyStatic(){
+  document.documentElement.lang=LANG;
+  document.querySelectorAll("[data-i]").forEach(e=>e.textContent=L(e.dataset.i));
+  $("#ctaline").textContent=L("cta");
+  renderStep();
+  if(STATE.stage==="pick")renderPick();else renderResult();
+}
+function renderStep(){
+  const cur=STATE.stage==="pick"?1:(STATE.minted?3:2);
+  $("#stepnav").innerHTML=[["step1",1],["step2",2],["step3",3]].map(([k,n],idx)=>
+    `<span class="s ${n===cur?'on':''}"><b>${n}</b>${L(k)}</span>${idx<2?'<span class="arr">›</span>':''}`).join("");
+}
+function flagImg(code,cls){return `<img class="${cls}" src="${FLAGS[code]||''}" alt="">`;}
+function renderPick(){
+  const champ=STATE.champion;
+  const leafTeams=[]; ["L","R"].forEach(s=>BRACKET[s].forEach(t=>leafTeams.push(t[0],t[1])));
+  const champIdx=champ?leafTeams.indexOf(champ):-1;
+  const CX=380,CY=380,RAD=[280,220,166,116,76,0];
+  const ang=i=>(-90+(i+0.5)*(360/32))*Math.PI/180;
+  const levels=[]; levels[0]=leafTeams.map((tm,i)=>{const a=ang(i);return{a,x:CX+Math.cos(a)*RAD[0],y:CY+Math.sin(a)*RAD[0]};});
+  for(let l=1;l<=4;l++){const p=levels[l-1],arr=[];for(let j=0;j<p.length/2;j++){const a=(p[2*j].a+p[2*j+1].a)/2;arr.push({a,x:CX+Math.cos(a)*RAD[l],y:CY+Math.sin(a)*RAD[l]});}levels[l]=arr;}
+  const onPath=(l,j)=>champIdx>=0&&(champIdx>>l)===j;
+  const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+  // grid: concentric rings + 32 spokes
+  let grid="";RAD.slice(0,5).forEach(r=>grid+=`<circle cx="${CX}" cy="${CY}" r="${r}" fill="none" stroke="rgba(140,170,255,.09)" stroke-width="1"/>`);
+  levels[0].forEach(nd=>grid+=`<line x1="${CX}" y1="${CY}" x2="${nd.x.toFixed(1)}" y2="${nd.y.toFixed(1)}" stroke="rgba(140,170,255,.05)" stroke-width="1"/>`);
+  // edges (base, faint neon) with ids for hover-preview; lit edges animated
+  let edges="",litEdges="";
+  for(let l=0;l<=4;l++){levels[l].forEach((nd,j)=>{const par=l<4?levels[l+1][j>>1]:{x:CX,y:CY};
+    const seg=`x1="${nd.x.toFixed(1)}" y1="${nd.y.toFixed(1)}" x2="${par.x.toFixed(1)}" y2="${par.y.toFixed(1)}"`;
+    if(onPath(l,j)){const len=dist(nd,par).toFixed(0);
+      litEdges+=`<line ${seg} class="litedge" style="--len:${len};animation-delay:${l*0.11}s"/>`;}
+    else edges+=`<line id="e${l}_${j}" class="baseedge" ${seg}/>`;});}
+  // internal nodes
+  let dots="";for(let l=1;l<=4;l++)levels[l].forEach((nd,j)=>{const lit=onPath(l,j);
+    dots+=`<circle cx="${nd.x.toFixed(1)}" cy="${nd.y.toFixed(1)}" r="${lit?4.5:2.6}" fill="${lit?'#a9b4ff':'rgba(150,175,255,.3)'}" ${lit?'filter="url(#glw)"':''}/>`;});
+  // leaves
+  let clips="",leaves="";
+  levels[0].forEach((nd,i)=>{const en=leafTeams[i];const tm=TEAM[en];const elim=ELIM.has(en);const sel=champ===en;
+    const r=sel?28:22;clips+=`<clipPath id="lf${i}"><circle cx="${nd.x.toFixed(1)}" cy="${nd.y.toFixed(1)}" r="${r-3}"/></clipPath>`;
+    const ring=sel?'#8b7bff':elim?'rgba(255,120,90,.6)':'rgba(180,200,255,.35)';
+    // 队名标签：沿半径外侧，按左右半区对齐
+    const out=RAD[0]+r+7;const lx=CX+Math.cos(nd.a)*out,ly=CY+Math.sin(nd.a)*out;
+    const anchor=Math.cos(nd.a)<-0.15?'end':Math.cos(nd.a)>0.15?'start':'middle';
+    const nm=nameOf(en);const nmSize=LANG==='zh'?11.5:(nm.length>9?8.5:10);
+    const label=`<text x="${lx.toFixed(1)}" y="${(ly+3.5).toFixed(1)}" text-anchor="${anchor}" font-family="FWCCond,-apple-system,sans-serif" font-size="${nmSize}" fill="${sel?'#c9d1ff':elim?'rgba(255,150,130,.85)':'rgba(200,212,255,.78)'}" font-weight="${sel?700:400}">${esc(nm)}</text>`;
+    leaves+=`<g class="lf ${elim?'elim':''} ${sel?'sel':''}" data-team="${en}" data-idx="${i}" style="cursor:pointer">
+      ${sel?`<circle class="halo" cx="${nd.x}" cy="${nd.y}" r="${r+7}" fill="none" stroke="#8b7bff" stroke-width="2" filter="url(#glw)"/>`:''}
+      <circle class="lfbg" cx="${nd.x}" cy="${nd.y}" r="${r}" fill="#0d1230" stroke="${ring}" stroke-width="${sel?3:1.5}" ${sel?'filter="url(#glw)"':''}/>
+      <image href="${FLAGS[tm.code]||''}" x="${(nd.x-(r-3)).toFixed(1)}" y="${(nd.y-(r-3)).toFixed(1)}" width="${(r-3)*2}" height="${(r-3)*2}" preserveAspectRatio="xMidYMid slice" clip-path="url(#lf${i})" opacity="${elim&&!sel?.45:1}"/>
+      ${elim?`<line x1="${(nd.x-r+4).toFixed(1)}" y1="${nd.y}" x2="${(nd.x+r-4).toFixed(1)}" y2="${nd.y}" stroke="rgba(255,120,90,.9)" stroke-width="2"/>`:''}
+      ${label}
+    </g>`;});
+  const cTm=champ?TEAM[champ]:null;
+  const center=cTm?`<circle cx="${CX}" cy="${CY}" r="36" fill="#0d1230" stroke="#8b7bff" stroke-width="3" filter="url(#glw)"/>
+      <clipPath id="ctr"><circle cx="${CX}" cy="${CY}" r="31"/></clipPath>
+      <image href="${FLAGS[cTm.code]||''}" x="${CX-31}" y="${CY-31}" width="62" height="62" preserveAspectRatio="xMidYMid slice" clip-path="url(#ctr)"/>`
+    :`<circle class="pulse" cx="${CX}" cy="${CY}" r="42" fill="url(#tg)" stroke="rgba(139,123,255,.6)" stroke-width="1.5" filter="url(#glw)"/>
+      <text x="${CX}" y="${CY+12}" text-anchor="middle" font-size="36">🏆</text>`;
+  const cap=champ?`<div class="pickcap"><b>${nameOf(champ)}</b> ${ELIM.has(champ)?('· '+(LANG==='zh'?'现实已止步，仍可推演':'out — still runnable')):'· '+(LANG==='zh'?'已锁定奖杯，路径点亮':'locked in — path lit')}</div>`
+    :`<div class="pickcap">${LANG==='zh'?'点选或拖拽任意球队送上奖杯 · 路径将自动点亮':'tap or drag any team to the trophy · its path lights up'}</div>`;
+  $("#stage").innerHTML=`
+    <div class="radialwrap">
+      <svg id="radial" viewBox="0 0 760 760" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="tg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,210,90,.45)"/><stop offset="100%" stop-color="rgba(139,123,255,.05)"/></radialGradient>
+          <radialGradient id="bgg" cx="50%" cy="50%" r="65%"><stop offset="0%" stop-color="#141a3e"/><stop offset="100%" stop-color="#0a0e24"/></radialGradient>
+          <filter id="glw" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+          ${clips}
+        </defs>
+        <rect x="8" y="8" width="744" height="744" rx="28" fill="url(#bgg)"/>
+        <g class="spin"><circle cx="${CX}" cy="${CY}" r="${RAD[0]+15}" fill="none" stroke="rgba(139,123,255,.25)" stroke-width="1.5" stroke-dasharray="2 14" stroke-linecap="round"/></g>
+        <g>${grid}</g>
+        <g>${edges}</g><g filter="url(#glw)">${litEdges}</g><g>${dots}</g>
+        <line id="dragline" class="dragline" x1="0" y1="0" x2="0" y2="0" stroke="#8b7bff" stroke-width="3" stroke-dasharray="6 7" stroke-linecap="round" opacity="0" filter="url(#glw)"/>
+        ${center}<g id="leaves">${leaves}</g>
+      </svg>
+      ${cap}
+    </div>
+    <div class="runbar"><button class="btn btn-pu" id="run" ${champ?'':'disabled'}>${L('run')}</button></div>`;
+  const svg=$("#radial");const dl=$("#dragline");let drag=null;
+  const pt=e=>{const r=svg.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)/r.width*760,y:(t.clientY-r.top)/r.height*760};};
+  const preview=(idx,on)=>{for(let l=0;l<=4;l++){const el=document.getElementById(`e${l}_${idx>>l}`);if(el)el.classList.toggle("prev",on);}};
+  svg.querySelectorAll(".lf").forEach(g=>{const idx=+g.dataset.idx;
+    g.addEventListener("pointerdown",e=>{drag={team:g.dataset.team};const p=pt(e);
+      dl.setAttribute("x1",p.x);dl.setAttribute("y1",p.y);dl.setAttribute("x2",380);dl.setAttribute("y2",380);dl.setAttribute("opacity",".8");});
+    g.addEventListener("pointerenter",()=>{if(!drag&&!g.classList.contains("sel"))preview(idx,true);});
+    g.addEventListener("pointerleave",()=>preview(idx,false));
+  });
+  const centerEl=svg.querySelector(".pulse")||svg.querySelector('circle[filter]');
+  svg.addEventListener("pointermove",e=>{if(!drag)return;const p=pt(e);
+    const near=Math.hypot(p.x-380,p.y-380)<74;
+    dl.setAttribute("x1",near?380:p.x);dl.setAttribute("y1",near?380:p.y);
+    dl.classList.toggle("snap",near);svg.classList.toggle("snapping",near);});
+  const finish=()=>{if(drag){const t=drag.team;drag=null;dl.setAttribute("opacity","0");dl.classList.remove("snap");svg.classList.remove("snapping");selectChamp(t);}};
+  svg.addEventListener("pointerup",finish);svg.addEventListener("pointerleave",finish);
+  $("#run").onclick=()=>{if(STATE.champion){STATE.stage="result";STATE.explored=0;STATE.nonce=0;STATE.minted=false;STATE.nick="";spin();}};
+}
+function selectChamp(en){STATE.champion=en;renderPick();renderStep();}
+function makeSeed(){return `${STATE.nick}|${STATE.champion}|${SNAPSHOT.snapshotId}|${STATE.nonce}`;}
+function spin(){STATE.nonce++;STATE.explored++;STATE.current=genUniverse(STATE.champion,makeSeed());renderStep();renderResult();}
+
+// 页面流动叙事（HTML，高亮不分点）
+function htmlModules(R){return R.path.map((leg,i)=>{const e=legEvent(R,leg,i);const opp=nameOf(leg.opp);
+  const oc=(TEAM[leg.opp]||{}).code;const rd=ROUNDS.find(r=>r.id===leg.round)[LANG];
+  return `<div class="mod ${leg.defied?'def':''}">
+    <div class="modtop"><span class="rc">${rd}</span>
+      ${oc&&FLAGS[oc]?`<img class="mf" src="${FLAGS[oc]}" alt="">`:''}
+      <span class="mo">${opp}</span><span class="mp">${LANG==='zh'?'市场定价 ':''}${pct(leg.oppProb)}<b>${leg.defied?(LANG==='zh'?'市场误判':'MISPRICED'):(LANG==='zh'?'定价击穿':'BROKEN')}</b></span></div>
+    <div class="mtag">${e.tag}</div><div class="mexp">${e.exp}</div></div>`;}).join("");}
+function renderResult(){
+  const R=STATE.current;if(!R)return;
+  const svg=buildSVG(R,STATE.minted?{exp:true,nick:STATE.nick,explored:STATE.explored}:{});
+  const strs=[headline(R),L('lead',pct(R.cardProb),RARITY[R.rarity][LANG]),AFTER[R.aft][LANG](nameOf(R.champion)),
+    PUNCH[R.punch][LANG](R.skeptic.label,pct(R.skeptic.prob),R.ally.label),...R.path.map((l,i)=>legCopy(R,l,i))];
+  const lr=lint(strs);
+  const elimNote=R.eliminated?`<div class="elimnote"><span class="tag">${LANG==='zh'?'现实赛果':'reality'}</span> ${LANG==='zh'
+    ?`<b>${nameOf(R.champion)}</b> 已在 ${ROUNDS.find(r=>r.id===R.realExit.round)[LANG]} 止步（${R.realExit.sc} 负 ${nameOf(R.realExit.opp)}）——以下是它本可以走的那条平行宇宙。`
+    :`<b>${nameOf(R.champion)}</b> went out in the ${ROUNDS.find(r=>r.id===R.realExit.round)[LANG]} (${R.realExit.sc} to ${nameOf(R.realExit.opp)}) — here is the universe it could have walked.`}</div>`:"";
+  const readHTML=`
+    <div class="exittag">${headline(R)}</div>
+    <div class="lead">${L('lead',pct(R.cardProb),RARITY[R.rarity][LANG])}</div>
+    <div class="leadsub">${L('leadsub',pct(R.title),R.defied)}</div>
+    ${elimNote}
+    <div class="routelbl">${L('routeLabel')}</div>
+    <div class="mods">${htmlModules(R)}</div>
+    <div class="punch">${PUNCH[R.punch][LANG](R.skeptic.label,pct(R.skeptic.prob),R.ally.label)}</div>
+    <div class="guard">${lr.ok?L('guard'):'⚠ '+String(lr.hit)}</div>`;
+  const actions = STATE.minted
+    ? `<button class="btn btn-dark" id="dl">⤓ ${L('download')}</button><button class="btn btn-ghost" id="cap">${LANG==='zh'?'✍ 复制发帖文案':'✍ Copy caption'}</button><button class="btn btn-ghost" id="reroll">${L('reroll')}</button><button class="btn btn-ghost" id="back">${L('back')}</button>`
+    : `<button class="btn btn-pu" id="mint">${L('mintBtn')}</button><button class="btn btn-ghost" id="reroll">${L('reroll')}</button><button class="btn btn-ghost" id="back">${L('back')}</button>`;
+  $("#stage").innerHTML=`<div class="result1">
+    <div class="cardwrap">${svg}</div>
+    <div class="cardactions">${actions}<span class="explore">${L('explore',STATE.explored)}</span></div>
+    <div class="cappanel" id="cappanel" hidden>
+      <div class="caphead">${LANG==='zh'?'一键发帖文案（已按稀有度自动生成）':'Ready-to-post caption'}</div>
+      <textarea id="captext" readonly rows="4"></textarea>
+      <button class="btn btn-dark" id="capcopy">${LANG==='zh'?'复制':'Copy'}</button>
+    </div>
+    <div class="read">${readHTML}</div>
+  </div>`;
+  if($("#reroll"))$("#reroll").onclick=spin;
+  $("#back").onclick=()=>{STATE.stage="pick";renderStep();renderPick();};
+  if($("#mint"))$("#mint").onclick=openMint;
+  if($("#dl"))$("#dl").onclick=downloadCard;
+  if($("#cap"))$("#cap").onclick=()=>showCaption(false);
+}
+/* 发帖配文：稀有度+存活状态+最后一道判决 组合钩子 */
+function postCopy(R){const zh=LANG==='zh';const t=TEAM[R.champion];const p=pct(R.cardProb);
+  const tier=R.eliminated?(zh?'隐藏款':'HIDDEN'):(R.cardProb<0.7?(zh?'传说款':'LEGENDARY'):R.cardProb<1.0?(zh?'史诗款':'EPIC'):R.cardProb<2.8?(zh?'稀有款':'RARE'):(zh?'共识款':'STANDARD'));
+  const finTag=legEvent(R,R.path[R.path.length-1],R.path.length-1).tag;
+  const hook=R.eliminated?(zh?'这个宇宙在现实里已经终结——所以它反而最稀有。':'This universe already ended in reality — which makes it the rarest kind.')
+    :(zh?`宇宙还活着,已应验 ${R.survived}/5 关。`:`Still alive — ${R.survived}/5 verified so far.`);
+  return zh?`我抽到了${t.zh}夺冠的平行宇宙 🎫 稀有度 ${p} · ${tier}。决赛判决:「${finTag}」。${hook}你的票是哪张?\n#世界杯2026 #平行宇宙冠军机 #pmwatcher #校准而非预测`
+    :`I pulled the ${t.en} championship universe 🎫 rarity ${p} · ${tier}. Final verdict: "${finTag}". ${hook} Which ticket is yours?\n#WorldCup2026 #ParallelUniverse #pmwatcher`;}
+function showCaption(auto){const R=STATE.current;if(!R)return;const txt=postCopy(R);
+  const pn=$("#cappanel"),ta=$("#captext");if(!pn)return;pn.hidden=false;ta.value=txt;
+  const doCopy=()=>{const ok=()=>toast(LANG==='zh'?'文案已复制,直接去粘贴发帖':'Caption copied');
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,()=>{ta.select();document.execCommand('copy');ok();});
+    else{ta.select();document.execCommand('copy');ok();}};
+  $("#capcopy").onclick=doCopy;if(auto)doCopy();
+  pn.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function openMint(){$("#scrim").classList.add("on");setTimeout(()=>$("#nick").focus(),50);}
+function closeMint(){$("#scrim").classList.remove("on");}
+function doMint(){STATE.nick=($("#nick").value||"").trim()||L('anon');STATE.minted=true;
+  STATE.current=genUniverse(STATE.champion,makeSeed());closeMint();renderStep();renderResult();}
+
+/* download: SVG -> Canvas -> PNG (fonts embedded in SVG defs) */
+function downloadCard(){
+  const R=STATE.current;const svg0=buildSVG(R,{exp:true,nick:STATE.nick,explored:STATE.explored});
+  embedForExport(svg0).then(svg=>{
+  const vb=(svg.match(/viewBox="[^"]*?\s([\d.]+)\s([\d.]+)"/)||[0,1568,688]);const VBW=+vb[1],VBH=+vb[2];
+  const W=1680,H=Math.round(VBH/VBW*1680),M=60,CW=W+M*2,CH=H+M*2;
+  const blob=new Blob([svg],{type:"image/svg+xml;charset=utf-8"});const u=URL.createObjectURL(blob);
+  const img=new Image();
+  img.onload=()=>{const c=document.createElement("canvas");c.width=CW;c.height=CH;const ctx=c.getContext("2d");
+    ctx.fillStyle="#ece9e0";ctx.fillRect(0,0,CW,CH);ctx.save();ctx.shadowColor="rgba(0,0,0,.34)";ctx.shadowBlur=46;ctx.shadowOffsetY=22;
+    ctx.drawImage(img,M,M,W,H);ctx.restore();URL.revokeObjectURL(u);
+    c.toBlob(b=>{if(!b)return;const a=document.createElement("a");a.href=URL.createObjectURL(b);
+      a.download=`pm-watcher-parallel-${R.champion.replace(/\s+/g,'-')}.png`;document.body.appendChild(a);a.click();a.remove();toast(L('dlToast'));showCaption(true);});};
+  img.onerror=()=>URL.revokeObjectURL(u);
+  img.src=u;
+  });
+}
+let tt;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("on");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("on"),2000);}
+
+function setLang(l){LANG=l;$("#zh").setAttribute("aria-pressed",String(l==="zh"));$("#en").setAttribute("aria-pressed",String(l==="en"));applyStatic();}
+$("#zh").onclick=()=>setLang("zh");$("#en").onclick=()=>setLang("en");
+$("#mintCancel").onclick=closeMint;$("#mintGo").onclick=doMint;
+$("#scrim").onclick=e=>{if(e.target===$("#scrim"))closeMint();};
+$("#nick").addEventListener("keydown",e=>{if(e.key==="Enter")doMint();});
+
+applyStatic();
+</script>
