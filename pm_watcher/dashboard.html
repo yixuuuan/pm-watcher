@@ -1482,7 +1482,7 @@ function renderKnockout(){
     ? `<details class="foldsec"><summary>${L("ko_quali_label")}</summary><div style="margin-top:8px">${qual}</div></details>`
     : "";
   host.innerHTML=`
-    <section class="koPU"><a class="koPUfull" href="parallel-universe.html?lang=${LANG}" target="_blank" rel="noopener">${L("ko_pu_cta")}</a><span class="koPUtag">${L("ko_pu_tag")}</span><h3>${L("ko_pu_title")}</h3><p>${L("ko_pu_sub")}</p><div class="koPUwrap"><iframe id="puFrame" src="parallel-universe.html?lang=${LANG}" loading="lazy" title="Parallel Universe Champion Machine"></iframe></div></section>
+    <section class="koPU"><a class="koPUfull" href="parallel-universe.html?lang=${LANG}" target="_blank" rel="noopener">${L("ko_pu_cta")}</a><h3>${L("ko_pu_title")}</h3><p>${L("ko_pu_sub")}</p><div class="koPUwrap"><iframe id="puFrame" src="parallel-universe.html?lang=${LANG}&embed=1" loading="lazy" title="Parallel Universe Champion Machine"></iframe></div></section>
     ${groupSec}
     <div class="lab" style="margin:28px 0 6px">${L("ko_head")}</div>
     <div class="sub" style="max-width:760px;margin-bottom:6px">${L("ko_lede")}</div>

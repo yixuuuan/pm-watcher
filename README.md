@@ -18,7 +18,7 @@ One World Cup, five prediction markets, five different answers. pm-watcher puts 
 - **Champion board** — title odds for all 48 teams, five platforms side by side, plus a consensus price and a divergence heatmap (darker = the platforms disagree more)
 - **Group winner** — qualifying odds for all 12 groups (live data from Kalshi and 42)
 - **Fixtures** — a schedule of ~80 group-stage matches, auto-generated from the platforms' own markets; tap any match for a cross-platform Win / Draw / Loss comparison and the spread
-- **Knockout** — the road-to-the-final bracket with **true two-half seeding** and a qualification tracker that **forward-propagates decided winners** into the next round; also home to the Parallel-Universe Champion Machine (below)
+- **Knockout** — the road-to-the-final bracket with **true two-half seeding** and a qualification tracker that **forward-propagates decided winners** into the next round; the Parallel-Universe Champion Machine renders **inline in this tab** (below)
 - **Live news × odds** — a BBC / Guardian / ESPN / Sky football feed plus Dongqiudi (Chinese), filtered by team; **tap a story to see that team's per-platform odds for ±3 hours around it** (the dashed red line marks the news timestamp)
 - **News danmaku** — recent and newly arrived headlines drift across the top as bullet-screen pills; hover to pause and read, click to open, and a top-right button toggles the stream off
 - **Persisted history** — every odds change is written to a local SQLite file (change-driven: nothing is stored while a price holds steady). When the tournament ends, `history.db` is a complete record of how five markets priced 104 matches
@@ -47,19 +47,19 @@ One World Cup, five prediction markets, five different answers. pm-watcher puts 
 
 ## 🆕 New in this release — the Parallel-Universe Champion Machine
 
-The knockout rounds turn every fan into a counterfactual thinker: *what would it take for **my** team to win it all?* The Champion Machine answers with a collectible artifact. Pick any of the **32 knockout teams** on a radial sci-fi selector; the machine reverse-derives that team's championship path **along the real bracket** — five rounds, five opponents — and stamps the whole story onto a die-cut **champion's match ticket** you can download and share.
+The knockout rounds turn every fan into a counterfactual thinker: *what would it take for **my** team to win it all?* The Champion Machine answers with a collectible artifact. Pick any of the **32 knockout teams** on a radial sci-fi selector; the machine reverse-derives that team's championship path **along the real bracket** — five rounds, five opponents — and stamps the whole story onto a die-cut **champion's match ticket** you can download and share. It lives **inside the Knockout tab** — no page jump — in an auto-sizing embed, with a one-click full-screen view.
 
 ![Parallel-Universe Champion Machine](docs/pu_board_en.png)
 
-**Five verdicts on a ticket.** Each round of the path is a stamped module: the opponent, a meme-grade verdict in a double-printed rubber stamp (drawn from a hand-built corpus of player lore, tactical folklore and football superstition), a one-line story, two derivative hashtags, a parallel-universe scoreline (AET and penalty drama included) — and the market's pre-match price for that opponent, struck through and stamped **MISPRICED** or **BROKEN**.
+**Five verdicts on a ticket.** Each round of the path is a stamped module: the opponent, a meme-grade verdict in a double-printed rubber stamp (drawn from a hand-built corpus of player lore, tactical folklore and football superstition), a one-line story, two derivative hashtags, a parallel-universe scoreline (AET and penalty drama included) — and the market's pre-match price for that opponent, struck through and stamped **MISPRICED** or **BROKEN**. Every re-roll rotates the whole corpus, so verdicts change on each pull and never repeat within a ticket.
 
 **Rarity as a blind-box tier.** The joint probability of the whole path sets the tier — STANDARD / RARE / EPIC / **LEGENDARY** (gold-foil frame) — and eliminated teams mint as **HIDDEN**: a universe that has already ended in reality is the rarest kind you can hold.
 
-**A ticket that stays alive.** Every ticket carries a **universe lifeline**: as real results land, legs the team actually won are stamped **✓ VERIFIED** and the lifeline reads *alive · 2/5 verified* — or *ended @ Round of 16*. A share becomes a reason to come back after every matchday.
+**A ticket that stays alive.** On load the machine syncs finished knockout results from the board's own recap API. Legs the team has actually won are stamped **✓ VERIFIED** and show the **real scoreline** — penalty shootouts included (`1–1 PENS`) — while the **universe lifeline** reads *alive · 2/5 verified*, or *ended @ Round of 16*. A share becomes a reason to come back after every matchday.
 
 **National identity in the texture.** Every nation gets a signature motif woven into the ticket — seigaiha waves for Japan, a sunburst for Argentina, the šahovnica check for Croatia, zellige stars for Morocco, the Aztec greca for Mexico, St George's cross for England… — plus a punched perforation line, a barcode stub, and a triangular die-cut edge.
 
-**Built to be shared.** One-tap PNG export; a bilingual, auto-generated caption (team, rarity tier, final verdict, alive/ended hook) is copied to the clipboard the moment the download finishes. Every ticket also carries its **price-snapshot timestamp** — calibration language, not prophecy.
+**Built to be shared.** One-tap export produces a presentation-ready PNG with a soft drop shadow tracing the die-cut teeth; a bilingual, auto-generated caption (team, rarity tier, final verdict, alive/ended hook) is copied to the clipboard the moment it finishes. On phones the ticket opens in a **long-press-to-save** sheet instead of a silent download, and the radial selector is tuned for touch drag. Every ticket carries a **scannable QR code and printed URL** deep-linking back to the machine, plus its **price-snapshot timestamp** — calibration language, not prophecy.
 
 ![A downloadable champion's ticket](docs/pu_ticket_en.png)
 
@@ -105,7 +105,7 @@ pip install -r requirements.txt
 # Web dashboard (recommended):
 python3 -m pm_watcher.serve --live --interval 30
 # then open http://127.0.0.1:8765
-# the Champion Machine lives under the Knockout tab (or /parallel-universe.html)
+# the Champion Machine is embedded in the Knockout tab (full-screen at /parallel-universe.html)
 
 # Or command line:
 python3 -m pm_watcher.watch --query "World Cup" --board --live
@@ -127,6 +127,7 @@ Cross-platform price comparison sounds like "put a few numbers next to each othe
 6. **42's single-match markets are exact-score markets** (e.g. `NED 0–1 JPN`), not win/draw/loss. This project aggregates the score-level probabilities into a three-way price; outcomes it cannot classify are dropped honestly, so 42's three-way total can fall slightly below 100% rather than being force-normalized.
 7. **One team has five different names across five platforms.** Türkiye/Turkey, Korea Republic/South Korea, Cabo Verde/Cape Verde, two spellings of Bosnia. Without canonicalization, a cross-platform comparison treats one team as two.
 8. **SVG masks are not portable.** The ticket's punched perforation was first cut with a `<mask>`; browsers apply masks by luminance, some rasterizers by alpha — the same file punched holes in one renderer and ignored them in another. Rebuilding the holes as `clip-rule="evenodd"` sub-paths made the die-cut pure geometry, identical everywhere.
+9. **On phones, `a.download` quietly does nothing.** In-app browsers (Xiaohongshu, WeChat) ignore the download attribute and blob URLs; a "download" button that works on desktop simply eats the tap on mobile. The reliable path is the platform's own gesture: render the PNG as a data-URL image in an overlay and let the user **long-press to save**.
 
 ## A few observations (as the group stage opens)
 
@@ -151,13 +152,13 @@ pm_watcher/
 ├── notifier.py              # Telegram push
 ├── serve.py                 # local dashboard server (http://127.0.0.1:8765)
 ├── dashboard.html           # single-page dashboard (no frontend build step)
-├── parallel-universe.html   # the Champion Machine (self-contained page, ~90 KB)
+├── parallel-universe.html   # the Champion Machine (self-contained page, ~160 KB incl. QR encoder)
 ├── fonts-subset/            # subset WC26 display fonts (woff2, ~88 KB total)
 ├── fonts/ · flags/          # full display fonts + 62 national-flag SVGs
 └── watch.py                 # command-line mode
 ```
 
-The only dependency is `httpx` (plus optional `python-dotenv`). Both pages are self-contained HTML files with no frontend build chain; the Champion Machine embeds its fonts and flags into the exported PNG at download time.
+The only dependency is `httpx` (plus optional `python-dotenv`). Both pages are self-contained HTML files with no frontend build chain; the Champion Machine syncs live knockout results from `/api/recap` and embeds its fonts and flags into the exported PNG at download time.
 
 ## Data sources
 

@@ -86,7 +86,7 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-
 .trophy .pick{font-size:14px;font-weight:800;color:var(--pu)}
 .trophy .fg{width:30px;height:20px;border-radius:3px;box-shadow:0 0 0 .5px var(--line)}
 .picknote{font-size:11px;color:var(--hint);text-align:center;max-width:130px}
-.radialwrap{max-width:600px;margin:0 auto;text-align:center;border-radius:24px;
+.radialwrap{max-width:780px;margin:0 auto;text-align:center;border-radius:24px;
   background:radial-gradient(60% 60% at 50% 45%,#141a3e,#0a0e24);
   box-shadow:0 18px 60px rgba(10,14,40,.5),inset 0 0 0 1px rgba(139,123,255,.12);padding:6px}
 .radialwrap svg{width:100%;height:auto;display:block;touch-action:none}
@@ -182,6 +182,11 @@ body{background:var(--bg);color:var(--ink);font-family:var(--sans);-webkit-font-
 .cappanel .caphead{font-size:12.5px;color:var(--mut);letter-spacing:.03em}
 .cappanel textarea{width:100%;box-sizing:border-box;resize:vertical;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:13.5px;line-height:1.55;color:var(--ink);background:var(--bg);font-family:inherit}
 .cappanel .btn{align-self:flex-end}
+html.embed body{background:transparent}
+html.embed .wrap{max-width:none;padding:0}
+html.embed .top{display:none}
+html.embed .machine{border:0;border-radius:0;background:transparent;box-shadow:none}
+html.embed .mhead{padding:18px 20px 0}
 .radialwrap svg{touch-action:none}
 .imgsheet{position:fixed;inset:0;background:rgba(15,14,30,.68);display:none;align-items:center;justify-content:center;z-index:80;padding:18px}
 .imgsheet.on{display:flex}
@@ -2579,6 +2584,8 @@ const I18N={
 };
 let LANG="zh";
 try{ const _q=new URLSearchParams(location.search).get("lang"); if(_q==="zh"||_q==="en")LANG=_q; }catch(e){}
+let EMBED=false;
+try{ EMBED=(new URLSearchParams(location.search).get("embed")==="1")||(window.self!==window.top); if(EMBED)document.documentElement.classList.add("embed"); }catch(e){}
 function L(k,...a){const e=I18N[k];if(!e)return k;const v=e[LANG];return typeof v==="function"?v(...a):v;}
 
 /* ========================= market data (mock /api/board) ========================= */
@@ -3270,7 +3277,7 @@ function renderPick(){
   const champ=STATE.champion;
   const leafTeams=[]; ["L","R"].forEach(s=>BRACKET[s].forEach(t=>leafTeams.push(t[0],t[1])));
   const champIdx=champ?leafTeams.indexOf(champ):-1;
-  const CX=380,CY=380,RAD=[280,220,166,116,76,0];
+  const CX=420,CY=420,RAD=[300,232,172,120,78,0];
   const ang=i=>(-90+(i+0.5)*(360/32))*Math.PI/180;
   const levels=[]; levels[0]=leafTeams.map((tm,i)=>{const a=ang(i);return{a,x:CX+Math.cos(a)*RAD[0],y:CY+Math.sin(a)*RAD[0]};});
   for(let l=1;l<=4;l++){const p=levels[l-1],arr=[];for(let j=0;j<p.length/2;j++){const a=(p[2*j].a+p[2*j+1].a)/2;arr.push({a,x:CX+Math.cos(a)*RAD[l],y:CY+Math.sin(a)*RAD[l]});}levels[l]=arr;}
@@ -3292,12 +3299,12 @@ function renderPick(){
   // leaves
   let clips="",leaves="";
   levels[0].forEach((nd,i)=>{const en=leafTeams[i];const tm=TEAM[en];const elim=ELIM.has(en);const sel=champ===en;
-    const r=sel?28:22;clips+=`<clipPath id="lf${i}"><circle cx="${nd.x.toFixed(1)}" cy="${nd.y.toFixed(1)}" r="${r-3}"/></clipPath>`;
+    const r=sel?33:27;clips+=`<clipPath id="lf${i}"><circle cx="${nd.x.toFixed(1)}" cy="${nd.y.toFixed(1)}" r="${r-3}"/></clipPath>`;
     const ring=sel?'#8b7bff':elim?'rgba(255,120,90,.6)':'rgba(180,200,255,.35)';
     // 队名标签：沿半径外侧，按左右半区对齐
     const out=RAD[0]+r+7;const lx=CX+Math.cos(nd.a)*out,ly=CY+Math.sin(nd.a)*out;
     const anchor=Math.cos(nd.a)<-0.15?'end':Math.cos(nd.a)>0.15?'start':'middle';
-    const nm=nameOf(en);const nmSize=LANG==='zh'?11.5:(nm.length>9?8.5:10);
+    const nm=nameOf(en);const nmSize=LANG==='zh'?14:(nm.length>9?10.5:12.5);
     const label=`<text x="${lx.toFixed(1)}" y="${(ly+3.5).toFixed(1)}" text-anchor="${anchor}" font-family="FWCCond,-apple-system,sans-serif" font-size="${nmSize}" fill="${sel?'#c9d1ff':elim?'rgba(255,150,130,.85)':'rgba(200,212,255,.78)'}" font-weight="${sel?700:400}">${esc(nm)}</text>`;
     leaves+=`<g class="lf ${elim?'elim':''} ${sel?'sel':''}" data-team="${en}" data-idx="${i}" style="cursor:pointer">
       ${sel?`<circle class="halo" cx="${nd.x}" cy="${nd.y}" r="${r+7}" fill="none" stroke="#8b7bff" stroke-width="2" filter="url(#glw)"/>`:''}
@@ -3316,7 +3323,7 @@ function renderPick(){
     :`<div class="pickcap">${LANG==='zh'?'点选或拖拽任意球队送上奖杯 · 路径将自动点亮':'tap or drag any team to the trophy · its path lights up'}</div>`;
   $("#stage").innerHTML=`
     <div class="radialwrap">
-      <svg id="radial" viewBox="0 0 760 760" xmlns="http://www.w3.org/2000/svg">
+      <svg id="radial" viewBox="0 0 840 840" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <radialGradient id="tg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,210,90,.45)"/><stop offset="100%" stop-color="rgba(139,123,255,.05)"/></radialGradient>
           <radialGradient id="bgg" cx="50%" cy="50%" r="65%"><stop offset="0%" stop-color="#141a3e"/><stop offset="100%" stop-color="#0a0e24"/></radialGradient>
