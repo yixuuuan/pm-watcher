@@ -3299,12 +3299,12 @@ function renderPick(){
   // leaves
   let clips="",leaves="";
   levels[0].forEach((nd,i)=>{const en=leafTeams[i];const tm=TEAM[en];const elim=ELIM.has(en);const sel=champ===en;
-    const r=sel?33:27;clips+=`<clipPath id="lf${i}"><circle cx="${nd.x.toFixed(1)}" cy="${nd.y.toFixed(1)}" r="${r-3}"/></clipPath>`;
+    const r=sel?30:24.5;clips+=`<clipPath id="lf${i}"><circle cx="${nd.x.toFixed(1)}" cy="${nd.y.toFixed(1)}" r="${r-3}"/></clipPath>`;
     const ring=sel?'#8b7bff':elim?'rgba(255,120,90,.6)':'rgba(180,200,255,.35)';
     // 队名标签：沿半径外侧，按左右半区对齐
-    const out=RAD[0]+r+7;const lx=CX+Math.cos(nd.a)*out,ly=CY+Math.sin(nd.a)*out;
+    const out=RAD[0]+r+10;const lx=CX+Math.cos(nd.a)*out,ly=CY+Math.sin(nd.a)*out;
     const anchor=Math.cos(nd.a)<-0.15?'end':Math.cos(nd.a)>0.15?'start':'middle';
-    const nm=nameOf(en);const nmSize=LANG==='zh'?14:(nm.length>9?10.5:12.5);
+    const nm=nameOf(en);const nmSize=LANG==='zh'?12.5:(nm.length>9?9.5:11.5);
     const label=`<text x="${lx.toFixed(1)}" y="${(ly+3.5).toFixed(1)}" text-anchor="${anchor}" font-family="FWCCond,-apple-system,sans-serif" font-size="${nmSize}" fill="${sel?'#c9d1ff':elim?'rgba(255,150,130,.85)':'rgba(200,212,255,.78)'}" font-weight="${sel?700:400}">${esc(nm)}</text>`;
     leaves+=`<g class="lf ${elim?'elim':''} ${sel?'sel':''}" data-team="${en}" data-idx="${i}" style="cursor:pointer">
       ${sel?`<circle class="halo" cx="${nd.x}" cy="${nd.y}" r="${r+7}" fill="none" stroke="#8b7bff" stroke-width="2" filter="url(#glw)"/>`:''}
