@@ -1460,10 +1460,16 @@ function koBracketSVG(){
 
 function puAutosize(){
   const f=document.getElementById("puFrame"); if(!f||f.__wired) return; f.__wired=true;
+  const setH=h=>{ f.style.height=Math.max(720,h)+"px"; };
+  // 子页面推演后会 postMessage 高度，这里直接采纳（内嵌 iframe 内容高度变化最可靠的信号）
+  window.addEventListener("message",e=>{ if(e&&e.data&&e.data.type==="pu-height"&&typeof e.data.height==="number") setH(e.data.height); });
   f.addEventListener("load",()=>{ try{
     const d=f.contentDocument; if(!d) return;
-    const fit=()=>{ const h=Math.max(720, d.documentElement.scrollHeight); f.style.height=h+"px"; };
-    fit(); new ResizeObserver(fit).observe(d.body);
+    const fit=()=>{ setH(Math.max(d.documentElement.scrollHeight, d.body.scrollHeight)); };
+    fit();
+    try{ new ResizeObserver(fit).observe(d.documentElement); }catch(_){}
+    // 兜底：内容高度轮询（应对个别浏览器不冒泡 body resize 的情况）
+    let last=0; setInterval(()=>{ const h=Math.max(d.documentElement.scrollHeight,d.body.scrollHeight); if(Math.abs(h-last)>4){last=h;setH(h);} },500);
   }catch(e){} });
 }
 function renderKnockout(){

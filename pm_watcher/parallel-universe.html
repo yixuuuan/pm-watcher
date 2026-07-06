@@ -3250,7 +3250,7 @@ async function embedForExport(svg){
   if(!__fontCss){const specs=[["FWCBlack","fonts-subset/FWC2026-Black.woff2"],["FWCNBlack","fonts-subset/FWC2026-NormalBlack.woff2"],["FWCNormal","fonts-subset/FWC2026-Normal.woff2"],["FWCCond","fonts-subset/FWC2026-UltraCond.woff2"],["FWCLight","fonts-subset/FWC2026-CondLight.woff2"]];
     let css="";for(const p of specs){try{const b=await fetch(p[1]).then(r=>r.arrayBuffer());css+="@font-face{font-family:'"+p[0]+"';src:url(data:font/woff2;base64,"+__b64buf(b)+") format('woff2');}";}catch(e){}}
     __fontCss=css;}
-  svg=svg.split("__RT_DEFS__").join("<style>"+__fontCss+"</style>");
+  svg=svg.split("__RT_DEFS__").join(__fontCss?("<style>"+__fontCss+"</style>"):"");
   const used=[...new Set([...svg.matchAll(/href="(flags\/[a-z-]+\.svg)"/g)].map(m=>m[1]))];
   for(const u of used){if(!__flagB64[u]){try{const b=await fetch(u).then(r=>r.arrayBuffer());__flagB64[u]="data:image/svg+xml;base64,"+__b64buf(b);}catch(e){__flagB64[u]=u;}}
     svg=svg.split('href="'+u+'"').join('href="'+__flagB64[u]+'"');}
@@ -3357,10 +3357,23 @@ function renderPick(){
   const finish=()=>{if(drag){const t=drag.team;drag=null;dl.setAttribute("opacity","0");dl.classList.remove("snap");svg.classList.remove("snapping");selectChamp(t);}};
   svg.addEventListener("pointerup",finish);svg.addEventListener("pointerleave",finish);
   $("#run").onclick=()=>{if(STATE.champion){STATE.stage="result";STATE.explored=0;STATE.nonce=0;STATE.minted=false;STATE.nick="";spin();}};
+  notifyResize(false);
 }
 function selectChamp(en){STATE.champion=en;renderPick();renderStep();}
 function makeSeed(){return `${STATE.nick}|${STATE.champion}|${SNAPSHOT.snapshotId}|${STATE.nonce}`;}
-function spin(){STATE.nonce++;STATE.explored++;STATE.current=genUniverse(STATE.champion,makeSeed());renderStep();renderResult();}
+function spin(){
+  try{
+    STATE.nonce++;STATE.explored++;
+    STATE.current=genUniverse(STATE.champion,makeSeed());
+    renderStep();renderResult();
+  }catch(err){
+    console.error("[pm-watcher] 推演失败:",err);
+    try{ const st=document.getElementById("stage");
+      if(st) st.innerHTML='<div style="padding:28px;color:#d85a30;font-size:14px;line-height:1.7">推演时出错了，请把这段报错发给作者：<br><code style="display:block;margin-top:8px;white-space:pre-wrap;color:#6b6a64">'+((err&&err.message)||err)+'</code></div>';
+    }catch(_){}
+    try{ if(typeof toast==="function") toast("推演出错，详见页面提示"); }catch(_){}
+  }
+}
 
 // 页面流动叙事（HTML，高亮不分点）
 function htmlModules(R){return R.path.map((leg,i)=>{const e=legEvent(R,leg,i);const opp=nameOf(leg.opp);
@@ -3370,9 +3383,16 @@ function htmlModules(R){return R.path.map((leg,i)=>{const e=legEvent(R,leg,i);co
       ${oc&&FLAGS[oc]?`<img class="mf" src="${FLAGS[oc]}" alt="">`:''}
       <span class="mo">${opp}</span><span class="mp">${LANG==='zh'?'市场定价 ':''}${pct(leg.oppProb)}<b>${leg.defied?(LANG==='zh'?'市场误判':'MISPRICED'):(LANG==='zh'?'定价击穿':'BROKEN')}</b></span></div>
     <div class="mtag">${e.tag}</div><div class="mexp">${e.exp}</div></div>`;}).join("");}
+function notifyResize(scrollIntoStage){
+  try{
+    const h=Math.max(document.documentElement.scrollHeight, document.body.scrollHeight);
+    if(window.self!==window.top){ window.parent.postMessage({type:"pu-height",height:h},"*"); }
+    if(scrollIntoStage){ const st=document.getElementById("stage"); if(st&&st.scrollIntoView) st.scrollIntoView({behavior:"smooth",block:"start"}); }
+  }catch(e){}
+}
 function renderResult(){
   const R=STATE.current;if(!R)return;
-  const svg=buildSVG(R,STATE.minted?{exp:true,nick:STATE.nick,explored:STATE.explored}:{});
+  const svg=buildSVG(R,STATE.minted?{exp:true,nick:STATE.nick,explored:STATE.explored}:{}).split("__RT_DEFS__").join("");
   const strs=[headline(R),L('lead',pct(R.cardProb),RARITY[R.rarity][LANG]),AFTER[R.aft][LANG](nameOf(R.champion)),
     PUNCH[R.punch][LANG](R.skeptic.label,pct(R.skeptic.prob),R.ally.label),...R.path.map((l,i)=>legCopy(R,l,i))];
   const lr=lint(strs);
@@ -3406,6 +3426,7 @@ function renderResult(){
   if($("#mint"))$("#mint").onclick=openMint;
   if($("#dl"))$("#dl").onclick=downloadCard;
   if($("#cap"))$("#cap").onclick=()=>showCaption(false);
+  notifyResize(true);
 }
 /* 发帖配文：稀有度+存活状态+最后一道判决 组合钩子 */
 function postCopy(R){const zh=LANG==='zh';const t=TEAM[R.champion];const p=pct(R.cardProb);
