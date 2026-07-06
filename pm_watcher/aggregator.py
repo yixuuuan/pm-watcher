@@ -132,12 +132,17 @@ def _clean_label(nm: str) -> str:
     return nm
 
 
-def build_matchboard(results: dict[str, list[Market]]) -> list[dict]:
+def build_matchboard(results: dict[str, list[Market]],
+                     fixtures: "frozenset[tuple[str, str]] | None" = None) -> list[dict]:
     """
     跨平台归并单场比赛：key = 排序后的(规范队A, 规范队B)。
     每行: {teams:[A,B], title, kickoff, vol, odds:{platform:{A:p, Draw:p, B:p}}}
     kickoff 用市场收盘时间近似（诚实标注：收盘≈开球，非官方赛程）。
     只采全场胜平负主盘：无后缀，或后缀属 _MAIN_ALLOW；其余子盘/未知后缀一律丢弃。
+
+    fixtures：赛事级白名单（history.fixture_pairs()）。给定且非空时，只保留 key 命中官方
+    赛程的对阵，剔除被平台误开盘的非世界杯比赛；为 None/空集时不过滤（fail-open，避免
+    football-data 未就绪时误伤整块 live 看板）。
     """
     from .names import canonical_country
     from .polymarket import _split_vs
@@ -152,6 +157,8 @@ def build_matchboard(results: dict[str, list[Market]]) -> list[dict]:
                 continue
             a, b = canonical_country(sides[0]), canonical_country(sides[1])
             key = tuple(sorted([a, b]))
+            if fixtures and key not in fixtures:
+                continue                       # 非官方赛程对阵 → 丢弃（EAFF/热身赛等误收）
             row = rows.setdefault(key, {"teams": [a, b], "title": f"{a} vs {b}",
                                         "kickoff": None, "vol": 0.0, "odds": {}})
             od: dict[str, float] = {}

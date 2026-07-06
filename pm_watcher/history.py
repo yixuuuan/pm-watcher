@@ -191,6 +191,18 @@ def results() -> list[dict]:
     return [dict(zip(cols, r)) for r in rows]
 
 
+def fixture_pairs() -> frozenset[tuple[str, str]]:
+    """世界杯官方赛程对阵白名单：result 表里每场的 (规范队A, 规范队B) 排序元组集合。
+    数据源自 football-data.org 的 WC 竞赛（由 results.py 写入），含小组赛与全部已定对阵的
+    淘汰赛。用于摄入层剔除被平台误开盘的【非世界杯比赛】（如 South Korea×Japan 的 EAFF/热身赛）。
+    队名写入时已过 canonical_country()，与 build_matchboard 的 key 同词表，可直接比对。
+    表为空（如 football-data 未就绪）时返回空集——调用方据此 fail-open，不误伤 live 看板。"""
+    with _lock:
+        c = _db()
+        rows = c.execute("SELECT home, away FROM result").fetchall()
+    return frozenset(tuple(sorted((h, a))) for h, a in rows if h and a)
+
+
 def knockout_fixtures() -> list[dict]:
     """淘汰赛全部对阵（含未开赛），按轮次→开赛时间排序。供对阵图使用。
     未开赛的场次 outcome 为空串、score 为 None。"""

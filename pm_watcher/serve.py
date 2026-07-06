@@ -44,7 +44,12 @@ async def _collect(platforms, live):
         gr, gerr = await fetch_all(clients, "World Cup Group", limit=64)
         group = build_board(gr)
         mr = await fetch_matches(clients)
-        matchboard = build_matchboard(mr)
+        try:
+            from . import history
+            wl = history.fixture_pairs()        # 官方赛程白名单；取不到就退回不过滤
+        except Exception:
+            wl = None
+        matchboard = build_matchboard(mr, wl)
         over = {}
         for p in platforms:
             s = sum(v[p] for v in champ.values() if v.get(p) is not None)
