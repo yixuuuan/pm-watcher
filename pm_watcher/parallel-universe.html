@@ -2648,7 +2648,8 @@ let KO_REAL=[];
 const ELIM=new Set();
 function recomputeElim(){ ELIM.clear();
   ["L","R"].forEach(sd=>BRACKET[sd].forEach(t=>{ const w=winnerOfTie(t); if(w)ELIM.add(w===t[0]?t[1]:t[0]); }));
-  for(const m of KO_REAL){ if(m.result==="A")ELIM.add(m.away); else if(m.result==="B")ELIM.add(m.home); } }
+  for(const m of KO_REAL){ if(m.round&&m.round!=="R32")continue; // 仅 R32 败者计入淘汰，避免把整个半区推空
+    if(m.result==="A")ELIM.add(m.away); else if(m.result==="B")ELIM.add(m.home); } }
 recomputeElim();
 function koWinnerName(m){ return m.result==="A"?m.home:(m.result==="B"?m.away:null); }
 function realWinsOf(team){
@@ -2723,11 +2724,13 @@ const rkey=cp=>cp<.2?"legend":cp<.8?"certified":cp<2?"minority":"fellow";
 const ROUNDS=[{id:"R32",zh:"1/16 决赛",en:"Round of 32"},{id:"R16",zh:"1/8 决赛",en:"Round of 16"},{id:"QF",zh:"1/4 决赛",en:"Quarter-final"},{id:"SF",zh:"半决赛",en:"Semi-final"},{id:"Final",zh:"决赛",en:"Final"}];
 // expected advancer of a sub-bracket range [a,b) of a side: actual winner if decided, else higher-title team
 function expectAdvance(side,a,b){
-  let best=null;
+  const pick=(arr)=>{let best=null;for(const c of arr){if(!PROF[c])continue;if(!best||PROF[c].title>PROF[best].title)best=c;}return best;};
+  let alive=[], all=[];
   for(let i=a;i<b;i++){const tie=BRACKET[side][i];const w=winnerOfTie(tie);
-    const cands = (w?[w]:[tie[0],tie[1]]).filter(c=>!ELIM.has(c)); // 已淘汰队不可能是未来对手
-    cands.forEach(c=>{ if(!best||PROF[c].title>PROF[best].title) best=c; });}
-  return best;
+    const cs=(w?[w]:[tie[0],tie[1]]);
+    for(const c of cs){ all.push(c); if(!ELIM.has(c)) alive.push(c); } }
+  // 优先未淘汰者；整块都出局则回退到全体（对手仍需可展示，不能为 null）
+  return pick(alive) || pick(all) || null;
 }
 function findTie(champion){
   for(const side of["L","R"])for(let i=0;i<8;i++){const t=BRACKET[side][i];if(t[0]===champion||t[1]===champion)return{side,i};}
@@ -2758,7 +2761,14 @@ function buildPath(champion){
   }
   return legs;
 }
-function mkLeg(round,champ,opp){const op=PROF[opp].title,cp=PROF[champ].title;return{round,opp,oppProb:op,defied:op>cp,gap:Math.max(0,op-cp)};}
+function mkLeg(round,champ,opp){
+  if(!opp||!PROF[opp]){ // 兜底：找一个 PROF 内、非 champ、未在本路径出现的合理对手
+    const fallback=ALL.find(t=>t!==champ&&PROF[t]&&!ELIM.has(t))||ALL.find(t=>t!==champ&&PROF[t])||champ;
+    opp=fallback;
+  }
+  const op=(PROF[opp]?PROF[opp].title:0),cp=(PROF[champ]?PROF[champ].title:0);
+  return{round,opp,oppProb:op,defied:op>cp,gap:Math.max(0,op-cp)};
+}
 
 /* ========================= corpus (话题度 · 球队梗/绰号/真实赛事叙事 · brand-safe) =========================
    原则：球队层面的足球玄学与文化梗(出圈、可传播)，结合市场定价/打脸角度；
