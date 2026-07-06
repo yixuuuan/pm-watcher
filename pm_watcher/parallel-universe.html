@@ -2642,53 +2642,69 @@ const BRACKET={
 };
 TEAM["Canada"]={en:"Canada",zh:"加拿大",code:"ca",p:{polymarket:.8,kalshi:.7,predict:.75,"42":.6,manifold:1.0},main:"#e0241a",accent:"#2bb9a0"};
 
-/* eliminated = lost a played tie（含点球）；KO_REAL = 运行时从 /api/recap 同步的真实淘汰赛结果 */
-const winnerOfTie=t=>{ if(t[2]==null)return null; if(t[2]===t[3])return t[4]||null; return t[2]>t[3]?t[0]:t[1]; };
-let KO_REAL=[];
+/* ===== 真实淘汰赛结果（权威事实层 · 截至 2026-07-06）=====
+   winner=胜者；pens=true 表示点球晋级。线上有 /api/recap 时会被真实数据覆盖/补充。
+   已确定的对阵一律以此为准，未打的轮次才用概率推演。 */
+let KO_RESULTS=[
+  // R32（全部结束）
+  {round:"R32",home:"Germany",away:"Paraguay",sa:1,sb:1,winner:"Paraguay",pens:true},
+  {round:"R32",home:"France",away:"Sweden",sa:3,sb:0,winner:"France"},
+  {round:"R32",home:"South Africa",away:"Canada",sa:0,sb:1,winner:"Canada"},
+  {round:"R32",home:"Netherlands",away:"Morocco",sa:1,sb:1,winner:"Morocco",pens:true},
+  {round:"R32",home:"Portugal",away:"Croatia",sa:2,sb:1,winner:"Portugal"},
+  {round:"R32",home:"Spain",away:"Austria",sa:3,sb:0,winner:"Spain"},
+  {round:"R32",home:"USA",away:"Bosnia",sa:2,sb:0,winner:"USA"},
+  {round:"R32",home:"Belgium",away:"Senegal",sa:3,sb:2,winner:"Belgium"},
+  {round:"R32",home:"Brazil",away:"Japan",sa:2,sb:1,winner:"Brazil"},
+  {round:"R32",home:"Ivory Coast",away:"Norway",sa:1,sb:2,winner:"Norway"},
+  {round:"R32",home:"Mexico",away:"Ecuador",sa:2,sb:0,winner:"Mexico"},
+  {round:"R32",home:"England",away:"DR Congo",sa:2,sb:1,winner:"England"},
+  {round:"R32",home:"Switzerland",away:"Algeria",sa:2,sb:0,winner:"Switzerland"},
+  // R32 未定：Argentina/Cape Verde、Australia/Egypt、Colombia/Ghana（保守起见，这三场若已打由 /api/recap 补）
+  // R16（已决 4 场）
+  {round:"R16",home:"Morocco",away:"Canada",sa:3,sb:0,winner:"Morocco"},
+  {round:"R16",home:"France",away:"Paraguay",sa:1,sb:0,winner:"France"},
+  {round:"R16",home:"Norway",away:"Brazil",sa:2,sb:0,winner:"Norway"},
+  {round:"R16",home:"England",away:"Mexico",sa:3,sb:2,winner:"England"},
+];
+const RORD={R32:0,R16:1,QF:2,SF:3,Final:4};
+function koFind(a,b){ // 找 a、b 之间的真实结果（无序）
+  for(const m of KO_RESULTS){ if((m.home===a&&m.away===b)||(m.home===b&&m.away===a))return m; }
+  return null; }
+function koResultOfTeam(team,round){ // 该队在某轮的真实结果
+  for(const m of KO_RESULTS){ if(m.round===round&&(m.home===team||m.away===team))return m; } return null; }
+function realWinsOf(team){ // 该队在现实里已赢下的淘汰赛场次（连续从 R32 起算）
+  let n=0; for(const rd of ["R32","R16","QF","SF","Final"]){ const m=koResultOfTeam(team,rd); if(m&&m.winner===team)n++; else break; } return n; }
+function realLossOf(team){ // 该队现实中被淘汰的那场（round/opp/sc）
+  for(const rd of ["R32","R16","QF","SF","Final"]){ const m=koResultOfTeam(team,rd);
+    if(m&&m.winner&&m.winner!==team){ const mg=m.home===team?m.sa:m.sb, og=m.home===team?m.sb:m.sa;
+      const opp=m.home===team?m.away:m.home;
+      return {round:rd,opp,sc:mg+"–"+og+(m.pens?(LANG==="zh"?"(点球)":" (pens)"):"")}; } }
+  return null; }
+function realScoreFor(team,opp,Lz){ const m=koFind(team,opp);
+  if(m&&m.winner){ const cg=m.home===team?m.sa:m.sb, og=m.home===team?m.sb:m.sa;
+    return cg+"–"+og+(m.pens?(Lz?" 点球":" PENS"):""); }
+  return null; }
+// 被淘汰 = 现实中输过任意一场淘汰赛
 const ELIM=new Set();
 function recomputeElim(){ ELIM.clear();
-  ["L","R"].forEach(sd=>BRACKET[sd].forEach(t=>{ const w=winnerOfTie(t); if(w)ELIM.add(w===t[0]?t[1]:t[0]); }));
-  for(const m of KO_REAL){ if(m.round&&m.round!=="R32")continue; // 仅 R32 败者计入淘汰，避免把整个半区推空
-    if(m.result==="A")ELIM.add(m.away); else if(m.result==="B")ELIM.add(m.home); } }
+  for(const m of KO_RESULTS){ if(m.winner){ const loser=m.winner===m.home?m.away:m.home; ELIM.add(loser); } } }
 recomputeElim();
-function koWinnerName(m){ return m.result==="A"?m.home:(m.result==="B"?m.away:null); }
-function realWinsOf(team){
-  if(KO_REAL.length)return KO_REAL.filter(m=>koWinnerName(m)===team).length;
-  const t=BRACKET.L.concat(BRACKET.R).find(x=>x[0]===team||x[1]===team);
-  return t&&winnerOfTie(t)===team?1:0; }
-function realLossOf(team){
-  for(const m of KO_REAL){ const w=koWinnerName(m); if(!w)continue;
-    if((m.home===team||m.away===team)&&w!==team){ const mg=m.home===team?m.sa:m.sb, og=m.home===team?m.sb:m.sa;
-      return {round:m.round||"R32",opp:w,sc:mg+"–"+og+(m.sa===m.sb?(LANG==="zh"?"(点球)":" (pens)"):"")}; } }
-  const t=BRACKET.L.concat(BRACKET.R).find(x=>x[0]===team||x[1]===team);
-  if(t){ const w=winnerOfTie(t); if(w&&w!==team){ const mg=t[0]===team?t[2]:t[3], og=t[0]===team?t[3]:t[2];
-    return {round:"R32",opp:w,sc:mg+"–"+og+(t[2]===t[3]?(LANG==="zh"?"(点球)":" (pens)"):"")}; } }
-  return null; }
-function realScoreFor(team,opp,Lz){
-  for(const m of KO_REAL){ if(!koWinnerName(m))continue;
-    if((m.home===team&&m.away===opp)||(m.away===team&&m.home===opp)){
-      const cg=m.home===team?m.sa:m.sb, og=m.home===team?m.sb:m.sa;
-      return cg+"–"+og+(m.sa===m.sb?(Lz?" 点球":" PENS"):""); } }
-  const t=BRACKET.L.concat(BRACKET.R).find(x=>(x[0]===team&&x[1]===opp)||(x[1]===team&&x[0]===opp));
-  if(t&&t[2]!=null&&winnerOfTie(t)){ const cg=t[0]===team?t[2]:t[3], og=t[0]===team?t[3]:t[2];
-    return cg+"–"+og+(t[2]===t[3]?(Lz?" 点球":" PENS"):""); }
-  return null; }
+// findTie 仍需 BRACKET 结构；winnerOfTie 改为查真实结果
+const winnerOfTie=t=>{ const m=koFind(t[0],t[1]); return m?m.winner:null; };
 async function syncRealResults(){
   if(typeof fetch==="undefined")return;
   try{
     const r=await fetch("api/recap",{cache:"no-store"}); const j=await r.json();
     const ko=(j.ko||[]).filter(m=>m.round&&m.result&&m.sa!=null&&m.sb!=null);
-    if(!ko.length)return;
-    KO_REAL=ko;
-    for(const m of ko){ if(m.round!=="R32")continue;
-      const all=BRACKET.L.concat(BRACKET.R);
-      const t=all.find(x=>(x[0]===m.home&&x[1]===m.away)||(x[0]===m.away&&x[1]===m.home));
-      if(!t)continue;
-      if(t[0]===m.home){t[2]=m.sa;t[3]=m.sb;}else{t[2]=m.sb;t[3]=m.sa;}
-      if(m.sa===m.sb)t[4]=koWinnerName(m);
-    }
+    if(!ko.length){ recomputeElim(); return; }
+    // 以 API 为权威：转成 KO_RESULTS 结构并合并（同一对阵以 API 覆盖内置）
+    const conv=ko.map(m=>({round:m.round,home:m.home,away:m.away,sa:m.sa,sb:m.sb,
+      winner:m.result==="A"?m.home:(m.result==="B"?m.away:null),pens:(m.sa===m.sb)}));
+    const keep=KO_RESULTS.filter(o=>!conv.some(n=>(n.home===o.home&&n.away===o.away)||(n.home===o.away&&n.away===o.home)));
+    KO_RESULTS=keep.concat(conv.filter(n=>n.winner));
     recomputeElim();
-  }catch(e){}
+  }catch(e){ recomputeElim(); }
 }
 
 /* ========================= probability model (trim of knockout-universe-model.js) ========================= */
@@ -2723,14 +2739,18 @@ const rkey=cp=>cp<.2?"legend":cp<.8?"certified":cp<2?"minority":"fellow";
 /* ========================= bracket router (walk real bracket) ========================= */
 const ROUNDS=[{id:"R32",zh:"1/16 决赛",en:"Round of 32"},{id:"R16",zh:"1/8 决赛",en:"Round of 16"},{id:"QF",zh:"1/4 决赛",en:"Quarter-final"},{id:"SF",zh:"半决赛",en:"Semi-final"},{id:"Final",zh:"决赛",en:"Final"}];
 // expected advancer of a sub-bracket range [a,b) of a side: actual winner if decided, else higher-title team
-function expectAdvance(side,a,b){
+function expectAdvance(side,a,b,round){
   const pick=(arr)=>{let best=null;for(const c of arr){if(!PROF[c])continue;if(!best||PROF[c].title>PROF[best].title)best=c;}return best;};
-  let alive=[], all=[];
+  // 该区块里，若某队在"上一轮"已有真实胜绩，它就是真实晋级者；优先返回真实结果
+  let realAdvancers=[], alive=[], all=[];
   for(let i=a;i<b;i++){const tie=BRACKET[side][i];const w=winnerOfTie(tie);
     const cs=(w?[w]:[tie[0],tie[1]]);
-    for(const c of cs){ all.push(c); if(!ELIM.has(c)) alive.push(c); } }
-  // 优先未淘汰者；整块都出局则回退到全体（对手仍需可展示，不能为 null）
-  return pick(alive) || pick(all) || null;
+    for(const c of cs){ all.push(c); if(!ELIM.has(c)) alive.push(c);
+      // c 若在目标轮的前一轮真实赢球，则确定晋级到本轮
+      if(round){ const prevIdx=RORD[round]-1; const prevRd=Object.keys(RORD).find(k=>RORD[k]===prevIdx);
+        if(prevRd){ const m=koResultOfTeam(c,prevRd); if(m&&m.winner===c) realAdvancers.push(c); } } } }
+  // 真实晋级者里挑（同块多个真实胜者取 title 最高，实际上一块只会有一个）；否则未淘汰者；再否则全体
+  return pick(realAdvancers) || pick(alive) || pick(all) || null;
 }
 function findTie(champion){
   for(const side of["L","R"])for(let i=0;i<8;i++){const t=BRACKET[side][i];if(t[0]===champion||t[1]===champion)return{side,i};}
@@ -2751,11 +2771,11 @@ function buildPath(champion){
     let oppA,oppB;
     if(r<4){ // opponent comes from sibling half within this side
       if(champHalf===0){oppA=blockStart+half;oppB=blockStart+size;} else {oppA=blockStart;oppB=blockStart+half;}
-      const opp=expectAdvance(side,oppA,oppB);
+      const opp=expectAdvance(side,oppA,oppB,ROUNDS[r].id);
       legs.push(mkLeg(ROUNDS[r].id,champion,opp));
     } else { // Final: opponent = expected winner of the OTHER side entirely
       const other=side==="L"?"R":"L";
-      const opp=expectAdvance(other,0,8);
+      const opp=expectAdvance(other,0,8,"Final");
       legs.push(mkLeg("Final",champion,opp));
     }
   }

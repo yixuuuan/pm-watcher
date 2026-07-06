@@ -1830,7 +1830,16 @@ function mxDetailHtml(A,B,odds,withNews){
 }
 function renderMatches(){
   if(typeof RECAP==="undefined" || RECAP===null) loadRecap();   // 懒加载历史比赛数据
-  const ms = DATA.matches||[];
+  const nowTs = Math.floor(Date.now()/1000);
+  // 已结束对阵集合（复盘里有真实比分的）
+  const finished = new Set();
+  (RECAP||[]).forEach(m=>{ if(m.sa!=null&&m.sb!=null){ finished.add(m.home+"|"+m.away); finished.add(m.away+"|"+m.home); } });
+  // 赛程区只保留"尚未开赛且未结束"的比赛；其余归入下方历史与复盘
+  const ms = (DATA.matches||[]).filter(m=>{
+    if(m.kickoff && m.kickoff < nowTs - 3*3600) return false;      // 已开赛 3 小时以上
+    if(m.teams && finished.has(m.teams.join("|"))) return false;    // 已有真实比分
+    return true;
+  });
   const el = document.getElementById("matches");
   const fmtT = ts => ts? new Date(ts*1000).toLocaleString(loc(),{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
   let live;
