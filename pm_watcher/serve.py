@@ -21,7 +21,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 from . import make_client, ALL_PLATFORMS
-from .aggregator import fetch_all, build_board, fetch_matches, build_matchboard
+from .aggregator import (fetch_all, build_board, fetch_matches,
+                         build_matchboard, merge_knockout_fixtures)
 
 _HTML = (Path(__file__).parent / "dashboard.html").read_text(encoding="utf-8")
 
@@ -47,9 +48,11 @@ async def _collect(platforms, live):
         try:
             from . import history
             wl = history.fixture_pairs()        # 官方赛程白名单；取不到就退回不过滤
+            ko = history.knockout_fixtures()    # 权威淘汰赛赛程：改期 + 补占位
         except Exception:
-            wl = None
+            wl, ko = None, None
         matchboard = build_matchboard(mr, wl)
+        matchboard = merge_knockout_fixtures(matchboard, ko)
         over = {}
         for p in platforms:
             s = sum(v[p] for v in champ.values() if v.get(p) is not None)

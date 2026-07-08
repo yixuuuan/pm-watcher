@@ -229,6 +229,7 @@
   .mxrow .mxteam{flex:1 1 auto;min-width:120px}
   .mxrow .mxsum{margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
   .mxrow .mxbk{flex:0 0 auto;white-space:nowrap}
+  .mxrow.mxpend{cursor:default;opacity:.62}
   .mxrow.hist .histsc{font-variant-numeric:tabular-nums;font-weight:700;margin:0 7px}
   .histfold .mxrow{cursor:pointer}
   #recap .rcmv{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:4px 0 2px;padding:9px 11px;background:var(--card);border:.5px solid var(--line);border-radius:11px}
@@ -419,7 +420,8 @@ const I18N = {
     board_empty:"No data for this board (group board needs --live, and some platforms have no group market yet).",
     matches_empty:"No comparable single-match markets. On --live, if this stays empty: match markets on Polymarket/Manifold may not be listed yet (they usually appear close to kickoff), or the network is unreachable.",
     tbd:"Time TBD", th_draw:"Draw", th_spread:"Spread", books:"books",
-    matches_note:"Time shown is market close ≈ kickoff (not the official schedule); summary is the first platform's W/D/L %. Tap to expand the cross-platform comparison and both teams' news.",
+    mx_pending:"Awaiting markets", mx_plat:"platforms",
+    matches_note:"Knockout kickoffs follow the official schedule; group-stage rows still show market close ≈ kickoff. Summary is the first platform's W/D/L %; \u201Cawaiting markets\u201D means the tie is set but no platform has priced it yet. Tap a priced row to expand the cross-platform comparison and both teams' news.",
     hist_head:"Past matches", hist_sub:"Every finished match — teams, final score, and each platform's pre-match pricing. Tap a row to expand.",
     no_team_news:"No news for", team_news:"Related news", news_odds:"📈 odds around this", news_new:"New", danmaku:"Danmaku",
     loading_odds:"Loading odds ±3h around this news…",
@@ -501,7 +503,8 @@ const I18N = {
     board_empty:"这个榜暂无数据（小组榜需 --live，且部分平台尚未接小组市场）。",
     matches_empty:"暂无可比的单场比赛盘。--live 下若长期为空：Polymarket/Manifold 的比赛盘可能尚未上架（多在临近开球时出现），或网络未通。",
     tbd:"时间待定", th_draw:"平局", th_spread:"价差", books:"家",
-    matches_note:"时间为市场收盘时间 ≈ 开球时间（非官方赛程）；概要为首家平台的 胜/平/负 %。点击展开跨平台对比与两队新闻。",
+    mx_pending:"待开盘", mx_plat:"个平台",
+    matches_note:"淘汰赛开球时间取自官方赛程；小组赛行仍为市场收盘时间 ≈ 开球。概要为首家平台的 胜/平/负 %；“待开盘”表示对阵已定、平台尚未开盘。点击已开盘的行展开跨平台对比与两队新闻。",
     hist_head:"历史比赛", hist_sub:"全部已结束比赛 —— 对阵、最终比分,以及各平台赛前定价。点击任意一行展开。",
     no_team_news:"暂无相关新闻：", team_news:"两队相关新闻", news_odds:"📈 前后赔率", news_new:"新闻", danmaku:"弹幕",
     loading_odds:"加载该新闻前后 ±3 小时的赔率…",
@@ -1851,9 +1854,17 @@ function renderMatches(){
       (byDay[d]=byDay[d]||[]).push(m); });
     live = Object.entries(byDay).map(([day,list])=>{
       const rows = list.map(m=>{
+        const [A,B]=m.teams;
+        const pending = m.pending || !Object.keys(m.odds||{}).length;   // 对阵已定、平台未开盘
+        if(pending){
+          return `<div class="mxrow mxpend">
+            <span class="sub mxtime">${fmtT(m.kickoff)}</span>
+            <span class="team mxteam">${flag(A)} ${A} <span class="sub">vs</span> ${flag(B)} ${B}</span>
+            <span class="mxsum sub">${L("mx_pending")}</span>
+            <span class="sub mxbk"></span></div>`;
+        }
         const key = m.teams.join("|");
         const open = OPENMATCH===key;
-        const [A,B]=m.teams;
         const p0 = Object.values(m.odds)[0]||{};
         const sum = `<span class="num">${p0[A]!=null?p0[A].toFixed(0):"–"}</span><span class="sub"> / </span><span class="num">${p0["Draw"]!=null?p0["Draw"].toFixed(0):"–"}</span><span class="sub"> / </span><span class="num">${p0[B]!=null?p0[B].toFixed(0):"–"}</span>`;
         const detail = open ? mxDetailHtml(A,B,m.odds,true) : "";
@@ -1861,7 +1872,7 @@ function renderMatches(){
             <span class="sub mxtime">${fmtT(m.kickoff)}</span>
             <span class="team mxteam">${flag(A)} ${A} <span class="sub">vs</span> ${flag(B)} ${B}</span>
             <span class="mxsum">${sum}</span>
-            <span class="sub mxbk">${Object.keys(m.odds).length} ${LANG==="zh"?"个平台":"platforms"}</span></div>${detail}`;
+            <span class="sub mxbk">${Object.keys(m.odds).length} ${L("mx_plat")}</span></div>${detail}`;
       }).join("");
       return `<div class="sub" style="margin-top:14px;font-weight:500">${day}</div>${rows}`;
     }).join("");

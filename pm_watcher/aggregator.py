@@ -182,6 +182,42 @@ def build_matchboard(results: dict[str, list[Market]],
     return out
 
 
+def merge_knockout_fixtures(matchboard: list[dict],
+                            ko: "list[dict] | None") -> list[dict]:
+    """把 football-data 权威淘汰赛赛程并入赛程板（就地修改并返回同一列表）：
+      1) 已在板上的淘汰赛对阵 → 用官方 kickoff_ts 覆盖其 kickoff，纠正单一平台把 market
+         收盘日期设成远期占位（如 Argentina×Switzerland 被标成 7/26）导致的错排；
+      2) 对阵已定、平台还没开盘的淘汰赛 → 补一条占位行（odds 空、pending=True），
+         前端渲染成"待开盘"。
+    ko 为 history.knockout_fixtures() 的返回（含 R32..FIN，未开赛者 outcome 空、score None）。
+    队名两侧都过 canonical_country()，与 build_matchboard 的 key 同词表可直接比对。
+    ko 为空/None 时原样返回（fail-open，取不到官方赛程不影响原有 live 板）。"""
+    if not ko:
+        return matchboard
+    from .names import canonical_country
+    idx = {tuple(sorted(m["teams"])): m for m in matchboard}
+    for f in ko:
+        home = canonical_country(f.get("home") or "")
+        away = canonical_country(f.get("away") or "")
+        if not home or not away:
+            continue                       # 对阵两边未定 → 不排程
+        kt = f.get("kickoff_ts")
+        key = tuple(sorted((home, away)))
+        row = idx.get(key)
+        if row is not None:                # 已开盘：仅以官方开球时间覆盖排序锚点
+            if kt:
+                row["kickoff"] = kt
+            row.setdefault("grp", f.get("grp"))
+            continue
+        if f.get("status") == "FINISHED" or (f.get("outcome") or ""):
+            continue                       # 已结束 → 归复盘，不进赛程占位
+        matchboard.append({"teams": [home, away], "title": f"{home} vs {away}",
+                           "kickoff": kt, "vol": 0.0, "odds": {},
+                           "pending": True, "grp": f.get("grp")})
+    matchboard.sort(key=lambda r: (r["kickoff"] or 9e18))
+    return matchboard
+
+
 def build_board(results: dict[str, list[Market]]) -> dict[str, dict[str, float]]:
     """
     汇总成排行榜：label（规范队名）-> {platform: price}。
