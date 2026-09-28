@@ -320,11 +320,21 @@
 
   // ───────── 访问量 / 新闻 ─────────
   function dayStr(T) { return new Date(T * 1000).toISOString().slice(0, 10); }
-  function visitsAt() {                 // 访问量不随回放时刻变化：始终显示原站最终的累计值
+  function visitsAt() {                 // 访问量不随回放时刻变化：原站历史累计 + 存档上线后的实时新增
     var total = 0, last = D.visits[D.visits.length - 1] || [null, 0, 0];
     D.visits.forEach(function (v) { total += v[1]; });
-    return { total: total, today_hits: last[1], today_unique: last[2] };
+    return { total: total + (PMW.liveN || 0), today_hits: last[1], today_unique: last[2] };
   }
+  // 实时访问量（Cloudflare Pages Function /api/visits）：每个浏览器会话只计一次
+  PMW.liveN = 0;
+  PMW.pullVisits = function () {
+    var first = false;
+    try { first = !sessionStorage.getItem("pmw_hit"); if (first) sessionStorage.setItem("pmw_hit", "1"); } catch (e) {}
+    return of("/api/visits", { method: first ? "POST" : "GET", cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) { if (j && typeof j.n === "number") PMW.liveN = j.n; return PMW.liveN; })
+      .catch(function () { return PMW.liveN; });
+  };
   function newsAt(T) {
     var out = [];
     for (var i = NEWS.length - 1; i >= 0 && out.length < 50; i--) {
@@ -384,6 +394,7 @@
     var path = u.pathname.replace(/\/+$/, "");
     var m = path.match(/\/api\/(board|recap|news|stats|history)$/);
     if (!m) return null;
+    if (m[1] === "stats") return ready.then(PMW.pullVisits).then(function () { return json(visitsAt()); });
     return ready.then(function () {
       var r = handle("/api/" + m[1], u.searchParams);
       return r ? json(r) : new Response("not found", { status: 404 });

@@ -198,6 +198,14 @@
     text-shadow:0 1px 6px rgba(0,0,0,.9);pointer-events:none}
   .b3 .lab img{width:20px;height:14px;border-radius:2px;object-fit:cover}
   .b3 .lab:empty{display:none}
+  .mfs-btn{position:absolute;right:10px;top:10px;z-index:5;font:inherit;font-size:12px;color:var(--ink);cursor:pointer;
+    background:rgba(20,24,34,.72);border:.5px solid var(--line2);border-radius:9px;padding:5px 10px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+  .mfs-btn:hover{border-color:var(--gold);color:var(--gold)}
+  #mapPanel.mfs{position:fixed;inset:0;z-index:200;border-radius:0;border:0;margin:0;background:#07080b;overflow:auto;padding:16px 22px 12px;display:flex;flex-direction:column;opacity:1;transform:none}
+  #mapPanel.mfs .mapwrap{flex:1;grid-template-columns:minmax(0,1fr) 260px;align-items:center}
+  #mapPanel.mfs .mapbox{background:radial-gradient(ellipse at 50% 55%,rgba(61,123,255,.14),transparent 72%)}
+  #mapPanel.mfs .tip{z-index:300}
+  @media (max-width:860px){ #mapPanel.mfs .mapwrap{grid-template-columns:1fr;align-items:start} }
   .mhint{position:absolute;right:12px;bottom:10px;font-size:11.5px;color:var(--dim);pointer-events:none}
   .mload{position:absolute;left:14px;bottom:10px;font-size:12px;color:var(--dim)}
   .mlbh{font-size:12px;color:var(--mut);letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin:2px 0 10px}
@@ -212,12 +220,50 @@
   .mtick span{font-size:12.5px;background:var(--panel2);border:.5px solid var(--line2);border-radius:20px;padding:3px 11px;animation:evin .5s ease}
   .mtick b{color:var(--gold);margin:0 4px}
   @media (max-width:860px){ .mapwrap{grid-template-columns:1fr} .mlb{height:160px} }
+  /* ── 手机 ── */
+  @media (max-width:640px){
+    .wrap{padding:0 16px}
+    .nav .wrap{flex-wrap:wrap;height:auto;padding-top:8px;padding-bottom:6px;gap:8px 10px}
+    .nav .brand{order:1;flex:1}
+    .nut{order:2;width:30px;height:30px;font-size:14px}
+    .langsw{order:3}
+    .back{order:4;font-size:0;padding:5px 9px}
+    .back::after{content:"← 看板";font-size:12px}
+    html[lang=en] .back::after{content:"← Board"}
+    .nav .links{order:5;flex:0 0 100%;margin:0 -16px;padding:0 12px}
+    .nav .links a{font-size:12.5px;padding:4px 9px}
+    .panel{padding:14px;border-radius:16px}
+    .chap{font-size:11.5px}
+    h2{font-size:26px!important;line-height:1.2}
+    .sub{font-size:14px}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .stats .stat:last-child{grid-column:1/-1}
+    .bar{gap:6px;height:34px}
+    .bars{height:calc(10 * 38px)}
+    .bar .rk{width:16px;font-size:11.5px}
+    .bar .nm{width:82px;font-size:12.5px;gap:5px}
+    .bar .nm img{width:20px;height:14px}
+    .bar .track{height:22px}
+    .bar .val{font-size:12.5px}
+    .bar .tag{font-size:10px;padding:0 4px;margin-left:0}
+    .bn{padding:18px 16px 16px}
+    .uc{padding:16px}
+    .uc .sc{font-size:34px}
+    .uc .t{font-size:13px}
+    .mwhen{font-size:24px}
+    .mhead{align-items:flex-start}
+    .mctl{width:100%;justify-content:space-between}
+    .mhint{display:none}
+    .mrow .nm{width:84px;font-size:12.5px}
+    footer{margin-top:60px}
+    section.sec{scroll-margin-top:84px}
+  }
 </style>
 </head>
 <body>
 <canvas id="fx" aria-hidden="true"></canvas><div class="fx-tex" aria-hidden="true"></div>
 <nav class="nav"><div class="wrap">
-  <span class="brand"><img src="favicon.svg" alt="" class="logo"><b>pm</b>-watcher</span>
+  <span class="brand"><img src="favicon.svg" alt="" class="logo"><span><b>pm</b>-watcher</span></span>
   <div class="links" id="navlinks"></div>
   <a class="nut" href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener" title="Buy me a chestnut">🌰</a>
   <div class="langsw"><button data-lang="en">EN</button><button data-lang="zh">中</button></div>
@@ -318,7 +364,7 @@
   <div class="chap reveal"><i>09</i><span data-i="c9"></span></div>
   <h2 class="reveal" id="mapH"></h2>
   <p class="sub reveal" data-i="d_map"></p>
-  <div class="panel reveal">
+  <div class="panel reveal" id="mapPanel">
     <div class="mhead">
       <div><div class="mwhen num" id="mapWhen"></div><div class="mstage" id="mapStage"></div></div>
       <div class="mctl">
@@ -327,7 +373,7 @@
       </div>
     </div>
     <div class="mapwrap">
-      <div class="mapbox"><div class="m3d" id="m3d"><div class="m3d-stage" id="m3dStage"><svg id="mapSvg"></svg><div class="m3d-bars" id="m3dBars"></div></div></div><div class="mload" id="mapLoad"></div><div class="mhint" id="mapHint"></div></div>
+      <div class="mapbox"><div class="m3d" id="m3d"><div class="m3d-stage" id="m3dStage"><svg id="mapSvg"></svg><div class="m3d-bars" id="m3dBars"></div></div></div><div class="mload" id="mapLoad"></div><div class="mhint" id="mapHint"></div><button class="mfs-btn" id="mapFs"></button></div>
       <div><div class="mlbh" id="mapLbH"></div><div class="mlb" id="mapLb"></div></div>
     </div>
     <input type="range" class="scrub" id="mapScrub">
@@ -373,7 +419,7 @@ var S={zh:{
   c7:"平台",h_plat:"五个平台，五种性格",d_plat:"同一场比赛、同一支球队，五个平台的定价习惯并不一样。",
   plat_note:"「热门自信度」= 该平台给共识热门的概率 − 共识概率（正值 = 比同行更自信）；「单场概率和」= 三档原始价格相加（>100% 为溢价）；「冠军盘偏离」= 与清洗后共识的平均距离；「异常报价」= 每 12 小时抽样，因偏离其他平台过多（多为其他运动的同名球队串盘）被剔除的次数。",
   c8:"比赛",h_game:"场上发生了什么",ko_head:"淘汰赛全部赛果",
-  c9:"进球地图",h_map:function(g){return g+" 粒进球，落在地图上";},d_map:"按时间回放整届赛事：每场比赛结束，两队之间划出一道弧线，光柱随累计数据升高。拖动地图可以旋转视角，悬停光柱或国家查看详情。",m_gf:"进球",m_ga:"失球",m_gd:"净胜球",m_play:"▶ 播放",m_pause:"⏸ 暂停",m_replay:"↻ 重播",m_lb:"排行",m_n:"场",m_load:"地图加载中…",m_drag:"拖动旋转 · 双击复位",m_tip:function(n,gf,ga){return n+" 场 · 进 "+gf+" · 失 "+ga;},m_champ:"冠军",m_out:"止步",mail:"写信给我",coffee:"请我喝杯咖啡",
+  c9:"进球地图",h_map:function(g){return g+" 粒进球，落在地图上";},d_map:"按时间回放整届赛事：每场比赛结束，两队之间划出一道弧线，光柱随累计数据升高。拖动地图可以旋转视角，悬停光柱或国家查看详情。",m_gf:"进球",m_ga:"失球",m_gd:"净胜球",m_play:"▶ 播放",m_pause:"⏸ 暂停",m_replay:"↻ 重播",m_lb:"排行",m_n:"场",m_load:"地图加载中…",m_drag:"拖动旋转 · 双击复位",m_fs:"⛶ 全屏",m_fs_exit:"✕ 退出全屏",m_tip:function(n,gf,ga){return n+" 场 · 进 "+gf+" · 失 "+ga;},m_champ:"冠军",m_out:"止步",mail:"写信给我",coffee:"请我喝杯咖啡",
   c10:"方法与数据说明",
   s_matches:"场比赛",s_goals:"粒进球",s_changes:"次定价变动",s_plat:"个预测市场",s_views:"次访问",
   champ_path:function(r,p,f){return "开赛初期市场排名第 <b>"+r+"</b>（"+p+"%）→ 决赛前 <b>"+f+"%</b> → 捧杯";},
@@ -408,7 +454,7 @@ var S={zh:{
   c7:"Platforms",h_plat:"Five platforms, five personalities",d_plat:"Same match, same team — the platforms price differently.",
   plat_note:"“Favorite confidence” = platform's probability on the consensus favorite minus the consensus (positive = more confident). “Match overround” = three raw prices summed (>100% = margin). “Title deviation” = average distance from the cleaned consensus. “Anomalies” = sampled every 12h, quotes dropped for straying too far from the other platforms (usually a same-named team from another sport).",
   c8:"The football",h_game:"What happened on the pitch",ko_head:"All knockout results",
-  c9:"Goal map",h_map:function(g){return g+" goals, on the map";},d_map:"Replay the tournament: when a match ends an arc links the two teams and each column rises with its running total. Drag the map to rotate; hover a column or country for details.",m_gf:"Scored",m_ga:"Conceded",m_gd:"Goal diff",m_play:"▶ Play",m_pause:"⏸ Pause",m_replay:"↻ Replay",m_lb:"Leaders",m_n:"played",m_load:"Loading map…",m_drag:"Drag to rotate · double-click to reset",m_tip:function(n,gf,ga){return n+" played · "+gf+" scored · "+ga+" conceded";},m_champ:"Champion",m_out:"Out in",mail:"Write to me",coffee:"Buy me a coffee",
+  c9:"Goal map",h_map:function(g){return g+" goals, on the map";},d_map:"Replay the tournament: when a match ends an arc links the two teams and each column rises with its running total. Drag the map to rotate; hover a column or country for details.",m_gf:"Scored",m_ga:"Conceded",m_gd:"Goal diff",m_play:"▶ Play",m_pause:"⏸ Pause",m_replay:"↻ Replay",m_lb:"Leaders",m_n:"played",m_load:"Loading map…",m_drag:"Drag to rotate · double-click to reset",m_fs:"⛶ Full screen",m_fs_exit:"✕ Exit full screen",m_tip:function(n,gf,ga){return n+" played · "+gf+" scored · "+ga+" conceded";},m_champ:"Champion",m_out:"Out in",mail:"Write to me",coffee:"Buy me a coffee",
   c10:"Method & data notes",
   s_matches:"matches",s_goals:"goals",s_changes:"price changes",s_plat:"prediction markets",s_views:"views",
   champ_path:function(r,p,f){return "Ranked <b>#"+r+"</b> early on ("+p+"%) → <b>"+f+"%</b> before the final → champions";},
@@ -523,7 +569,7 @@ function raceRender(){
     if(i==null){ el.style.opacity=0; el.style.transform="translateY("+(10*rowH)+"px)"; return; }
     var x=show[i]; el.style.opacity=1; el.style.transform="translateY("+(i*rowH)+"px)"; el.classList.toggle("out",x.out);
     el.querySelector(".rk").textContent=x.out?"—":(i+1);
-    var w=Math.max(0.4,x.v/mx*100); var fill=el.querySelector(".fill"); fill.style.width=w+"%";
+    var w=Math.max(0.4,x.v/mx*(innerWidth<600?74:86)); var fill=el.querySelector(".fill"); fill.style.width=w+"%";
     var val=el.querySelector(".val"); val.innerHTML=x.out?'<span class="tag">'+L("out")+(elimRound[x.t]?" · "+elimRound[x.t]:"")+'</span>':x.v.toFixed(1)+"%"; val.style.left="calc("+w+"% + 8px)"; });
   document.getElementById("raceDate").textContent=fmtD(t,true);
   document.getElementById("raceStage").textContent=stageAt(t);
@@ -610,20 +656,21 @@ function ucards(){
 
 // ───── 转折点：斜线图 ─────
 function slope(){
-  var rows=A.swings.slice(0,10), el=document.getElementById("slope"), W=Math.max(320,el.clientWidth||900), rowH=40, H=rows.length*rowH+40;
-  var lx=Math.min(300,W*.34), rx=W-150, X=function(v){ return lx+v/100*(rx-lx); };
+  var rows=A.swings.slice(0,10), el=document.getElementById("slope"), W=Math.max(300,el.clientWidth||900), mob=W<560;
+  var rowH=mob?64:40, H=rows.length*rowH+(mob?30:40);
+  var lx=mob?34:Math.min(300,W*.34), rx=mob?W-76:W-150, X=function(v){ return lx+v/100*(rx-lx); };
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
-  [0,25,50,75,100].forEach(function(v){ s+='<line x1="'+X(v)+'" x2="'+X(v)+'" y1="12" y2="'+(H-18)+'" stroke="rgba(255,255,255,.06)"/><text x="'+X(v)+'" y="'+(H-4)+'" font-size="10" text-anchor="middle" fill="#6c6a64">'+v+'%</text>'; });
-  rows.forEach(function(r,i){ var y=24+i*rowH, x1=X(r.before), x2=X(r.after), c=r.delta>0?"#17d17f":"#ff3b52";
+  (mob?[0,50,100]:[0,25,50,75,100]).forEach(function(v){ s+='<line x1="'+X(v)+'" x2="'+X(v)+'" y1="12" y2="'+(H-18)+'" stroke="rgba(255,255,255,.06)"/><text x="'+X(v)+'" y="'+(H-4)+'" font-size="10" text-anchor="middle" fill="#6c6a64">'+v+'%</text>'; });
+  rows.forEach(function(r,i){ var y=mob?36+i*rowH:24+i*rowH, ty=mob?y-18:y, x1=X(r.before), x2=X(r.after), c=r.delta>0?"#17d17f":"#ff3b52", ly=mob?y+12:y;
     var t=nm(r.home)+" "+r.sa+"–"+r.sb+" "+nm(r.away)+" · "+stg(r.grp)+"<br>"+nm(r.team)+": "+r.before+"% → "+r.after+"%";
     s+='<a href="'+replayMatch(r)+'"><g data-tip="'+t.replace(/"/g,"&quot;")+'" style="cursor:pointer">'+
-      '<rect x="0" y="'+(y-16)+'" width="'+W+'" height="'+rowH+'" fill="transparent"/>'+
-      '<image href="'+flagSrc(r.team)+'" x="0" y="'+(y-9)+'" width="26" height="18"/>'+
-      '<text x="34" y="'+(y+4)+'" font-size="13" font-weight="650" fill="#f3f1ea">'+nm(r.team)+'</text>'+
-      '<text x="34" y="'+(y+18)+'" font-size="10.5" fill="#6c6a64">'+stg(r.grp)+' · '+nm(r.home)+' '+r.sa+'–'+r.sb+' '+nm(r.away)+'</text>'+
-      '<line x1="'+x1+'" x2="'+x2+'" y1="'+y+'" y2="'+y+'" stroke="'+c+'" stroke-width="3" stroke-linecap="round" opacity=".85"/>'+
-      '<circle cx="'+x1+'" cy="'+y+'" r="4.5" fill="#15171d" stroke="#9a978f" stroke-width="1.5"/><circle cx="'+x2+'" cy="'+y+'" r="6" fill="'+c+'"/>'+
-      '<text x="'+(rx+18)+'" y="'+(y+5)+'" font-size="15" font-weight="800" fill="'+c+'">'+(r.delta>0?"+":"")+r.delta.toFixed(1)+'pt</text></g></a>'; });
+      '<rect x="0" y="'+(ty-16)+'" width="'+W+'" height="'+rowH+'" fill="transparent"/>'+
+      '<image href="'+flagSrc(r.team)+'" x="0" y="'+(ty-9)+'" width="26" height="18"/>'+
+      '<text x="34" y="'+(ty+4)+'" font-size="13" font-weight="650" fill="#f3f1ea">'+nm(r.team)+(mob?'<tspan font-size="10.5" font-weight="400" fill="#6c6a64" dx="8">'+stg(r.grp)+' · '+nm(r.home)+' '+r.sa+'–'+r.sb+' '+nm(r.away)+'</tspan>':'')+'</text>'+
+      (mob?'':'<text x="34" y="'+(y+18)+'" font-size="10.5" fill="#6c6a64">'+stg(r.grp)+' · '+nm(r.home)+' '+r.sa+'–'+r.sb+' '+nm(r.away)+'</text>')+
+      '<line x1="'+x1+'" x2="'+x2+'" y1="'+ly+'" y2="'+ly+'" stroke="'+c+'" stroke-width="3" stroke-linecap="round" opacity=".85"/>'+
+      '<circle cx="'+x1+'" cy="'+ly+'" r="4.5" fill="#15171d" stroke="#9a978f" stroke-width="1.5"/><circle cx="'+x2+'" cy="'+ly+'" r="6" fill="'+c+'"/>'+
+      '<text x="'+(rx+(mob?12:18))+'" y="'+(ly+5)+'" font-size="'+(mob?13.5:15)+'" font-weight="800" fill="'+c+'">'+(r.delta>0?"+":"")+r.delta.toFixed(1)+'pt</text></g></a>'; });
   el.innerHTML=s+'</svg>';
 }
 
@@ -652,7 +699,7 @@ function rel(){ var R=A.accuracy.reliability, keys=["consensus","polymarket","ka
 
 // ───── 看走眼：散点 ─────
 function scatter(){
-  var rows=A.teams, el=document.getElementById("scatter"), W=Math.max(320,el.clientWidth||900), H=Math.round(Math.min(560,Math.max(360,W*.6))), p=46;
+  var rows=A.teams, el=document.getElementById("scatter"), W=Math.max(300,el.clientWidth||900), mob=W<560, H=Math.round(mob?Math.max(340,W*1.05):Math.min(560,Math.max(360,W*.6))), p=mob?40:46;
   var X=function(v){return p+v/100*(W-p-20);}, Y=function(v){return H-p-v/100*(H-p-18);};
   var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
   s+='<path d="M'+X(0)+','+Y(0)+' L'+X(100)+','+Y(100)+' L'+X(0)+','+Y(100)+' Z" fill="rgba(23,209,127,.05)"/><path d="M'+X(0)+','+Y(0)+' L'+X(100)+','+Y(100)+' L'+X(100)+','+Y(0)+' Z" fill="rgba(255,59,82,.05)"/>';
@@ -660,11 +707,18 @@ function scatter(){
   s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(100)+'" y2="'+Y(100)+'" stroke="#9a978f" stroke-dasharray="5,5"/>';
   s+='<text x="'+(X(4))+'" y="'+(Y(94))+'" font-size="13" font-weight="700" fill="#17d17f">'+L("under")+'</text><text x="'+(X(96))+'" y="'+(Y(6))+'" font-size="13" font-weight="700" fill="#ff3b52" text-anchor="end">'+L("over")+'</text>';
   s+='<text x="'+((X(0)+X(100))/2)+'" y="'+(H-8)+'" font-size="11" text-anchor="middle" fill="#9a978f">'+L("x_lab")+'</text><text x="12" y="'+((Y(0)+Y(100))/2)+'" font-size="11" text-anchor="middle" fill="#9a978f" transform="rotate(-90 12 '+((Y(0)+Y(100))/2)+')">'+L("y_lab")+'</text>';
-  var sorted=rows.slice().sort(function(a,b){return Math.abs(a.gap)-Math.abs(b.gap);});
-  sorted.forEach(function(r){ var x=X(r.mkt), y=Y(r.act), big=Math.abs(r.gap)>=25, c=r.gap>=0?"#17d17f":"#ff3b52", fw=big?30:22, fh=big?20:15;
+  var sorted=rows.slice().sort(function(a,b){return Math.abs(a.gap)-Math.abs(b.gap);}), labs=[], fs=mob?10:11.5;
+  sorted.forEach(function(r){ var x=X(r.mkt), y=Y(r.act), big=Math.abs(r.gap)>=25, c=r.gap>=0?"#17d17f":"#ff3b52", fw=mob?(big?20:15):(big?30:22), fh=mob?(big?14:10):(big?20:15);
     var t="<b>"+nm(r.team)+"</b> · "+r.w+"-"+r.d+"-"+r.l+"<br>"+(LANG==="zh"?"市场预期 ":"expected ")+r.mkt+"% → "+(LANG==="zh"?"实际 ":"actual ")+r.act+"%<br><b style='color:"+(r.gap>=0?"#0a8a64":"#c23a2a")+"'>"+(r.gap>=0?"+":"")+r.gap+"pt</b>"+(r.big?"<br>"+(LANG==="zh"?"最大冷门：":"best upset: ")+"vs "+nm(r.big.opp)+" "+r.big.score:"");
     s+='<g data-tip="'+t.replace(/"/g,"&quot;")+'" style="cursor:pointer"><rect x="'+(x-fw/2-2)+'" y="'+(y-fh/2-2)+'" width="'+(fw+4)+'" height="'+(fh+4)+'" rx="4" fill="'+c+'" opacity="'+(big?.9:.35)+'"/><image href="'+flagSrc(r.team)+'" x="'+(x-fw/2)+'" y="'+(y-fh/2)+'" width="'+fw+'" height="'+fh+'" preserveAspectRatio="xMidYMid slice"/>'+
-      (big?'<text x="'+(x+fw/2+6)+'" y="'+(y+4)+'" font-size="11.5" font-weight="700" fill="'+c+'">'+nm(r.team)+' '+(r.gap>=0?"+":"")+r.gap+'</text>':"")+'</g>'; });
+      '</g>';
+    if(big) labs.push({x:x+fw/2+5,y:y+4,c:c,t:nm(r.team)+' '+(r.gap>=0?"+":"")+r.gap,g:Math.abs(r.gap)}); });
+  // 标签：按偏差从大到小放，互相重叠的就不放（悬停仍可看全部）
+  var placed=[]; labs.sort(function(a,b){return b.g-a.g;}).forEach(function(l){
+    var w=0; for(var i=0;i<l.t.length;i++) w+=l.t.charCodeAt(i)>255?fs:fs*.6; var b={l:l.x,r:l.x+w,t:l.y-fs,b:l.y+3};
+    if(b.r>W-2){ b.l=l.x-w-(mob?22:36)-4; b.r=b.l+w; l.x=b.l; }
+    if(placed.some(function(q){ return b.l<q.r&&b.r>q.l&&b.t<q.b&&b.b>q.t; })) return;
+    placed.push(b); s+='<text x="'+l.x.toFixed(1)+'" y="'+l.y.toFixed(1)+'" font-size="'+fs+'" font-weight="700" fill="'+l.c+'" style="paint-order:stroke" stroke="#101217" stroke-width="3">'+l.t+'</text>'; });
   el.innerHTML=s+'</svg>';
 }
 
@@ -774,7 +828,17 @@ function mapLoadTopo(){
 }
 // 视角：缩放适配容器宽度；倾斜 + 旋转；标签始终正对屏幕
 function mapFit(){ var box=document.getElementById("m3d"); if(!box) return; var w=box.clientWidth||900;
-  MP.s=w/MW*(w<600?1.15:1.08); box.style.height=Math.round(w*(w<600?.74:.66))+"px"; }
+  MP.s=w/MW*(w<600?1.15:1.08); var h=Math.round(w*(w<600?.74:.66));
+  if(MP.fs){ var avail=innerHeight-(innerWidth<=860?300:190); h=Math.max(260,avail); MP.s=Math.min(w/MW*.98,h/(MH*.62)); }
+  box.style.height=h+"px"; }
+function mapFsLabel(){ var b=document.getElementById("mapFs"); if(b) b.textContent=MP.fs?L("m_fs_exit"):L("m_fs"); }
+function mapSetFs(on){ var p=document.getElementById("mapPanel"); MP.fs=on; p.classList.toggle("mfs",on);
+  document.documentElement.style.overflow=on?"hidden":"";
+  var tp=document.querySelector(".tip"); if(tp) (on?p:document.body).appendChild(tp);
+  mapFsLabel(); setTimeout(function(){ mapFit(); mapView(); mapDeclutter(MP.lastOrder); },60); }
+function mapToggleFs(){ var p=document.getElementById("mapPanel");
+  if(!MP.fs){ mapSetFs(true); if(p.requestFullscreen) p.requestFullscreen().catch(function(){}); else if(p.webkitRequestFullscreen) try{ p.webkitRequestFullscreen(); }catch(e){} }
+  else { if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen().catch(function(){}); else if(document.webkitFullscreenElement&&document.webkitExitFullscreen) document.webkitExitFullscreen(); mapSetFs(false); } }
 function mapView(){
   var st=document.getElementById("m3dStage"); if(!st) return;
   st.style.transform="translate(-50%,-50%) translateY("+(MP.tilt*1.5*MP.s).toFixed(1)+"px) scale("+MP.s.toFixed(4)+") rotateX("+MP.tilt.toFixed(2)+"deg) rotateZ("+MP.rz.toFixed(2)+"deg)";
@@ -856,7 +920,7 @@ function mapLabels(){ document.getElementById("mapH").textContent=L("h_map")(A.o
   document.querySelectorAll("#mapMetric button").forEach(function(b){ b.textContent=L("m_"+b.dataset.m); b.classList.toggle("on",b.dataset.m===MP.metric); });
   document.getElementById("mapPlay").textContent=MP.playing?L("m_pause"):(MP.t>=MP.t1?L("m_replay"):L("m_play"));
   document.getElementById("mapLbH").textContent=L("m_lb")+" · "+L("m_"+MP.metric);
-  document.getElementById("mapHint").textContent=L("m_drag"); }
+  document.getElementById("mapHint").textContent=L("m_drag"); mapFsLabel(); }
 function mapPlay(){ if(MP.t>=MP.t1){ MP.t=MP.t0; MP.last=MP.t0; }
   MP.playing=true; mapLabels(); var prev=performance.now(), rate=(MP.t1-MP.t0)/34;
   cancelAnimationFrame(MP.raf);
@@ -882,6 +946,10 @@ function mapInit(){
     box.addEventListener("pointermove",function(e){ if(!drag) return; MP.rz=Math.max(-75,Math.min(75,drag.rz+(e.clientX-drag.x)*.3)); MP.tilt=Math.max(0,Math.min(70,drag.tilt-(e.clientY-drag.y)*.25)); mapView(); mapDeclutter(MP.lastOrder); });
     var up=function(){ drag=null; box.classList.remove("drag"); }; box.addEventListener("pointerup",up); box.addEventListener("pointercancel",up);
     box.addEventListener("dblclick",function(){ mapTween(VIEW,700); });
+    document.getElementById("mapFs").addEventListener("click",mapToggleFs);
+    var fsc=function(){ if(MP.fs&&!(document.fullscreenElement||document.webkitFullscreenElement)) mapSetFs(false); };
+    document.addEventListener("fullscreenchange",fsc); document.addEventListener("webkitfullscreenchange",fsc);
+    document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&MP.fs) mapSetFs(false); });
     new IntersectionObserver(function(es){ es.forEach(function(en){
       if(en.isIntersecting){ if(!MP.started){ MP.started=true; MP.t=MP.t0; MP.last=MP.t0; mapRender(true); mapTween(VIEW,1600); setTimeout(mapPlay,700); } else if(MP.auto){ MP.auto=false; if(MP.t<MP.t1) mapPlay(); } }
       else if(MP.playing){ MP.auto=true; mapPause(); } }); },{threshold:.35}).observe(document.getElementById("s-map"));
@@ -889,6 +957,14 @@ function mapInit(){
   }
   if(!MP.started){ MP.tilt=0; MP.rz=0; } mapView();
 }
+// 实时访问量：历史累计（analysis.json）+ 存档上线后的新增（/api/visits，每个会话计一次）
+var VBASE=null, VLIVE=0;
+function pullVisits(){ var first=false; try{ first=!sessionStorage.getItem("pmw_hit"); if(first) sessionStorage.setItem("pmw_hit","1"); }catch(e){}
+  return fetch("/api/visits",{method:first?"POST":"GET",cache:"no-store"}).then(function(r){ return r.ok?r.json():null; })
+    .then(function(j){ if(j&&typeof j.n==="number"&&j.n!==VLIVE){ VLIVE=j.n; applyVisits(); } }).catch(function(){}); }
+function applyVisits(){ if(!A) return; if(VBASE==null) VBASE=A.overview.visits; A.overview.visits=VBASE+VLIVE; footViews();
+  var el=document.querySelector("#stats .stat:last-child [data-count]");
+  if(el){ el.dataset.count=A.overview.visits; if(el.classList.contains("done")) el.innerHTML=A.overview.visits.toLocaleString("en-US"); } }
 function footViews(){ var v=(A.overview||{}).visits; var e=document.getElementById("fViews"); if(e&&v!=null) e.innerHTML='👀 <b class="num">'+v.toLocaleString("en-US")+'</b> '+(LANG==="zh"?"累计访问":"total views"); }
 function renderAll(){ statics(); footViews(); hero(); raceInit(); bign(); ucards(); slope(); hitStage(); draws(); brier(); rel(); scatter(); pcards(); game(); mapInit(); method();
   document.querySelectorAll("section.sec").forEach(function(s){ secIO.observe(s); }); observe();
@@ -896,7 +972,7 @@ function renderAll(){ statics(); footViews(); hero(); raceInit(); bign(); ucards
 document.querySelectorAll("[data-lang]").forEach(function(b){ b.addEventListener("click",function(){ LANG=b.dataset.lang; try{localStorage.setItem("pmw_lang",JSON.stringify(LANG));}catch(e){} var f=RB.f, pl=RB.playing; racePause(); renderAll(); RB.f=f; raceRender(); if(pl) racePlay();
   document.querySelectorAll("[data-count]").forEach(function(el){ if(el.closest(".reveal.in")||el.closest(".hero")) countUp(el); }); }); });
 var rt; addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(function(){ if(!A) return; slope(); rel(); scatter(); if(MP.built) mapRender(true); if(RB.view==="line") raceLine(); },200); });
-fetch("data/analysis.json").then(function(r){return r.json();}).then(function(j){ A=j; renderAll(); document.querySelectorAll(".hero [data-count]").forEach(countUp); });
+fetch("data/analysis.json").then(function(r){return r.json();}).then(function(j){ A=j; VBASE=A.overview.visits; renderAll(); pullVisits(); setInterval(pullVisits,60000); document.querySelectorAll(".hero [data-count]").forEach(countUp); });
 })();
 </script>
 <script>

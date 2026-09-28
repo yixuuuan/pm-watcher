@@ -1,12 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="15" fill="#0b0d12"/>
-  <g fill="none" stroke-width="4.4" stroke-linecap="round">
-    <path d="M7 32C12 23.75 22 19.625 32 19.625" stroke="#ff3b52"/>
-    <path d="M32 19.625C42 19.625 52 23.75 57 32" stroke="#f0c75e"/>
-    <path d="M57 32C52 40.25 42 44.375 32 44.375" stroke="#3d7bff"/>
-    <path d="M32 44.375C22 44.375 12 40.25 7 32" stroke="#17d17f"/>
-  </g>
-  <circle cx="32" cy="32" r="10.5" fill="#161a23" stroke="#f3f1ea" stroke-width="2.4"/>
+  <path d="M7 32C14.5 19.6 23 15.6 32 15.6S49.5 19.6 57 32C49.5 44.4 41 48.4 32 48.4S14.5 44.4 7 32Z" fill="none" stroke="#20d3a1" stroke-width="4.2" stroke-linejoin="round"/>
+  <circle cx="32" cy="32" r="10.5" fill="#12251f" stroke="#f3f1ea" stroke-width="2.4"/>
   <polyline points="25,36.5 29.5,31.5 33,34 38.5,27" fill="none" stroke="#f3f1ea" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="38.5" cy="27" r="2.6" fill="#f0c75e"/>
+  <circle cx="38.5" cy="27" r="2.8" fill="#f0c75e"/>
 </svg>
