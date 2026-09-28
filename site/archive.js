@@ -448,19 +448,21 @@
     var bar = document.createElement("div");
     bar.id = "pmwbar";
     bar.innerHTML =
-      '<div class="pb-row">' +
-        '<span class="pb-badge" id="pbBadge"></span>' +
-        '<button class="pb-btn" id="pbBack" title="-1h">−1h</button>' +
-        '<input type="datetime-local" id="pbInput">' +
-        '<button class="pb-btn" id="pbFwd" title="+1h">+1h</button>' +
-        '<button class="pb-btn pb-play" id="pbPlay"></button>' +
+      '<div class="pb-row pb-main">' +
+        '<span class="pb-badge" id="pbBadge"><i class="pb-rec"></i><span id="pbBadgeT"></span></span>' +
+        '<div class="pb-clock" id="pbClock"><div class="pb-time" id="pbTime"></div><div class="pb-stage" id="pbStage"></div></div>' +
+        '<div class="pb-nav" id="pbNav">' +
+          '<button class="pb-btn" id="pbBack" title="-1h">−1h</button>' +
+          '<input type="datetime-local" id="pbInput">' +
+          '<button class="pb-btn" id="pbFwd" title="+1h">+1h</button>' +
+        '</div>' +
+        '<button class="pb-play" id="pbPlay"><span class="pb-ico" aria-hidden="true"></span><span class="pb-lbl" id="pbPlayL"></span></button>' +
         '<select id="pbSpeed"></select>' +
-        '<span class="pb-stage" id="pbStage"></span>' +
+        '<span class="pb-flex"></span>' +
+        '<button class="pb-help" id="pbHelp"></button>' +
         '<a class="pb-ana" id="pbAna" href="analysis.html"></a>' +
       '</div>' +
-      '<div class="pb-row pb-row2">' +
-        '<input type="range" id="pbRange">' +
-      '</div>' +
+      '<div class="pb-row pb-row2"><div class="pb-track" id="pbTrack"><div class="pb-ticks" id="pbTicks"></div><input type="range" id="pbRange"></div></div>' +
       '<div class="pb-row pb-chips" id="pbChips"></div>';
     document.body.insertBefore(bar, document.body.firstChild);
     UI.input = bar.querySelector("#pbInput");
@@ -475,7 +477,8 @@
     UI.range.addEventListener("change", function () { setT(+UI.range.value, "jump"); });
     bar.querySelector("#pbBack").addEventListener("click", function () { setT(PMW.T - 3600, "jump"); });
     bar.querySelector("#pbFwd").addEventListener("click", function () { setT(PMW.T + 3600, "jump"); });
-    UI.play.addEventListener("click", function () { PMW.playing ? stop() : play(); });
+    UI.play.addEventListener("click", function () { PMW.playing ? stop() : play(); try { localStorage.setItem("pmw_played", "1"); } catch (e) {} });
+    bar.querySelector("#pbHelp").addEventListener("click", function () { tour(0); });
     UI.speed.addEventListener("change", function () { PMW.speed = +UI.speed.value; });
     bar.querySelector("#pbChips").addEventListener("click", function (e) {
       var b = e.target.closest("[data-t]"); if (b) { stop(); setT(+b.dataset.t, "jump"); }
@@ -499,13 +502,19 @@
   }
   function labels() {
     if (!UI.play) return;
-    document.getElementById("pbBadge").textContent = tx("⏱ 历史回放", "⏱ Replay");
-    UI.play.textContent = PMW.playing ? tx("⏸ 暂停", "⏸ Pause") : tx("▶ 播放", "▶ Play");
+    document.getElementById("pbBadgeT").textContent = tx("历史回放", "REPLAY");
+    document.getElementById("pbPlayL").textContent = PMW.playing ? tx("暂停", "Pause") : tx("播放", "Play");
+    UI.play.classList.toggle("on", !!PMW.playing);
+    document.getElementById("pbHelp").innerHTML = '<b>?</b><span>' + tx("使用指引", "Guide") + "</span>";
     var sp = [[60, "1分钟/秒", "1 min/s"], [600, "10分钟/秒", "10 min/s"], [3600, "1小时/秒", "1 h/s"], [21600, "6小时/秒", "6 h/s"]];
     UI.speed.innerHTML = sp.map(function (s) { return '<option value="' + s[0] + '"' + (s[0] === PMW.speed ? " selected" : "") + ">" + tx(s[1], s[2]) + "</option>"; }).join("");
     document.getElementById("pbAna").textContent = tx("📊 全程数据分析 →", "📊 Tournament analysis →");
-    document.getElementById("pbChips").innerHTML = stages().map(function (s) {
+    var st = stages(), span = PMW.t1 - PMW.t0;
+    document.getElementById("pbChips").innerHTML = st.map(function (s) {
       return '<button class="pb-chip" data-t="' + s.t + '" data-sid="' + s.id + '">' + tx(s.zh, s.en) + "</button>";
+    }).join("");
+    document.getElementById("pbTicks").innerHTML = st.map(function (s) {
+      return '<i style="left:' + ((s.t - PMW.t0) / span * 100).toFixed(2) + '%" title="' + tx(s.zh, s.en) + '"></i>';
     }).join("");
     sync();
     if (UI.place) UI.place();
@@ -515,6 +524,9 @@
     if (document.activeElement !== UI.input) UI.input.value = toLocalInput(PMW.T);
     if (document.activeElement !== UI.range || PMW.playing) UI.range.value = PMW.T;
     document.getElementById("pbStage").textContent = stageNow(PMW.T);
+    var d = new Date(PMW.T * 1000);
+    document.getElementById("pbTime").innerHTML = '<span>' + d.getFullYear() + "." + pad(d.getMonth() + 1) + "." + pad(d.getDate()) + "</span> " + pad(d.getHours()) + ":" + pad(d.getMinutes());
+    UI.range.style.setProperty("--p", ((PMW.T - PMW.t0) / (PMW.t1 - PMW.t0) * 100).toFixed(2) + "%");
     var chips = document.querySelectorAll(".pb-chip"), cur = null;
     chips.forEach(function (c) { if (+c.dataset.t <= PMW.T + 1) cur = c; });
     chips.forEach(function (c) { c.classList.toggle("on", c === cur); });
@@ -569,7 +581,11 @@
   }
   var playTimer = null;
   function play() {
-    if (PMW.T >= PMW.t1) PMW.T = PMW.t0;
+    if (PMW.T >= PMW.t1 - 60) {                    // 在终点按播放：从开幕前重播，并默认用 1 小时/秒（10 分钟/秒要看两个小时）
+      var k0 = Math.min.apply(null, D.games.map(function (g) { return g.kickoff; }));
+      setT(Math.max(PMW.t0, k0 - 3 * 3600), "jump");
+      if (PMW.speed === 600) PMW.speed = 3600;
+    }
     PMW.playing = true; labels();
     var last = Date.now();
     playTimer = setInterval(function () {
@@ -613,12 +629,113 @@
   }
   PMW.focusMatch = focusMatch;
 
+
+  // ───────── 使用指引：首次进入自动播放，之后可点「？使用指引」重看 ─────────
+  var TOUR = null;
+  function tourSteps() {
+    return [
+      { sel: null,
+        t: tx("欢迎来到 pm-watcher 时光机", "Welcome to the pm-watcher time machine"),
+        b: tx("2026 世界杯期间，这个看板实时追踪了 <b>5 个预测市场</b>对每支球队、每场比赛的定价，前后记录了 <b>20 万次</b>价格变动。<br>赛事已经结束，它变成了一份可回放的历史档案——你可以回到任意时刻，看到当时屏幕上的真实数据。",
+              "During the 2026 World Cup this dashboard tracked how <b>5 prediction markets</b> priced every team and match — over <b>200,000</b> price changes.<br>The tournament is over; now it is a replayable archive. Jump to any moment and see exactly what the live board showed.") },
+      { sel: "#pbClock,#pbNav",
+        t: tx("① 选一个时刻", "① Pick a moment"),
+        b: tx("这里显示你正在回看的时间。点日期可以直接选到分钟，或用 −1h / +1h 逐小时前后翻。", "This is the moment you are viewing. Pick any date and time, or step an hour back / forward.") },
+      { sel: "#pbTrack,#pbChips",
+        t: tx("② 拖动时间轴", "② Scrub the timeline"),
+        b: tx("拖动滑块穿越整届赛事；下面的按钮一键跳到关键节点：小组赛收官、32 强……直到决赛终场。", "Drag across the whole tournament, or jump straight to key moments — end of groups, each knockout round, the final whistle.") },
+      { sel: "#pbPlay,#pbSpeed", play: 1,
+        t: tx("③ 按下播放", "③ Press play"),
+        b: tx("赔率、榜单和新闻弹幕会像直播一样随时间流动。右边可以调速度：1 小时/秒约 24 秒看完一个比赛日。<br><em>现在就点一下试试 ▶</em>", "Odds, rankings and news start flowing as if live. Change the speed on the right — at 1 h/s a matchday takes about 24 seconds.<br><em>Try clicking it now ▶</em>") },
+      { sel: ".tabs.row",
+        t: tx("④ 切换视角", "④ Switch views"),
+        b: tx("复盘看每场比赛前后市场怎么变；冠军榜看夺冠概率；赛程与淘汰赛看对阵与各平台赔率。它们都会跟着上面的时刻变化。", "Recap shows how markets moved around each match; Champion shows title odds; Matches and Knockout show fixtures and prices. All follow the moment you picked.") },
+      { sel: "#pbAna",
+        t: tx("⑤ 想看整届总结？", "⑤ Want the big picture?"),
+        b: tx("这里是全程数据复盘：冠军概率赛跑、最大冷门、哪个平台最准……", "The tournament analysis: the title race, the biggest upsets, which platform was most accurate…") },
+    ];
+  }
+  function tourEl() {
+    if (TOUR) return TOUR;
+    var m = document.createElement("div"); m.className = "pmw-tour";
+    m.innerHTML = '<div class="pmw-spot"></div><div class="pmw-tip" role="dialog" aria-live="polite"></div>';
+    document.body.appendChild(m);
+    TOUR = { m: m, spot: m.firstChild, tip: m.lastChild, i: 0 };
+    TOUR.tip.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-go]"); if (!b) return;
+      var g = b.getAttribute("data-go");
+      if (g === "end") tourEnd(); else tour(TOUR.i + (+g));
+    });
+    document.addEventListener("keydown", function (e) {
+      if (!TOUR || !TOUR.m.classList.contains("on")) return;
+      if (e.key === "Escape") tourEnd();
+      if (e.key === "ArrowRight") tour(TOUR.i + 1);
+      if (e.key === "ArrowLeft" && TOUR.i > 0) tour(TOUR.i - 1);
+    });
+    var re = function () { if (TOUR && TOUR.m.classList.contains("on")) tourPlace(); };
+    window.addEventListener("resize", re); window.addEventListener("scroll", re, { passive: true });
+    UI.play && UI.play.addEventListener("click", function () {   // 在第 ③ 步真的点了播放 → 自动进入下一步
+      if (TOUR && TOUR.m.classList.contains("on") && tourSteps()[TOUR.i].play) setTimeout(function () { tour(TOUR.i + 1); }, 700);
+    });
+    return TOUR;
+  }
+  function tourRect(sel) {
+    var r = null;
+    sel.split(",").forEach(function (q) {
+      var el = document.querySelector(q); if (!el || !el.offsetParent && el.tagName !== "BODY") return;
+      var b = el.getBoundingClientRect(); if (!b.width) return;
+      r = r ? { l: Math.min(r.l, b.left), t: Math.min(r.t, b.top), r: Math.max(r.r, b.right), b: Math.max(r.b, b.bottom) } : { l: b.left, t: b.top, r: b.right, b: b.bottom };
+    });
+    return r;
+  }
+  function tourPlace() {
+    var st = tourSteps()[TOUR.i], spot = TOUR.spot, tip = TOUR.tip, vw = innerWidth, vh = innerHeight;
+    var r = st.sel ? tourRect(st.sel) : null;
+    TOUR.m.classList.toggle("center", !r);
+    if (!r) { spot.style.cssText = "left:50%;top:50%;width:0;height:0"; tip.style.left = ""; tip.style.top = ""; return; }
+    var pad = 8;
+    spot.style.cssText = "left:" + (r.l - pad) + "px;top:" + (r.t - pad) + "px;width:" + (r.r - r.l + pad * 2) + "px;height:" + (r.b - r.t + pad * 2) + "px";
+    var tw = tip.offsetWidth, th = tip.offsetHeight, x = Math.min(Math.max(12, (r.l + r.r) / 2 - tw / 2), vw - tw - 12);
+    var y = r.b + pad + 14; if (y + th > vh - 12) y = Math.max(12, r.t - pad - 14 - th);
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+    tip.style.setProperty("--ax", Math.min(Math.max(20, (r.l + r.r) / 2 - x), tw - 20) + "px");
+    tip.classList.toggle("up", y < r.t);
+  }
+  function tour(i) {
+    var S = tourSteps(); if (i < 0) i = 0; if (i >= S.length) return tourEnd();
+    var T = tourEl(); T.i = i; var st = S[i], last = i === S.length - 1;
+    var dots = S.map(function (_, k) { return '<i class="' + (k === i ? "on" : "") + '"></i>'; }).join("");
+    T.tip.innerHTML =
+      (i === 0 ? '<div class="pmw-hello"><span>Polymarket</span><span>Kalshi</span><span>42</span><span>Manifold</span><span>Predict</span></div>' : "") +
+      '<div class="pmw-h">' + st.t + "</div><div class=\"pmw-b\">" + st.b + "</div>" +
+      '<div class="pmw-f"><div class="pmw-dots">' + dots + "</div>" +
+      '<button class="pmw-skip" data-go="end">' + (last ? "" : tx("跳过", "Skip")) + "</button>" +
+      (i > 0 ? '<button class="pmw-prev" data-go="-1">' + tx("上一步", "Back") + "</button>" : "") +
+      '<button class="pmw-next" data-go="' + (last ? "end" : "1") + '">' + (i === 0 ? tx("带我看看 →", "Show me →") : last ? tx("开始探索 ✓", "Start exploring ✓") : tx("下一步 →", "Next →")) + "</button></div>";
+    T.m.classList.add("on");
+    document.documentElement.classList.toggle("pmw-touring", true);
+    if (st.sel) {                               // 目标不在视野里就先滚过去
+      var el = document.querySelector(st.sel.split(",")[0]), b = el && el.getBoundingClientRect();
+      if (b && (b.top < 0 || b.bottom > innerHeight - 180)) el.scrollIntoView({ block: "center", behavior: "smooth" });
+    }
+    tourPlace(); setTimeout(tourPlace, 350); setTimeout(tourPlace, 700);
+  }
+  function tourEnd() {
+    if (!TOUR) return;
+    TOUR.m.classList.remove("on");
+    document.documentElement.classList.remove("pmw-touring");
+    try { localStorage.setItem("pmw_tour_v1", "1"); } catch (e) {}
+  }
+  PMW.tour = tour;
+
   function initBar() {
     if (!document.getElementById("meta")) return;    // 只有看板页才有控制栏
     lastSig = recapSigAt(PMW.T);
     buildBar();
     var mk = new URLSearchParams(location.search).get("m");
     if (mk) focusMatch(mk);
+    var seen = null; try { seen = localStorage.getItem("pmw_tour_v1"); } catch (e) {}
+    if (!mk && !seen) setTimeout(function () { tour(0); }, 900);
   }
   ready.then(function () {
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initBar);
