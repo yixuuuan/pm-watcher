@@ -33,8 +33,10 @@ ROOT = Path(__file__).resolve().parent.parent
 HERE = Path(__file__).resolve().parent
 PKG = ROOT / "pm_watcher"
 
-ICON = ('<link rel="icon" type="image/svg+xml" href="favicon.svg">\n'
-        '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n')
+ICON = ('<link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">\n'
+        '<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3">\n'
+        '<link rel="shortcut icon" href="favicon.ico?v=3">\n'
+        '<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">\n')
 PLATFORMS = ["polymarket", "kalshi", "42", "manifold", "predict"]   # 与 ALL_PLATFORMS 同序
 FINISH_LAG = 2 * 3600 + 15 * 60     # 开球后多久视为「已结束并入库」（赛果源每 5 分钟同步）
 KO_ROUNDS = ("R32", "R16", "QF", "SF", "3P", "FIN")
@@ -243,7 +245,7 @@ def main():
         patch_dashboard((PKG / "dashboard.html").read_text(encoding="utf-8"), args.site_url), encoding="utf-8")
     (out / "parallel-universe.html").write_text(
         patch_pu((PKG / "parallel-universe.html").read_text(encoding="utf-8"), args.site_url), encoding="utf-8")
-    for f in ("archive.js", "archive.css", "analysis.html", "favicon.svg", "apple-touch-icon.png"):
+    for f in ("archive.js", "archive.css", "analysis.html", "favicon.svg", "favicon-32.png", "favicon.ico", "apple-touch-icon.png"):
         src = HERE / "web" / f
         if src.exists():
             shutil.copy(src, out / f)

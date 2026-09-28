@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>2026 世界杯 · 全程数据复盘 | pm-watcher</title>
 <meta name="description" content="五个预测市场、20 万次定价变动，复盘 2026 世界杯：冠军争夺战、冷门、市场准不准、谁被看走眼。">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png?v=3">
+<link rel="shortcut icon" href="favicon.ico?v=3">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
 <style>
   :root{--bg:#07080b;--bg2:#101217;--panel:rgba(18,20,26,.88);--panel2:rgba(27,30,37,.92);--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.14);
         --ink:#f3f1ea;--mut:#9a978f;--dim:#6c6a64;--teal:#17d17f;--hot:#ff3b52;--gold:#f0c75e;--blue:#3d7bff}
@@ -175,7 +177,6 @@
   .m3d.drag{cursor:grabbing}
   .m3d-stage{position:absolute;left:50%;top:50%;transform-style:preserve-3d;transform-origin:50% 50%}
   #mapSvg{position:absolute;left:0;top:0;display:block;overflow:visible}
-  #mapSvg .floor{fill:rgba(20,24,34,.55);stroke:rgba(61,123,255,.25);stroke-width:1}
   #mapSvg .grat path{fill:none;stroke:rgba(120,160,255,.09);stroke-width:.7}
   #mapSvg .land path{fill:#1f2431;stroke:rgba(255,255,255,.09);stroke-width:.5;transition:fill .4s}
   #mapSvg .land path.wc{stroke:rgba(255,255,255,.22);cursor:pointer}
@@ -263,7 +264,7 @@
 <body>
 <canvas id="fx" aria-hidden="true"></canvas><div class="fx-tex" aria-hidden="true"></div>
 <nav class="nav"><div class="wrap">
-  <span class="brand"><img src="favicon.svg" alt="" class="logo"><span><b>pm</b>-watcher</span></span>
+  <span class="brand"><img src="favicon.svg?v=3" alt="" class="logo"><span><b>pm</b>-watcher</span></span>
   <div class="links" id="navlinks"></div>
   <a class="nut" href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener" title="Buy me a chestnut">🌰</a>
   <div class="langsw"><button data-lang="en">EN</button><button data-lang="zh">中</button></div>
@@ -419,7 +420,7 @@ var S={zh:{
   c7:"平台",h_plat:"五个平台，五种性格",d_plat:"同一场比赛、同一支球队，五个平台的定价习惯并不一样。",
   plat_note:"「热门自信度」= 该平台给共识热门的概率 − 共识概率（正值 = 比同行更自信）；「单场概率和」= 三档原始价格相加（>100% 为溢价）；「冠军盘偏离」= 与清洗后共识的平均距离；「异常报价」= 每 12 小时抽样，因偏离其他平台过多（多为其他运动的同名球队串盘）被剔除的次数。",
   c8:"比赛",h_game:"场上发生了什么",ko_head:"淘汰赛全部赛果",
-  c9:"进球地图",h_map:function(g){return g+" 粒进球，落在地图上";},d_map:"按时间回放整届赛事：每场比赛结束，两队之间划出一道弧线，光柱随累计数据升高。拖动地图可以旋转视角，悬停光柱或国家查看详情。",m_gf:"进球",m_ga:"失球",m_gd:"净胜球",m_play:"▶ 播放",m_pause:"⏸ 暂停",m_replay:"↻ 重播",m_lb:"排行",m_n:"场",m_load:"地图加载中…",m_drag:"拖动旋转 · 双击复位",m_fs:"⛶ 全屏",m_fs_exit:"✕ 退出全屏",m_tip:function(n,gf,ga){return n+" 场 · 进 "+gf+" · 失 "+ga;},m_champ:"冠军",m_out:"止步",mail:"写信给我",coffee:"请我喝杯咖啡",
+  c9:"进球地图",h_map:function(g){return g+" 粒进球，落在地图上";},d_map:"按时间回放整届赛事：每场比赛结束，两队之间划出一道弧线，光柱随累计数据升高。拖动地图可以旋转视角，悬停光柱或国家查看详情。",m_gf:"进球",m_ga:"失球",m_gd:"净胜球",m_play:"▶ 播放",m_pause:"⏸ 暂停",m_replay:"↻ 重播",m_lb:"排行",m_n:"场",m_load:"地图加载中…",m_drag:"拖动旋转 · 双击复位 · 全屏可滚轮缩放",m_fs:"全屏",m_fs_exit:"✕ 退出全屏",m_tip:function(n,gf,ga){return n+" 场 · 进 "+gf+" · 失 "+ga;},m_champ:"冠军",m_out:"止步",mail:"写信给我",coffee:"请我喝杯咖啡",
   c10:"方法与数据说明",
   s_matches:"场比赛",s_goals:"粒进球",s_changes:"次定价变动",s_plat:"个预测市场",s_views:"次访问",
   champ_path:function(r,p,f){return "开赛初期市场排名第 <b>"+r+"</b>（"+p+"%）→ 决赛前 <b>"+f+"%</b> → 捧杯";},
@@ -454,7 +455,7 @@ var S={zh:{
   c7:"Platforms",h_plat:"Five platforms, five personalities",d_plat:"Same match, same team — the platforms price differently.",
   plat_note:"“Favorite confidence” = platform's probability on the consensus favorite minus the consensus (positive = more confident). “Match overround” = three raw prices summed (>100% = margin). “Title deviation” = average distance from the cleaned consensus. “Anomalies” = sampled every 12h, quotes dropped for straying too far from the other platforms (usually a same-named team from another sport).",
   c8:"The football",h_game:"What happened on the pitch",ko_head:"All knockout results",
-  c9:"Goal map",h_map:function(g){return g+" goals, on the map";},d_map:"Replay the tournament: when a match ends an arc links the two teams and each column rises with its running total. Drag the map to rotate; hover a column or country for details.",m_gf:"Scored",m_ga:"Conceded",m_gd:"Goal diff",m_play:"▶ Play",m_pause:"⏸ Pause",m_replay:"↻ Replay",m_lb:"Leaders",m_n:"played",m_load:"Loading map…",m_drag:"Drag to rotate · double-click to reset",m_fs:"⛶ Full screen",m_fs_exit:"✕ Exit full screen",m_tip:function(n,gf,ga){return n+" played · "+gf+" scored · "+ga+" conceded";},m_champ:"Champion",m_out:"Out in",mail:"Write to me",coffee:"Buy me a coffee",
+  c9:"Goal map",h_map:function(g){return g+" goals, on the map";},d_map:"Replay the tournament: when a match ends an arc links the two teams and each column rises with its running total. Drag the map to rotate; hover a column or country for details.",m_gf:"Scored",m_ga:"Conceded",m_gd:"Goal diff",m_play:"▶ Play",m_pause:"⏸ Pause",m_replay:"↻ Replay",m_lb:"Leaders",m_n:"played",m_load:"Loading map…",m_drag:"Drag to rotate · double-click to reset · scroll to zoom in full screen",m_fs:"Full screen",m_fs_exit:"✕ Exit full screen",m_tip:function(n,gf,ga){return n+" played · "+gf+" scored · "+ga+" conceded";},m_champ:"Champion",m_out:"Out in",mail:"Write to me",coffee:"Buy me a coffee",
   c10:"Method & data notes",
   s_matches:"matches",s_goals:"goals",s_changes:"price changes",s_plat:"prediction markets",s_views:"views",
   champ_path:function(r,p,f){return "Ranked <b>#"+r+"</b> early on ("+p+"%) → <b>"+f+"%</b> before the final → champions";},
@@ -794,7 +795,6 @@ function mapBuild(){
   var svg=document.getElementById("mapSvg"); svg.setAttribute("viewBox","0 0 "+MW+" "+MH); svg.setAttribute("width",MW); svg.setAttribute("height",MH); svg.innerHTML="";
   var defs=el("defs",{},svg), lg=el("linearGradient",{id:"marcG",x1:"0",x2:"1",y1:"0",y2:"0"},defs);
   [["0","#ff3b52"],[".5","#f0c75e"],["1","#3d7bff"]].forEach(function(s){ el("stop",{offset:s[0],"stop-color":s[1]},lg); });
-  el("rect",{x:0,y:0,width:MW,height:MH,rx:18,"class":"floor"},svg);
   var gr=el("g",{"class":"grat"},svg), d="";
   for(var lon=-180;lon<=180;lon+=30){ d+="M"; for(var lat=-57;lat<=80;lat+=4){ var q=proj(lon,Math.min(lat,80)); d+=(lat>-57?"L":"")+q[0].toFixed(1)+","+q[1].toFixed(1); } }
   [-30,0,30,60].forEach(function(lat){ d+="M"; for(var lon=-180;lon<=180;lon+=5){ var q=proj(lon,lat); d+=(lon>-180?"L":"")+q[0].toFixed(1)+","+q[1].toFixed(1); } });
@@ -831,8 +831,8 @@ function mapFit(){ var box=document.getElementById("m3d"); if(!box) return; var 
   MP.s=w/MW*(w<600?1.15:1.08); var h=Math.round(w*(w<600?.74:.66));
   if(MP.fs){ var avail=innerHeight-(innerWidth<=860?300:190); h=Math.max(260,avail); MP.s=Math.min(w/MW*.98,h/(MH*.62)); }
   box.style.height=h+"px"; }
-function mapFsLabel(){ var b=document.getElementById("mapFs"); if(b) b.textContent=MP.fs?L("m_fs_exit"):L("m_fs"); }
-function mapSetFs(on){ var p=document.getElementById("mapPanel"); MP.fs=on; p.classList.toggle("mfs",on);
+function mapFsLabel(){ var b=document.getElementById("mapFs"); if(b) b.innerHTML=MP.fs?L("m_fs_exit"):'<svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" style="vertical-align:-1px;margin-right:5px"><path d="M1 4.5V1h3.5M7.5 1H11v3.5M11 7.5V11H7.5M4.5 11H1V7.5"/></svg>'+L("m_fs"); }
+function mapSetFs(on){ var p=document.getElementById("mapPanel"); MP.fs=on; p.classList.toggle("mfs",on); if(!on){ MP.zoom=1; MP.px=0; MP.py=0; }
   document.documentElement.style.overflow=on?"hidden":"";
   var tp=document.querySelector(".tip"); if(tp) (on?p:document.body).appendChild(tp);
   mapFsLabel(); setTimeout(function(){ mapFit(); mapView(); mapDeclutter(MP.lastOrder); },60); }
@@ -841,8 +841,9 @@ function mapToggleFs(){ var p=document.getElementById("mapPanel");
   else { if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen().catch(function(){}); else if(document.webkitFullscreenElement&&document.webkitExitFullscreen) document.webkitExitFullscreen(); mapSetFs(false); } }
 function mapView(){
   var st=document.getElementById("m3dStage"); if(!st) return;
-  st.style.transform="translate(-50%,-50%) translateY("+(MP.tilt*1.5*MP.s).toFixed(1)+"px) scale("+MP.s.toFixed(4)+") rotateX("+MP.tilt.toFixed(2)+"deg) rotateZ("+MP.rz.toFixed(2)+"deg)";
-  var inv=" rotateZ("+(-MP.rz).toFixed(2)+"deg) rotateX("+(-MP.tilt).toFixed(2)+"deg) scale("+(1/Math.max(.6,MP.s)).toFixed(3)+") translate(-50%,-100%)";
+  var sc=MP.s*(MP.zoom||1);
+  st.style.transform="translate(-50%,-50%) translate("+(MP.px||0).toFixed(1)+"px,"+(MP.py||0).toFixed(1)+"px) translateY("+(MP.tilt*1.5*sc).toFixed(1)+"px) scale("+sc.toFixed(4)+") rotateX("+MP.tilt.toFixed(2)+"deg) rotateZ("+MP.rz.toFixed(2)+"deg)";
+  var inv=" rotateZ("+(-MP.rz).toFixed(2)+"deg) rotateX("+(-MP.tilt).toFixed(2)+"deg) scale("+(1/Math.max(.6,sc)).toFixed(3)+") translate(-50%,-100%)";
   Object.keys(MP.nodes||{}).forEach(function(t){ var n=MP.nodes[t]; n.lab.style.transform="translateZ("+(n.h+6).toFixed(1)+"px)"+inv; });
 }
 // 标签防重叠：按数值从高到低放置，和已放置的标签重叠就隐藏
@@ -852,8 +853,19 @@ function mapDeclutter(order){ var placed=[];
     if(!r.width) return;
     var hit=placed.some(function(q){ return r.left<q.right+4&&r.right>q.left-4&&r.top<q.bottom+2&&r.bottom>q.top-2; });
     if(!hit){ placed.push(r); lab.style.visibility=""; } }); MP.lastOrder=order; }
-function mapTween(to,ms){ var from={tilt:MP.tilt,rz:MP.rz}, t0=performance.now();
-  (function f(ts){ var p=Math.min(1,(ts-t0)/ms), e=1-Math.pow(1-p,3); MP.tilt=from.tilt+(to.tilt-from.tilt)*e; MP.rz=from.rz+(to.rz-from.rz)*e; mapView(); if(p<1) requestAnimationFrame(f); else mapDeclutter(MP.lastOrder); })(t0); }
+// 空闲时镜头缓慢环绕；拖动后停下，几秒后以新角度为中心继续
+var ORB={phase:0,base:null,last:0,raf:0,busy:0,idleAt:0,k:0};
+function orbitLoop(ts){ ORB.raf=0; if(!MP.visible||document.hidden) return;
+  var dt=ORB.last?Math.min(.1,(ts-ORB.last)/1000):0; ORB.last=ts;
+  if(!MP.drag&&!ORB.busy&&performance.now()>ORB.idleAt){
+    if(!ORB.base){ ORB.base={tilt:MP.tilt,rz:MP.rz}; ORB.phase=0; }
+    ORB.phase+=dt*.26; MP.rz=ORB.base.rz+10*Math.sin(ORB.phase); MP.tilt=Math.max(8,Math.min(70,ORB.base.tilt+3*Math.sin(ORB.phase*.63)));
+    mapView(); if(++ORB.k%8===0) mapDeclutter(MP.lastOrder); }
+  ORB.raf=requestAnimationFrame(orbitLoop); }
+function orbitStart(){ if(!ORB.raf&&!(window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches)){ ORB.last=0; ORB.raf=requestAnimationFrame(orbitLoop); } }
+function orbitHold(ms){ ORB.base=null; ORB.idleAt=performance.now()+(ms||4000); }
+function mapTween(to,ms){ var from={tilt:MP.tilt,rz:MP.rz,z:MP.zoom||1,px:MP.px||0,py:MP.py||0}, t0=performance.now(); ORB.busy++; orbitHold(ms+1500);
+  (function f(ts){ var p=Math.min(1,(ts-t0)/ms), e=1-Math.pow(1-p,3); MP.tilt=from.tilt+(to.tilt-from.tilt)*e; MP.rz=from.rz+(to.rz-from.rz)*e; if(to.z){ MP.zoom=from.z+(to.z-from.z)*e; MP.px=from.px*(1-e); MP.py=from.py*(1-e); } mapView(); if(p<1) requestAnimationFrame(f); else { ORB.busy--; mapDeclutter(MP.lastOrder); } })(t0); }
 function mapRender(force){
   if(!MP.built) return;
   var t=MP.t, m=MP.metric, S=mapStats(t), mx=MP.max[m]||1;
@@ -942,15 +954,20 @@ function mapInit(){
     document.getElementById("mapMetric").addEventListener("click",function(e){ var b=e.target.closest("[data-m]"); if(!b) return; MP.metric=b.dataset.m; mapLabels(); mapRender(true); });
     // 拖动旋转 / 调整俯仰
     var box=document.getElementById("m3d"), drag=null;
-    box.addEventListener("pointerdown",function(e){ drag={x:e.clientX,y:e.clientY,rz:MP.rz,tilt:MP.tilt}; box.setPointerCapture(e.pointerId); box.classList.add("drag"); });
+    box.addEventListener("pointerdown",function(e){ drag={x:e.clientX,y:e.clientY,rz:MP.rz,tilt:MP.tilt}; MP.drag=true; orbitHold(); box.setPointerCapture(e.pointerId); box.classList.add("drag"); });
+    box.addEventListener("wheel",function(e){ if(!MP.fs) return; e.preventDefault();
+      var z1=MP.zoom||1, z2=Math.max(.7,Math.min(2.6,z1*Math.exp(-e.deltaY*.0015))), r=box.getBoundingClientRect(), mx=e.clientX-r.left-r.width/2, my=e.clientY-r.top-r.height/2;
+      MP.px=mx-(mx-(MP.px||0))*z2/z1; MP.py=my-(my-(MP.py||0))*z2/z1; MP.zoom=z2;   // 以鼠标所在位置为中心缩放
+      orbitHold(); mapView(); mapDeclutter(MP.lastOrder); },{passive:false});
     box.addEventListener("pointermove",function(e){ if(!drag) return; MP.rz=Math.max(-75,Math.min(75,drag.rz+(e.clientX-drag.x)*.3)); MP.tilt=Math.max(0,Math.min(70,drag.tilt-(e.clientY-drag.y)*.25)); mapView(); mapDeclutter(MP.lastOrder); });
-    var up=function(){ drag=null; box.classList.remove("drag"); }; box.addEventListener("pointerup",up); box.addEventListener("pointercancel",up);
-    box.addEventListener("dblclick",function(){ mapTween(VIEW,700); });
+    var up=function(){ drag=null; MP.drag=false; orbitHold(3500); box.classList.remove("drag"); }; box.addEventListener("pointerup",up); box.addEventListener("pointercancel",up);
+    box.addEventListener("dblclick",function(){ mapTween({tilt:VIEW.tilt,rz:VIEW.rz,z:1},700); });
     document.getElementById("mapFs").addEventListener("click",mapToggleFs);
     var fsc=function(){ if(MP.fs&&!(document.fullscreenElement||document.webkitFullscreenElement)) mapSetFs(false); };
     document.addEventListener("fullscreenchange",fsc); document.addEventListener("webkitfullscreenchange",fsc);
     document.addEventListener("keydown",function(e){ if(e.key==="Escape"&&MP.fs) mapSetFs(false); });
     new IntersectionObserver(function(es){ es.forEach(function(en){
+      MP.visible=en.isIntersecting; if(MP.visible) orbitStart();
       if(en.isIntersecting){ if(!MP.started){ MP.started=true; MP.t=MP.t0; MP.last=MP.t0; mapRender(true); mapTween(VIEW,1600); setTimeout(mapPlay,700); } else if(MP.auto){ MP.auto=false; if(MP.t<MP.t1) mapPlay(); } }
       else if(MP.playing){ MP.auto=true; mapPause(); } }); },{threshold:.35}).observe(document.getElementById("s-map"));
     addEventListener("resize",function(){ mapFit(); mapView(); });
