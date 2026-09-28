@@ -1,0 +1,8 @@
+/data/*
+  Cache-Control: public, max-age=3600
+/flags/*
+  Cache-Control: public, max-age=604800
+/fonts/*
+  Cache-Control: public, max-age=604800
+/fonts-subset/*
+  Cache-Control: public, max-age=604800

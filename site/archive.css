@@ -1,0 +1,39 @@
+/* 历史回放控制栏：沿用原看板配色（米白底 / 深墨色胶囊） */
+#pmwbar{position:sticky;top:0;z-index:60;background:rgba(250,249,246,.94);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  border-bottom:.5px solid var(--line,rgba(0,0,0,.1));padding:10px 16px 8px;
+  font-size:13px;color:var(--ink,#2c2c2a)}
+#pmwbar .pb-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;max-width:1120px;margin:0 auto}
+#pmwbar .pb-row2{margin-top:8px}
+#pmwbar .pb-chips{margin-top:6px;gap:6px}
+#pmwbar .pb-badge{font-weight:600;letter-spacing:.02em;background:var(--ink,#2c2c2a);color:#fff;
+  border-radius:8px;padding:4px 10px;font-size:12.5px}
+#pmwbar .pb-btn,#pmwbar select,#pmwbar input[type=datetime-local]{font:inherit;font-size:13px;
+  border:.5px solid var(--line,rgba(0,0,0,.14));background:var(--card,#fff);color:var(--ink,#2c2c2a);
+  border-radius:9px;padding:5px 10px;cursor:pointer}
+#pmwbar .pb-btn:hover,#pmwbar select:hover{border-color:var(--hint,#9a988f)}
+#pmwbar .pb-play{background:var(--teal,#1d9e75);color:#fff;border-color:transparent;min-width:84px}
+#pmwbar .pb-stage{color:var(--mut,#6b6a64);margin-left:4px}
+#pmwbar .pb-ana{margin-left:auto;text-decoration:none;color:var(--ink,#2c2c2a);font-weight:600;
+  border:.5px solid var(--line,rgba(0,0,0,.14));border-radius:9px;padding:5px 12px;background:var(--card,#fff)}
+#pmwbar .pb-ana:hover{border-color:var(--ink,#2c2c2a)}
+#pmwbar input[type=range]{flex:1;accent-color:var(--ink,#2c2c2a);height:18px;cursor:pointer}
+#pmwbar .pb-chip{font:inherit;font-size:12px;border:.5px solid var(--line,rgba(0,0,0,.14));background:var(--card,#fff);
+  color:var(--mut,#6b6a64);border-radius:20px;padding:3px 11px;cursor:pointer}
+#pmwbar .pb-chip:hover{color:var(--ink,#2c2c2a);border-color:var(--hint,#9a988f)}
+#pmwbar .pb-chip.on{background:var(--ink,#2c2c2a);color:#fff;border-color:var(--ink,#2c2c2a)}
+/* 原看板的弹幕开关与飘屏区原本固定在 top:64px，这里让它们避开回放控制栏 */
+.dm-toggle{top:calc(var(--pmwbar-h,52px) + 10px)}
+#danmaku{top:calc(var(--pmwbar-h,52px) + 4px)}
+@media (max-width:640px){
+  /* 手机上控制栏不再吸顶（否则会挡住大半屏），随页面滚走 */
+  #pmwbar{position:relative;padding:8px 10px 6px}
+  #pmwbar .pb-row{gap:6px}
+  #pmwbar .pb-stage{width:100%;margin:2px 0 0}
+  #pmwbar .pb-ana{margin-left:0}
+  #pmwbar .pb-chips{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+  #pmwbar .pb-chips::-webkit-scrollbar{display:none}
+  #pmwbar .pb-chip{flex:0 0 auto}
+  .dm-toggle{top:auto;bottom:14px}
+  #danmaku{top:64px}
+}

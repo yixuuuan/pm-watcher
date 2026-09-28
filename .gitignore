@@ -1,5 +1,8 @@
 .env
 history.db
+# 原始数据库（含访客 IP 哈希）只留本地/私人备份，不进公开仓库；公开的是 site/data 里的导出数据
+*.db
+archive/.news_cache/
 __pycache__/
 *.pyc
 .DS_Store

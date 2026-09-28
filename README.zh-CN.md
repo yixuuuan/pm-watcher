@@ -2,13 +2,15 @@
 
 *by Yixuan · [English](./README.md)*
 
+> 🏆 **2026 世界杯已经结束，这个看板已成为永久的历史档案。** 打开 **[pmwatcher.wy-x.com](https://pmwatcher.wy-x.com/)**，从揭幕战到决赛任选一个时刻，就能看到当时线上看板显示的样子（可拖动时间轴或倍速播放）。另有一份 **[全程数据复盘](https://pmwatcher.wy-x.com/analysis.html)**：市场准不准、谁被看走眼、冠军之路如何被一步步定价。归档的构建方式见 [`archive/`](./archive/README.md)。
+
 同一场世界杯，五个预测市场，五种定价。pm-watcher 把 Polymarket、Kalshi、42、Manifold、Predict.fun 对 2026 世界杯的实时定价并排放在一张看板上——看它们在哪里取得共识，在哪里相互背离。
 
 > 这是一个**只读的分析工具**：它不下单、不接钱包、不需要任何平台账号。它回答的是"市场怎么想"，不是"怎么下注"。
 
 ![带分歧热力的冠军榜](docs/board_zh.png)
 
-> ▶️ **在线看板：https://pm-watchers.up.railway.app/** —— 体验几大核心视图：
+> ▶️ **回放看板：https://pmwatcher.wy-x.com/** —— 体验几大核心视图：
 > **复盘看板**（每场已结束比赛「赛前定价 vs. 真实结果」）、可收藏的
 > **48 国球队名片**，以及淘汰赛阶段的**平行宇宙冠军机**。只读、不预测、不下注。
 

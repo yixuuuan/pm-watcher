@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2026 世界杯 · 全程数据复盘 | pm-watcher</title>
+<meta name="description" content="用五个预测市场平台 20 万条定价记录，复盘 2026 世界杯：市场准不准、谁被看走眼、冠军之路如何一步步定价。">
+<style>
+  :root{ --bg:#faf9f6; --card:#ffffff; --ink:#2c2c2a; --mut:#6b6a64; --hint:#9a988f;
+         --line:rgba(0,0,0,.10); --teal:#1d9e75; --up:#1d9e75; --down:#d85a30; --gold:#c2a23a; }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif}
+  a{color:inherit}
+  .wrap{max-width:1040px;margin:0 auto;padding:22px 20px 60px}
+  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .back{text-decoration:none;font-size:13px;color:var(--mut);border:.5px solid var(--line);background:var(--card);border-radius:9px;padding:5px 11px}
+  .back:hover{color:var(--ink);border-color:var(--hint)}
+  .langsw{display:inline-flex;border:.5px solid var(--line);border-radius:9px;overflow:hidden}
+  .langsw button{font:inherit;cursor:pointer;border:0;background:var(--card);color:var(--mut);padding:5px 12px;font-size:13px}
+  .langsw button.on{background:var(--ink);color:#fff}
+  h1{font-size:34px;line-height:1.2;margin:26px 0 6px;letter-spacing:-.01em}
+  .lede{color:var(--mut);max-width:760px;margin:0}
+  h2{font-size:22px;margin:0 0 4px}
+  .sec{margin-top:46px;padding-top:26px;border-top:.5px solid var(--line)}
+  .sub{color:var(--mut);font-size:13.5px;margin:0 0 16px;max-width:780px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:22px}
+  .mc{background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:13px 15px;border-left:3px solid var(--accent,var(--teal))}
+  .mc .l{font-size:12px;color:var(--mut)} .mc .v{font-size:22px;font-weight:650;margin-top:2px;line-height:1.25} .mc .s{font-size:12px;color:var(--hint)}
+  .ins{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
+  .in{background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:14px 16px}
+  .in b.k{display:block;font-size:12px;letter-spacing:.04em;color:var(--mut);font-weight:600;margin-bottom:3px}
+  .in .t{font-size:15px}
+  .panel{background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:16px 16px 12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:760px){ .grid2{grid-template-columns:1fr} h1{font-size:27px} }
+  svg text{font-family:inherit}
+  .legend{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px}
+  .lg{font-size:12px;border:.5px solid var(--line);border-radius:20px;padding:2px 10px 2px 8px;cursor:pointer;background:var(--card);display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
+  .lg i{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .lg.off{opacity:.38}
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th{font-weight:500;color:var(--mut);font-size:12px;text-align:left;padding:7px 8px;border-bottom:.5px solid var(--line);white-space:nowrap}
+  td{padding:8px;border-bottom:.5px solid var(--line);vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  .r{text-align:right} .num{font-variant-numeric:tabular-nums}
+  .flag{width:18px;height:13px;border-radius:2px;vertical-align:-2px;margin-right:5px;box-shadow:0 0 0 .5px rgba(0,0,0,.12);object-fit:cover}
+  .pill{display:inline-block;border-radius:20px;padding:1px 9px;font-size:12px;font-weight:600}
+  .up{color:var(--up)} .down{color:var(--down)}
+  .tscroll{overflow-x:auto}
+  .go{font-size:12px;color:var(--mut);text-decoration:none;border:.5px solid var(--line);border-radius:7px;padding:2px 7px;white-space:nowrap}
+  .go:hover{color:var(--ink);border-color:var(--ink)}
+  .bar{height:8px;border-radius:5px;background:#eeece6;overflow:hidden} .bar i{display:block;height:100%;border-radius:5px}
+  .tip{position:fixed;z-index:50;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;line-height:1.55;padding:7px 10px;border-radius:8px;display:none;max-width:260px}
+  .podium{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+  .pd{flex:1;min-width:150px;background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:12px 14px}
+  .pd .n{font-size:12px;color:var(--mut)} .pd .tm{font-size:18px;font-weight:650}
+  .note{font-size:12.5px;color:var(--mut);line-height:1.7}
+  .note li{margin-bottom:4px}
+  footer{margin-top:56px;padding-top:18px;border-top:.5px solid var(--line);text-align:center;color:var(--hint);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a class="back" href="index.html" data-i="back"></a>
+    <div class="langsw"><button data-lang="en">EN</button><button data-lang="zh">中</button></div>
+  </div>
+  <h1 data-i="title"></h1>
+  <p class="lede" data-i="lede"></p>
+  <div class="cards" id="hero"></div>
+
+  <div class="sec"><h2 data-i="s_find"></h2><p class="sub" data-i="s_find_sub"></p><div class="ins" id="insights"></div></div>
+
+  <div class="sec"><h2 data-i="s_race"></h2><p class="sub" data-i="s_race_sub"></p>
+    <div class="panel"><div id="race"></div><div class="legend" id="raceLg"></div></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="panel"><div class="sub" style="margin:0 0 6px" data-i="start_top"></div><div id="startTop"></div></div>
+      <div class="panel"><div class="sub" style="margin:0 0 6px" data-i="podium"></div><div id="podium"></div></div>
+    </div>
+  </div>
+
+  <div class="sec"><h2 data-i="s_swing"></h2><p class="sub" data-i="s_swing_sub"></p><div class="panel tscroll" id="swings"></div></div>
+
+  <div class="sec"><h2 data-i="s_acc"></h2><p class="sub" data-i="s_acc_sub"></p>
+    <div class="grid2">
+      <div class="panel"><div class="sub" style="margin:0 0 8px" data-i="hit_by_stage"></div><div id="hitStage"></div></div>
+      <div class="panel"><div class="sub" style="margin:0 0 8px" data-i="draw_head"></div><div id="draws"></div></div>
+    </div>
+    <div class="panel tscroll" style="margin-top:12px"><div class="sub" style="margin:0 0 6px" data-i="brier_head"></div><div id="brier"></div></div>
+    <div class="panel" style="margin-top:12px"><div class="sub" style="margin:0 0 6px" data-i="rel_head"></div><div id="rel"></div><div class="legend" id="relLg"></div></div>
+  </div>
+
+  <div class="sec"><h2 data-i="s_upset"></h2><p class="sub" data-i="s_upset_sub"></p>
+    <div class="panel tscroll" id="upsets"></div>
+    <div class="panel tscroll" style="margin-top:12px"><div class="sub" style="margin:0 0 6px" data-i="sure_head"></div><div id="sure"></div></div>
+  </div>
+
+  <div class="sec"><h2 data-i="s_team"></h2><p class="sub" data-i="s_team_sub"></p><div class="panel" id="teams"></div></div>
+
+  <div class="sec"><h2 data-i="s_plat"></h2><p class="sub" data-i="s_plat_sub"></p><div class="panel tscroll" id="plats"></div></div>
+
+  <div class="sec"><h2 data-i="s_game"></h2><p class="sub" data-i="s_game_sub"></p>
+    <div class="cards" id="gameCards" style="margin-top:0"></div>
+    <div class="grid2" style="margin-top:12px">
+      <div class="panel tscroll"><div class="sub" style="margin:0 0 6px" data-i="high_head"></div><div id="high"></div></div>
+      <div class="panel tscroll"><div class="sub" style="margin:0 0 6px" data-i="big_head"></div><div id="big"></div></div>
+    </div>
+    <div class="panel tscroll" style="margin-top:12px"><div class="sub" style="margin:0 0 6px" data-i="ko_head"></div><div id="ko"></div></div>
+  </div>
+
+  <div class="sec"><h2 data-i="s_aud"></h2><p class="sub" data-i="s_aud_sub"></p><div class="panel"><div id="visits"></div></div></div>
+
+  <div class="sec"><h2 data-i="s_method"></h2><ul class="note" id="method"></ul></div>
+
+  <footer>© 2026 Yixuan · pm-watcher · <a href="mailto:isabel.yx.wang@gmail.com">isabel.yx.wang@gmail.com</a></footer>
+</div>
+<div class="tip" id="tip"></div>
+
+<script>
+(function(){
+"use strict";
+var PCOLOR={polymarket:"#2563ab",kalshi:"#1d9e75","42":"#d85a30",manifold:"#9a6bd6",predict:"#c2a23a",consensus:"#2c2c2a"};
+var TEAMC={Spain:"#c8102e",France:"#1f3a93",England:"#6b7fa8",Argentina:"#5fa8d3",Portugal:"#1b7f4a",Brazil:"#e0b000",Germany:"#444",Netherlands:"#f07c00",Norway:"#8f2d56",Morocco:"#0f6e3c",Belgium:"#b8860b"};
+var FALLBACK=["#7a5c99","#3c8d93","#a0522d","#5d6d7e","#9c6644","#2e86ab"];
+var A=null, LANG="zh";
+try{ var sv=JSON.parse(localStorage.getItem("pmw_lang")); if(sv) LANG=sv; else LANG=(navigator.language||"").toLowerCase().indexOf("zh")===0?"zh":"en"; }catch(e){}
+
+var S={
+ zh:{back:"← 回到历史回放看板",title:"2026 世界杯 · 全程数据复盘",
+  lede:"pm-watcher 在整届赛事期间持续记录了五个预测市场平台的定价。这里用这些记录回答三个问题：市场到底准不准？谁被看走眼了？冠军之路是怎样被一步步定价的？",
+  s_find:"关键结论",s_find_sub:"数字都来自赛前「收盘线」（开球前各平台最后一笔定价），与看板同一口径。",
+  s_race:"冠军之路：夺冠概率怎么变",s_race_sub:"五个平台的共识夺冠概率（每 3 小时一个点）。被淘汰即记为 0，决赛后冠军记 100%。点击图中任一位置，可跳到回放看板的那一刻。",
+  start_top:"开赛初期（6/16）市场的夺冠排序",podium:"最终名次",
+  s_swing:"改写冠军格局的比赛",s_swing_sub:"赛前 1 小时 → 赛后 3 小时，单场比赛让某队的共识夺冠概率变化了多少。",
+  s_acc:"市场准不准",s_acc_sub:"「共识热门」= 五个平台归一化后平均概率最高的结果。Brier 分数越低越准：完美 = 0，每档都猜 ⅓ ≈ 0.667。",
+  hit_by_stage:"共识热门命中率 · 按阶段",draw_head:"平局：市场以为的 vs 实际发生的",brier_head:"各平台 Brier 分数（越低越准）",
+  rel_head:"校准曲线：市场说 X% 的事，实际发生了多少？落在对角线上 = 校准完美；在线上方 = 市场偏保守，在线下方 = 市场偏自信。",
+  s_upset:"冷门榜",s_upset_sub:"按「实际结果的赛前共识概率」从低到高排列。点「回放」可回到开球前半小时，看当时五个平台怎么定价。",
+  sure_head:"最稳的判断：市场最有把握且猜中的比赛",
+  s_team:"被市场看走眼的球队",s_team_sub:"横轴 = 实际拿分率 − 市场赛前预期的拿分率（与看板「球队名片」同公式）。右侧 = 被低估、越打越好；左侧 = 被高估、名不副实。",
+  s_plat:"五个平台的画像",s_plat_sub:"同一场比赛、同一支球队，五个平台的定价习惯并不一样。",
+  s_game:"比赛本身",s_game_sub:"",high_head:"进球最多的比赛",big_head:"分差最大的比赛",ko_head:"淘汰赛全部赛果",
+  s_aud:"这个看板被多少人看过",s_aud_sub:"原站每日访问量。",
+  s_method:"方法与数据说明",
+  c_champ:"冠军",c_final:"决赛",c_matches:"比赛",c_goals:"进球",c_changes:"定价变动记录",c_plat:"平台",c_views:"累计访问",
+  gpm:"场均",stage:{group:"小组赛",R32:"32强",R16:"16强","QF+":"1/4决赛及以后",QF:"1/4决赛",SF:"半决赛","3P":"季军赛",FIN:"决赛"},
+  th_match:"比赛",th_stage:"阶段",th_score:"比分",th_pact:"结果赛前概率",th_fav:"赛前热门",th_team:"球队",th_before:"赛前",th_after:"赛后",th_delta:"变化",
+  th_plat:"平台",th_all:"全部",th_grp:"小组赛",th_ko:"淘汰赛",th_n:"场次",th_changes:"定价变动",th_over:"单场概率和",th_bias:"热门自信度",th_out:"最离群次数",th_dev:"冠军盘偏离",th_poll:"被剔除的异常报价",
+  replay:"回放",draw:"平局",implied:"市场隐含",actual:"实际发生",hit:"命中",n:"场",place:["冠军","亚军","季军","殿军"],
+  only_champ:"只有冠军盘",cons:"共识",win:"胜",
+  bias_note:"「热门自信度」= 该平台给共识热门的概率 − 共识概率，正值表示比同行更自信；「单场概率和」= 三档原始价格相加（>100% 为抽水/溢价）；「冠军盘偏离」= 该平台冠军报价与清洗后共识的平均距离（pt）；「被剔除的异常报价」= 每 12 小时抽样一次，该平台报价因偏离其他平台过多（多为其他运动的同名球队串盘）被剔除的次数。",
+  peak:"峰值",total:"累计",day:"天"},
+ en:{back:"← Back to the replay board",title:"2026 World Cup · The Full Data Recap",
+  lede:"pm-watcher recorded how five prediction-market platforms priced the 2026 World Cup, start to finish. This page uses those records to answer three questions: were the markets right, who did they misread, and how was the title race priced step by step?",
+  s_find:"Key findings",s_find_sub:"All match numbers use the closing line (each platform's last price before kickoff) — same as the board.",
+  s_race:"The title race, priced",s_race_sub:"Five-platform consensus title probability, every 3 hours. Eliminated teams drop to 0; the champion goes to 100% after the final. Click anywhere on the chart to open the replay at that moment.",
+  start_top:"Market's title ranking early on (Jun 16)",podium:"Final standings",
+  s_swing:"Matches that reshaped the title race",s_swing_sub:"Change in a team's consensus title probability from 1h before kickoff to 3h after.",
+  s_acc:"Were the markets right?",s_acc_sub:"Consensus favorite = the outcome with the highest average normalized probability across platforms. Brier: lower is better (perfect = 0, always ⅓ ≈ 0.667).",
+  hit_by_stage:"Consensus-favorite hit rate by stage",draw_head:"Draws: what markets expected vs. what happened",brier_head:"Brier score by platform (lower = better)",
+  rel_head:"Calibration: when the market said X%, how often did it happen? On the diagonal = perfect; above = markets too cautious; below = too confident.",
+  s_upset:"The upsets",s_upset_sub:"Ranked by the pre-match consensus probability of what actually happened. Hit “replay” to see the board half an hour before kickoff.",
+  sure_head:"Safest calls: the most confident predictions that came true",
+  s_team:"Teams the market misread",s_team_sub:"Actual points rate minus the market's pre-match expected points rate (same formula as the Team Cards). Right = underrated, got better; left = overrated.",
+  s_plat:"Five platforms, five personalities",s_plat_sub:"Same match, same team — the platforms price differently.",
+  s_game:"The football itself",s_game_sub:"",high_head:"Highest-scoring matches",big_head:"Biggest margins",ko_head:"All knockout results",
+  s_aud:"Who watched",s_aud_sub:"Daily views of the original live board.",
+  s_method:"Method & data notes",
+  c_champ:"Champion",c_final:"Final",c_matches:"Matches",c_goals:"Goals",c_changes:"Price changes recorded",c_plat:"Platforms",c_views:"Total views",
+  gpm:"per match",stage:{group:"Group",R32:"R32",R16:"R16","QF+":"QF onwards",QF:"QF",SF:"SF","3P":"3rd place",FIN:"Final"},
+  th_match:"Match",th_stage:"Stage",th_score:"Score",th_pact:"Pre-match prob. of result",th_fav:"Pre-match favorite",th_team:"Team",th_before:"Before",th_after:"After",th_delta:"Change",
+  th_plat:"Platform",th_all:"All",th_grp:"Group",th_ko:"KO",th_n:"n",th_changes:"Price changes",th_over:"Match overround",th_bias:"Favorite confidence",th_out:"Times most off",th_dev:"Title-market deviation",th_poll:"Anomalies removed",
+  replay:"replay",draw:"Draw",implied:"Market-implied",actual:"Actual",hit:"hit",n:"matches",place:["Champion","Runner-up","Third","Fourth"],
+  only_champ:"title market only",cons:"consensus",win:"win",
+  bias_note:"“Favorite confidence” = platform's probability on the consensus favorite minus the consensus (positive = more confident than peers). “Match overround” = the three raw prices summed (>100% = margin). “Title-market deviation” = average distance (pt) from the cleaned consensus. “Anomalies removed” = sampled every 12h, how often a quote was dropped for straying too far from the other platforms (usually a same-named team from another sport).",
+  peak:"Peak",total:"Total",day:"days"}
+};
+function L(k){ return (S[LANG]||S.zh)[k]; }
+function nm(t){ return LANG==="zh"? ((A.names.cn||{})[t]||t) : t; }
+function fl(t){ var c=(A.names.flag||{})[t]; return c? '<img class="flag" src="flags/'+c+'.svg" alt="">' : ""; }
+function tm(t){ return fl(t)+nm(t); }
+function fmtD(ts,withTime){ var d=new Date(ts*1000); return withTime? d.toLocaleString(LANG==="zh"?"zh-CN":"en-GB",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : (d.getMonth()+1)+"/"+d.getDate(); }
+function stg(g){ return (L("stage")[g]) || (LANG==="zh"? g+"组" : "Group "+g); }
+function iso(ts){ var d=new Date(ts*1000).toISOString(); return d.slice(0,13)+d.slice(14,16)+"Z"; }
+function replay(ts){ return 'index.html?t='+iso(ts); }
+function score(m){ return tm(m.home)+' <b class="num">'+m.sa+"–"+m.sb+"</b> "+tm(m.away); }
+function res(m){ return m.result==="D"? L("draw") : nm(m.result==="A"?m.home:m.away)+" "+L("win"); }
+function pct(x,d){ return x==null?"—":(+x).toFixed(d==null?1:d)+"%"; }
+var tip=document.getElementById("tip");
+function showTip(e,html){ tip.innerHTML=html; tip.style.display="block"; var x=e.clientX+14, y=e.clientY+14; if(x+270>innerWidth) x=e.clientX-274; tip.style.left=x+"px"; tip.style.top=y+"px"; }
+function hideTip(){ tip.style.display="none"; }
+
+function statics(){
+  document.documentElement.lang=LANG==="zh"?"zh":"en";
+  document.querySelectorAll("[data-i]").forEach(function(el){ var v=L(el.dataset.i); if(typeof v==="string") el.textContent=v; });
+  document.querySelectorAll("[data-lang]").forEach(function(b){ b.classList.toggle("on",b.dataset.lang===LANG); });
+  document.title=L("title")+" | pm-watcher";
+}
+
+function hero(){
+  var o=A.overview;
+  var c=function(l,v,s,acc){ return '<div class="mc" style="--accent:'+(acc||"#1d9e75")+'"><div class="l">'+l+'</div><div class="v">'+v+'</div>'+(s?'<div class="s">'+s+'</div>':"")+'</div>'; };
+  document.getElementById("hero").innerHTML=
+    c(L("c_champ"), tm(o.champion), "🏆", "#c2a23a")+
+    c(L("c_final"), '<span class="num">'+o.final.sa+"–"+o.final.sb+"</span>", nm(o.final.home)+" vs "+nm(o.final.away)+" · "+fmtD(o.final.kickoff), "#2c2c2a")+
+    c(L("c_matches"), o.matches, stg("group")+" "+o.group_matches+" · KO "+o.ko_matches, "#2563ab")+
+    c(L("c_goals"), o.goals, o.gpm+" "+L("gpm"), "#d85a30")+
+    c(L("c_changes"), LANG==="zh"? (o.snap_rows/10000).toFixed(1)+" 万" : Math.round(o.snap_rows/1000)+"k", L("c_plat")+" "+o.platforms, "#9a6bd6")+
+    c(L("c_views"), o.visits.toLocaleString("en-US"), o.peak_day? L("peak")+" "+o.peak_day[0].slice(5)+" · "+o.peak_day[1] : "", "#1d9e75");
+}
+
+function insights(){
+  var o=A.overview, r=A.race, a=A.accuracy, b=a.brier.filter(function(x){return x.p!=="consensus";});
+  var best=b[0], worst=b[b.length-1], up=A.upsets[0], hit=a.hit;
+  var champSer=r.series[r.champion]||[], preFinal=null;
+  for(var i=r.t.length-1;i>=0;i--){ if(r.t[i]<o.final.kickoff && champSer[i]!=null){ preFinal=champSer[i]; break; } }
+  var start=r.start_top.filter(function(x){return x.team===r.champion;})[0];
+  var over=A.teams.slice(0,3), under=A.teams.slice(-2).reverse();
+  var sw=A.swings[0];
+  var zh=LANG==="zh", items;
+  if(zh) items=[
+    ["冠军之路", nm(r.champion)+"开赛初只排市场第 "+r.champ_start_rank+"（"+pct(start&&start.p)+"），决赛开球前升到 "+pct(preFinal)+"，最终 "+o.final.sa+"–"+o.final.sb+" 击败"+nm(o.final.away)+"夺冠。"],
+    ["市场准不准","共识热门在 "+hit.all.n+" 场比赛里猜中 "+hit.all.hit+" 场（"+hit.all.rate+"%）。32强最准（"+hit.R32.rate+"%），1/4 决赛之后只剩 "+hit["QF+"].rate+"%——越到后面越难猜。"],
+    ["系统性偏差","市场一直高估平局：平均隐含平局概率 "+a.draw_implied+"%，实际只有 "+a.draw_actual+"% 的比赛打平。"],
+    ["谁最准",best.p+" 的校准最好（Brier "+best.all.toFixed(3)+"），"+worst.p+" 最差（"+worst.all.toFixed(3)+"）。五个平台之间的差距其实很小。"],
+    ["最大冷门",nm(up.home)+" "+up.sa+"–"+up.sb+" "+nm(up.away)+"（"+stg(up.grp)+"）：这个结果赛前共识只给了 "+up.p_actual+"%。"],
+    ["被看走眼", over.map(function(t){return nm(t.team);}).join("、")+" 的实际拿分率比市场预期高出 "+over[0].gap+" 个百分点以上；"+under.map(function(t){return nm(t.team);}).join("、")+" 则被明显高估。"],
+    ["最关键的一场", nm(sw.home)+" "+sw.sa+"–"+sw.sb+" "+nm(sw.away)+"（"+stg(sw.grp)+"）让"+nm(sw.team)+"的夺冠概率从 "+sw.before+"% 变成 "+sw.after+"%。"]
+  ];
+  else items=[
+    ["The title race", r.champion+" was only #"+r.champ_start_rank+" early on ("+pct(start&&start.p)+"), rose to "+pct(preFinal)+" by the final's kickoff, then beat "+o.final.away+" "+o.final.sa+"–"+o.final.sb+"."],
+    ["Were markets right?","The consensus favorite won "+hit.all.hit+" of "+hit.all.n+" matches ("+hit.all.rate+"%). Best in the R32 ("+hit.R32.rate+"%); from the quarter-finals on, only "+hit["QF+"].rate+"%."],
+    ["A systematic bias","Markets kept overpricing the draw: "+a.draw_implied+"% implied on average, but only "+a.draw_actual+"% of matches were drawn."],
+    ["Best calibrated",best.p+" had the best Brier ("+best.all.toFixed(3)+"), "+worst.p+" the worst ("+worst.all.toFixed(3)+") — the spread between platforms is small."],
+    ["Biggest upset",up.home+" "+up.sa+"–"+up.sb+" "+up.away+" ("+stg(up.grp)+"): the consensus gave this result just "+up.p_actual+"%."],
+    ["Misread",over.map(function(t){return t.team;}).join(", ")+" earned points at a rate "+over[0].gap+"+ pts above market expectations; "+under.map(function(t){return t.team;}).join(", ")+" were clearly overrated."],
+    ["The pivotal match", sw.home+" "+sw.sa+"–"+sw.sb+" "+sw.away+" ("+stg(sw.grp)+") moved "+sw.team+"'s title odds from "+sw.before+"% to "+sw.after+"%."]
+  ];
+  document.getElementById("insights").innerHTML=items.map(function(x){ return '<div class="in"><b class="k">'+x[0]+'</b><div class="t">'+x[1]+'</div></div>'; }).join("");
+}
+
+// ─── 冠军走势折线图 ───
+var RACE_OFF={};
+function race(){
+  var R=A.race, T=R.t, teams=Object.keys(R.series);
+  teams.sort(function(a,b){ return Math.max.apply(null,R.series[b].map(function(v){return v||0;}))-Math.max.apply(null,R.series[a].map(function(v){return v||0;})); });
+  var col={}; var fi=0; teams.forEach(function(t){ col[t]=TEAMC[t]||FALLBACK[fi++%FALLBACK.length]; });
+  var el=document.getElementById("race"), W=Math.max(320,el.clientWidth||900), H=Math.round(Math.min(420,Math.max(260,W*.42)));
+  var pl=38,pr=40,pt=16,pb=26, t0=T[0], t1=T[T.length-1];
+  var X=function(t){return pl+(t-t0)/(t1-t0)*(W-pl-pr);}, Y=function(v){return pt+(1-v/100)*(H-pt-pb);};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;cursor:crosshair" id="raceSvg">';
+  [0,25,50,75,100].forEach(function(v){ s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="rgba(0,0,0,.07)"/><text x="'+(pl-6)+'" y="'+(Y(v)+4)+'" font-size="10" text-anchor="end" fill="#9a988f">'+v+'%</text>'; });
+  // 阶段分隔
+  var firstOf=function(r){ var x=A.knockout.filter(function(k){return k.grp===r;}).map(function(k){return k.kickoff;}); return x.length?Math.min.apply(null,x):null; };
+  ["R32","R16","QF","SF","FIN"].forEach(function(r){ var t=firstOf(r); if(!t||t<t0) return; var x=X(t);
+    s+='<line x1="'+x+'" x2="'+x+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="rgba(0,0,0,.12)" stroke-dasharray="3,4"/><text x="'+(x+3)+'" y="'+(pt+9)+'" font-size="10" fill="#9a988f">'+stg(r)+'</text>'; });
+  // x 轴日期
+  var day=86400, d0=Math.ceil(t0/day)*day;
+  for(var d=d0; d<=t1; d+=day*4) s+='<text x="'+X(d)+'" y="'+(H-8)+'" font-size="10" text-anchor="middle" fill="#9a988f">'+fmtD(d)+'</text>';
+  teams.slice().reverse().forEach(function(t){
+    if(RACE_OFF[t]) return;
+    var p="", on=false, ser=R.series[t];
+    for(var i=0;i<T.length;i++){ var v=ser[i]; if(v==null){ on=false; continue; } p+=(on?"L":"M")+X(T[i]).toFixed(1)+","+Y(v).toFixed(1); on=true; }
+    s+='<path d="'+p+'" fill="none" stroke="'+col[t]+'" stroke-width="'+(t===R.champion?2.6:1.6)+'" stroke-linejoin="round" opacity="'+(t===R.champion?1:.85)+'"/>';
+  });
+  s+='<line id="raceCur" x1="0" x2="0" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#2c2c2a" stroke-width=".8" style="display:none"/></svg>';
+  el.innerHTML=s;
+  document.getElementById("raceLg").innerHTML=teams.map(function(t){ return '<span class="lg'+(RACE_OFF[t]?" off":"")+'" data-t="'+t+'"><i style="background:'+col[t]+'"></i>'+nm(t)+'</span>'; }).join("");
+  var svg=document.getElementById("raceSvg"), cur=document.getElementById("raceCur");
+  function at(e){ var r=svg.getBoundingClientRect(), x=(e.clientX-r.left)*(W/r.width); var t=t0+(x-pl)/(W-pl-pr)*(t1-t0);
+    var i=0, best=Infinity; for(var k=0;k<T.length;k++){ var d=Math.abs(T[k]-t); if(d<best){best=d;i=k;} } return i; }   // 网格末尾不等距，取最近点
+  svg.addEventListener("mousemove",function(e){ var i=at(e); cur.setAttribute("x1",X(T[i])); cur.setAttribute("x2",X(T[i])); cur.style.display="";
+    var rows=teams.filter(function(t){return !RACE_OFF[t] && R.series[t][i]!=null;}).sort(function(a,b){return R.series[b][i]-R.series[a][i];}).slice(0,8);
+    showTip(e,'<b>'+fmtD(T[i],true)+'</b><br>'+rows.map(function(t){return '<span style="color:'+col[t]+'">●</span> '+nm(t)+' '+R.series[t][i].toFixed(1)+'%';}).join("<br>")+'<br><span style="opacity:.7">'+(LANG==="zh"?"点击 → 回放这一刻":"click → replay this moment")+'</span>'); });
+  svg.addEventListener("mouseleave",function(){ cur.style.display="none"; hideTip(); });
+  svg.addEventListener("click",function(e){ location.href=replay(T[at(e)]); });
+}
+document.addEventListener("click",function(e){ var g=e.target.closest("#raceLg .lg"); if(g){ RACE_OFF[g.dataset.t]=!RACE_OFF[g.dataset.t]; race(); } });
+
+function startTop(){
+  var R=A.race, place={}; var o=A.overview; [o.champion,o.runner,o.third,o.fourth].forEach(function(t,i){ place[t]=L("place")[i]; });
+  var reach={}; A.teams.forEach(function(t){ reach[t.team]=t.reached; });
+  document.getElementById("startTop").innerHTML='<table><tbody>'+R.start_top.map(function(x,i){
+    var fin=place[x.team] || stg(reach[x.team]||"group");
+    return '<tr><td class="num" style="color:#9a988f;width:22px">'+(i+1)+'</td><td>'+tm(x.team)+'</td><td class="r num">'+x.p.toFixed(1)+'%</td><td class="r" style="color:'+(place[x.team]?"#c2a23a":"#9a988f")+'">'+fin+'</td></tr>'; }).join("")+'</tbody></table>';
+  var o2=A.overview, med=["🥇","🥈","🥉","4"];
+  document.getElementById("podium").innerHTML='<div class="podium">'+[o2.champion,o2.runner,o2.third,o2.fourth].map(function(t,i){ return '<div class="pd"><div class="n">'+med[i]+" "+L("place")[i]+'</div><div class="tm">'+tm(t)+'</div></div>'; }).join("")+'</div>'+
+    '<div class="note" style="margin-top:10px">'+L("c_final")+": "+score(o2.final)+(o2.third_match? "<br>"+stg("3P")+": "+score(o2.third_match):"")+'</div>';
+}
+
+function swings(){
+  var rows=A.swings.slice(0,12);
+  document.getElementById("swings").innerHTML='<table><thead><tr><th>'+L("th_team")+'</th><th>'+L("th_match")+'</th><th>'+L("th_stage")+'</th><th class="r">'+L("th_before")+'</th><th class="r">'+L("th_after")+'</th><th class="r">'+L("th_delta")+'</th><th></th></tr></thead><tbody>'+
+    rows.map(function(s){ var c=s.delta>0?"up":"down";
+      return '<tr><td>'+tm(s.team)+'</td><td>'+score(s)+'</td><td>'+stg(s.grp)+'</td><td class="r num">'+s.before.toFixed(1)+'%</td><td class="r num">'+s.after.toFixed(1)+'%</td><td class="r num '+c+'"><b>'+(s.delta>0?"+":"")+s.delta.toFixed(1)+'pt</b></td><td class="r"><a class="go" href="'+replay(s.kickoff+8100+3600)+'">'+L("replay")+' →</a></td></tr>'; }).join("")+'</tbody></table>';
+}
+
+function hitStage(){
+  var h=A.accuracy.hit, keys=["group","R32","R16","QF+","all"];
+  document.getElementById("hitStage").innerHTML=keys.map(function(k){ var x=h[k]; if(!x||!x.n) return "";
+    var lab=k==="all"?(LANG==="zh"?"全部":"All"):stg(k);
+    return '<div style="display:flex;align-items:center;gap:10px;margin:9px 0"><div style="width:96px;font-size:13px;'+(k==="all"?"font-weight:650":"")+'">'+lab+'</div><div class="bar" style="flex:1"><i style="width:'+x.rate+'%;background:'+(k==="all"?"#2c2c2a":"#1d9e75")+'"></i></div><div class="num" style="width:110px;text-align:right;font-size:13px"><b>'+x.rate.toFixed(1)+'%</b> <span style="color:#9a988f">'+x.hit+"/"+x.n+'</span></div></div>'; }).join("");
+}
+function draws(){
+  var a=A.accuracy;
+  var bar=function(lab,v,c){ return '<div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="width:96px;font-size:13px">'+lab+'</div><div class="bar" style="flex:1;height:14px"><i style="width:'+(v/40*100)+'%;background:'+c+'"></i></div><div class="num" style="width:60px;text-align:right"><b>'+v.toFixed(1)+'%</b></div></div>'; };
+  document.getElementById("draws").innerHTML=bar(L("implied"),a.draw_implied,"#c2a23a")+bar(L("actual"),a.draw_actual,"#2c2c2a")+
+    '<div class="note">'+(LANG==="zh"?"平均每场比赛，市场给「平局」的概率 vs 实际打平的比例（同一批有定价的比赛）。":"Average draw probability per match vs. the share of those matches that were actually drawn.")+'</div>';
+}
+function brier(){
+  var rows=A.accuracy.brier, mx=0.667;
+  document.getElementById("brier").innerHTML='<table><thead><tr><th>#</th><th>'+L("th_plat")+'</th><th class="r">'+L("th_all")+'</th><th style="width:34%"></th><th class="r">'+L("th_grp")+'</th><th class="r">'+L("th_ko")+'</th><th class="r">'+L("th_n")+'</th></tr></thead><tbody>'+
+    rows.map(function(b,i){ var isC=b.p==="consensus"; var w=Math.max(3,(1-b.all/mx)*100*2.4);
+      return '<tr'+(isC?' style="background:rgba(0,0,0,.025)"':"")+'><td class="num" style="color:#9a988f">'+(isC?"—":i+1)+'</td><td><span style="color:'+(PCOLOR[b.p]||"#888")+'">●</span> '+(isC?L("cons"):b.p)+'</td><td class="r num"><b>'+b.all.toFixed(3)+'</b></td><td><div class="bar"><i style="width:'+Math.min(100,w)+'%;background:'+(PCOLOR[b.p]||"#888")+'"></i></div></td><td class="r num">'+(b.group!=null?b.group.toFixed(3):"—")+'</td><td class="r num">'+(b.ko!=null?b.ko.toFixed(3):"—")+'</td><td class="r num" style="color:#9a988f">'+b.n+'</td></tr>'; }).join("")+
+    '<tr><td class="num" style="color:#9a988f">—</td><td><span style="color:#9a6bd6">●</span> manifold</td><td class="r" colspan="5" style="color:#9a988f">'+L("only_champ")+'</td></tr></tbody></table>'+
+    '<div class="note" style="margin-top:8px">'+(LANG==="zh"?"参考：完美 = 0.000 · 每档都猜 ⅓ ≈ 0.667。各平台覆盖的场次（n）不同，比较时请留意。":"Reference: perfect = 0.000 · always ⅓ ≈ 0.667. Platforms cover different numbers of matches (n).")+'</div>';
+}
+var REL_OFF={};
+function rel(){
+  var R=A.accuracy.reliability, keys=["consensus","polymarket","kalshi","42","predict"].filter(function(k){return R[k]&&R[k].length;});
+  var el=document.getElementById("rel"), W=Math.min(560,Math.max(300,el.clientWidth||520)), H=W*0.78, p=36;
+  var X=function(v){return p+v/100*(W-p-10);}, Y=function(v){return H-p+ -v/100*(H-p-10);};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;max-width:560px">';
+  [0,25,50,75,100].forEach(function(v){ s+='<line x1="'+X(v)+'" x2="'+X(v)+'" y1="'+Y(0)+'" y2="'+Y(100)+'" stroke="rgba(0,0,0,.06)"/><line x1="'+X(0)+'" x2="'+X(100)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="rgba(0,0,0,.06)"/><text x="'+X(v)+'" y="'+(H-p+14)+'" font-size="10" text-anchor="middle" fill="#9a988f">'+v+'</text><text x="'+(p-6)+'" y="'+(Y(v)+4)+'" font-size="10" text-anchor="end" fill="#9a988f">'+v+'</text>'; });
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(100)+'" y2="'+Y(100)+'" stroke="#9a988f" stroke-dasharray="4,4"/>';
+  s+='<text x="'+((X(0)+X(100))/2)+'" y="'+(H-4)+'" font-size="10.5" text-anchor="middle" fill="#6b6a64">'+(LANG==="zh"?"市场隐含概率 (%)":"market-implied probability (%)")+'</text>';
+  s+='<text x="10" y="'+((Y(0)+Y(100))/2)+'" font-size="10.5" text-anchor="middle" fill="#6b6a64" transform="rotate(-90 10 '+((Y(0)+Y(100))/2)+')">'+(LANG==="zh"?"实际发生频率 (%)":"actual frequency (%)")+'</text>';
+  keys.forEach(function(k){ if(REL_OFF[k]) return; var pts=R[k], c=PCOLOR[k];
+    s+='<path d="'+pts.map(function(q,i){return (i?"L":"M")+X(q[0]).toFixed(1)+","+Y(q[1]).toFixed(1);}).join("")+'" fill="none" stroke="'+c+'" stroke-width="'+(k==="consensus"?2.2:1.2)+'" opacity="'+(k==="consensus"?1:.6)+'"/>';
+    pts.forEach(function(q){ s+='<circle cx="'+X(q[0]).toFixed(1)+'" cy="'+Y(q[1]).toFixed(1)+'" r="'+Math.min(9,2.5+Math.sqrt(q[2])/1.6).toFixed(1)+'" fill="'+c+'" fill-opacity="'+(k==="consensus"?.9:.55)+'" data-tip="'+(k==="consensus"?L("cons"):k)+' · '+q[0]+'% → '+q[1]+'% · n='+q[2]+'"/>'; });
+  });
+  el.innerHTML=s+'</svg>';
+  document.getElementById("relLg").innerHTML=keys.map(function(k){ return '<span class="lg'+(REL_OFF[k]?" off":"")+'" data-k="'+k+'"><i style="background:'+PCOLOR[k]+'"></i>'+(k==="consensus"?L("cons"):k)+'</span>'; }).join("");
+}
+document.addEventListener("click",function(e){ var g=e.target.closest("#relLg .lg"); if(g){ REL_OFF[g.dataset.k]=!REL_OFF[g.dataset.k]; rel(); } });
+document.addEventListener("mousemove",function(e){ var c=e.target.closest&&e.target.closest("[data-tip]"); if(c) showTip(e,c.getAttribute("data-tip")); else if(!e.target.closest("#raceSvg")) hideTip(); });
+
+function upsets(){
+  var head='<thead><tr><th>'+L("th_match")+'</th><th>'+L("th_stage")+'</th><th>'+L("th_fav")+'</th><th class="r">'+L("th_pact")+'</th><th></th></tr></thead>';
+  var favName=function(m){ return m.fav==="D"? L("draw") : nm(m.fav==="A"?m.home:m.away); };
+  var row=function(m){ return '<tr><td>'+score(m)+'</td><td>'+stg(m.grp)+'</td><td>'+favName(m)+' <span class="num" style="color:#9a988f">'+m.p_fav.toFixed(0)+'%</span></td><td class="r num"><span class="pill" style="background:'+(m.hit?"#e3f2ea":"#fbe7df")+';color:'+(m.hit?"#10593f":"#8a2e12")+'">'+m.p_actual.toFixed(1)+'%</span></td><td class="r"><a class="go" href="'+replay(m.kickoff-1800)+'">'+L("replay")+' →</a></td></tr>'; };
+  document.getElementById("upsets").innerHTML='<table>'+head+'<tbody>'+A.upsets.slice(0,10).map(row).join("")+'</tbody></table>';
+  document.getElementById("sure").innerHTML='<table>'+head+'<tbody>'+A.sure.slice(0,5).map(row).join("")+'</tbody></table>';
+}
+
+function teams(){
+  var rows=A.teams.slice().sort(function(a,b){return b.gap-a.gap;}), mx=Math.max.apply(null,rows.map(function(r){return Math.abs(r.gap);}));
+  var el=document.getElementById("teams");
+  el.innerHTML='<div style="display:grid;grid-template-columns:minmax(118px,160px) 1fr 50px;gap:3px 10px;align-items:center;font-size:13px">'+rows.map(function(r){
+    var w=Math.abs(r.gap)/mx*50, pos=r.gap>=0;
+    var bar='<div style="position:relative;height:14px"><div style="position:absolute;left:50%;top:-3px;bottom:-3px;border-left:.5px solid rgba(0,0,0,.25)"></div><div style="position:absolute;top:2px;height:10px;border-radius:3px;background:'+(pos?"#1d9e75":"#d85a30")+';'+(pos?'left:50%;width:'+w+'%':'right:50%;width:'+w+'%')+'"></div></div>';
+    var t=(LANG==="zh"?"市场预期拿分率 ":"expected ")+r.mkt+"% · "+(LANG==="zh"?"实际 ":"actual ")+r.act+"% · "+r.w+"-"+r.d+"-"+r.l+(r.big?" · "+(LANG==="zh"?"最大冷门 ":"best upset ")+"vs "+nm(r.big.opp)+" "+r.big.score:"");
+    return '<div data-tip="'+t.replace(/"/g,"&quot;")+'" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+tm(r.team)+'</div><div data-tip="'+t.replace(/"/g,"&quot;")+'">'+bar+'</div><div class="num '+(pos?"up":"down")+'" style="text-align:right;font-weight:600">'+(pos?"+":"")+r.gap+'</div>'; }).join("")+'</div>'+
+    '<div class="note" style="margin-top:10px">'+(LANG==="zh"?"数值单位：百分点（pt）。悬停可看战绩与赛前预期。":"Units: percentage points. Hover for record and expectation.")+'</div>';
+}
+
+function plats(){
+  var P=A.platforms;
+  document.getElementById("plats").innerHTML='<table><thead><tr><th>'+L("th_plat")+'</th><th class="r">'+L("th_changes")+'</th><th class="r">'+L("th_n")+'</th><th class="r">Brier</th><th class="r">'+L("th_over")+'</th><th class="r">'+L("th_bias")+'</th><th class="r">'+L("th_out")+'</th><th class="r">'+L("th_dev")+'</th><th class="r">'+L("th_poll")+'</th></tr></thead><tbody>'+
+    P.map(function(p){ var b=p.fav_bias;
+      return '<tr><td><span style="color:'+PCOLOR[p.p]+'">●</span> <b>'+p.p+'</b></td><td class="r num">'+p.changes.toLocaleString("en-US")+'</td><td class="r num">'+(p.matches||"—")+'</td><td class="r num">'+(p.brier!=null?p.brier.toFixed(3):"—")+'</td><td class="r num">'+(p.overround!=null?p.overround.toFixed(1)+"%":"—")+'</td><td class="r num '+(b>0?"up":b<0?"down":"")+'">'+(b!=null?(b>0?"+":"")+b.toFixed(1)+"pt":"—")+'</td><td class="r num">'+(p.outlier||0)+'</td><td class="r num">'+(p.champ_dev!=null?p.champ_dev.toFixed(2)+"pt":"—")+'</td><td class="r num">'+(p.pollution||0)+'</td></tr>'; }).join("")+'</tbody></table>'+
+    '<div class="note" style="margin-top:8px">'+L("bias_note")+'</div>';
+}
+
+function game(){
+  var o=A.overview;
+  var c=function(l,v,s){ return '<div class="mc"><div class="l">'+l+'</div><div class="v">'+v+'</div>'+(s?'<div class="s">'+s+'</div>':"")+'</div>'; };
+  document.getElementById("gameCards").innerHTML=
+    c(L("c_goals"),o.goals,o.gpm+" "+L("gpm"))+
+    c(stg("group"),o.gpm_group,L("gpm"))+
+    c(LANG==="zh"?"淘汰赛":"Knockouts",o.gpm_ko,L("gpm"))+
+    c(L("draw"),o.draws,(o.draws/o.matches*100).toFixed(1)+"%");
+  var tab=function(list){ return '<table><tbody>'+list.map(function(m){ return '<tr><td>'+score(m)+'</td><td style="color:#9a988f">'+stg(m.grp)+'</td><td class="r"><a class="go" href="'+replay(m.kickoff+8100)+'">'+L("replay")+' →</a></td></tr>'; }).join("")+'</tbody></table>'; };
+  document.getElementById("high").innerHTML=tab(A.highest_scoring);
+  document.getElementById("big").innerHTML=tab(A.biggest_wins);
+  document.getElementById("ko").innerHTML='<table><tbody>'+A.knockout.map(function(m){ return '<tr><td style="color:#9a988f;width:90px">'+stg(m.grp)+'</td><td>'+score(m)+'</td><td>'+(m.winner?"→ "+tm(m.winner):"")+'</td><td style="color:#9a988f" class="num">'+fmtD(m.kickoff,true)+'</td><td class="r"><a class="go" href="'+replay(m.kickoff-1800)+'">'+L("replay")+' →</a></td></tr>'; }).join("")+'</tbody></table>';
+}
+
+function visits(){
+  var V=A.visits; if(!V||!V.length){ document.getElementById("visits").innerHTML=""; return; }
+  var el=document.getElementById("visits"), W=Math.max(300,el.clientWidth||900), H=180, pl=34, pb=22, mx=Math.max.apply(null,V.map(function(v){return v[1];}));
+  var bw=(W-pl-6)/V.length, s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
+  [0,.5,1].forEach(function(f){ var y=H-pb-f*(H-pb-10); s+='<line x1="'+pl+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="rgba(0,0,0,.07)"/><text x="'+(pl-5)+'" y="'+(y+4)+'" font-size="10" text-anchor="end" fill="#9a988f">'+Math.round(mx*f)+'</text>'; });
+  V.forEach(function(v,i){ var h=v[1]/mx*(H-pb-10), x=pl+i*bw;
+    s+='<rect x="'+(x+1).toFixed(1)+'" y="'+(H-pb-h).toFixed(1)+'" width="'+Math.max(1,bw-2).toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+(v===A.overview.peak_day||v[0]===(A.overview.peak_day||[])[0]?"#d85a30":"#1d9e75")+'" data-tip="'+v[0]+' · '+v[1]+(LANG==="zh"?" 次访问 · 独立访客 ":" views · unique ")+v[2]+'"/>';
+    if(i%7===0) s+='<text x="'+(x+bw/2)+'" y="'+(H-6)+'" font-size="10" text-anchor="middle" fill="#9a988f">'+v[0].slice(5).replace("-","/")+'</text>'; });
+  el.innerHTML=s+'</svg><div class="note" style="margin-top:6px">'+L("total")+" "+A.overview.visits.toLocaleString("en-US")+" · "+L("peak")+" "+A.overview.peak_day[0]+" ("+A.overview.peak_day[1]+")"+'</div>';
+}
+
+function method(){
+  var o=A.overview, zh=LANG==="zh";
+  var items=zh?[
+    "数据来源：pm-watcher 在赛事期间对 Polymarket、Kalshi、42、Manifold、Predict 五个平台每约 30 秒抓取一次，只在价格变动 ≥0.1pt 时落盘，共 "+o.snap_rows.toLocaleString("en-US")+" 条定价变动；赛果来自 football-data.org。",
+    "单场口径：用「收盘线」（开球前各平台最后一笔），三档都有报价的平台才参与，先归一化再比较。Brier = 三档平方误差之和。Manifold 只有冠军盘（play money），不参与单场统计。",
+    "冠军概率走势做过清洗：某平台价格偏离其他平台中位数超过 20pt（多为其他运动的「World Cup」盘同名球队串入）会被剔除；超过 5 天未更新的报价视为下架；球队被淘汰后记 0、决赛后冠军记 100%。",
+    "回放看板则如实还原当时线上显示的内容，包括上述串盘污染——它们确实曾出现在当时的网站上。",
+    "「被看走眼的球队」与看板「球队名片」同公式：拿分率 = 积分 ÷（场次 × 3）；市场预期 = 各场赛前该队获胜的共识概率平均。"
+  ]:[
+    "Source: during the tournament pm-watcher polled Polymarket, Kalshi, 42, Manifold and Predict about every 30s, storing a row only when a price moved ≥0.1pt — "+o.snap_rows.toLocaleString("en-US")+" price changes in total. Results from football-data.org.",
+    "Matches use the closing line (each platform's last price before kickoff); only platforms quoting all three outcomes count, normalized before comparing. Brier = sum of squared errors over three outcomes. Manifold (play money) only had a title market.",
+    "The title-race series is cleaned: prices more than 20pt from the other platforms' median (usually a same-named team from another sport's “World Cup” market) are removed; quotes older than 5 days count as delisted; eliminated teams go to 0 and the champion to 100% after the final.",
+    "The replay board, by contrast, shows exactly what the live site showed at the time — including those cross-sport glitches, which really did appear on the site.",
+    "“Teams the market misread” uses the Team Cards formula: points rate = points ÷ (matches × 3); expectation = average pre-match consensus win probability."
+  ];
+  document.getElementById("method").innerHTML=items.map(function(x){return "<li>"+x+"</li>";}).join("");
+}
+
+function renderAll(){ statics(); hero(); insights(); race(); startTop(); swings(); hitStage(); draws(); brier(); rel(); upsets(); teams(); plats(); game(); visits(); method(); }
+document.querySelectorAll("[data-lang]").forEach(function(b){ b.addEventListener("click",function(){ LANG=b.dataset.lang; try{localStorage.setItem("pmw_lang",JSON.stringify(LANG));}catch(e){} renderAll(); }); });
+var rt; addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(function(){ if(A){ race(); rel(); visits(); } },200); });
+fetch("data/analysis.json").then(function(r){return r.json();}).then(function(j){ A=j; renderAll(); });
+})();
+</script>
+</body>
+</html>

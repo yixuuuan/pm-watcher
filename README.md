@@ -2,13 +2,15 @@
 
 *by Yixuan · [中文版](./README.zh-CN.md)*
 
+> 🏆 **The 2026 World Cup is over — this board is now a permanent archive.** Open **[pmwatcher.wy-x.com](https://pmwatcher.wy-x.com/)** and pick any moment from the opener to the final to see exactly what the live board showed then (drag the timeline or press play). Plus a **[full-tournament data recap](https://pmwatcher.wy-x.com/analysis.html)**: were the markets right, who did they misread, and how the title race was priced. How the archive is built: [`archive/`](./archive/README.md).
+
 One World Cup, five prediction markets, five different answers. pm-watcher puts Polymarket, Kalshi, 42, Manifold and Predict.fun side by side as they price the 2026 World Cup in real time — so you can see where they agree, and where they diverge.
 
 > A **read-only analysis tool.** It places no orders, connects no wallet, and needs no platform account. It answers *"what does the market think,"* not *"how do I bet."*
 
 ![Champion board with divergence heatmap](docs/board_en.png)
 
-> ▶️ **Live board: https://pm-watchers.up.railway.app/** — explore the flagship views:
+> ▶️ **Replay board: https://pmwatcher.wy-x.com/** — explore the flagship views:
 > the **Match Recap board** (how each finished match was *priced vs. how it ended*), the
 > collectible **48-nation team cards**, and the knockout-stage
 > **Parallel-Universe Champion Machine**. Read-only, no prediction, no betting.
