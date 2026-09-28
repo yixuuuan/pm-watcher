@@ -66,12 +66,12 @@ python3 -m http.server 8765 -d site          # 打开 http://localhost:8765
 
 ## 实时访问量（可选，免费）
 
-页脚与分析页的「累计访问」= 原站历史累计 + 存档上线后的新增。新增部分由 `functions/api/visits.js`（Cloudflare Pages Function）记录在 KV 里，每个浏览器会话只计一次。
+页脚与分析页的「累计访问」= 原站历史累计 + 存档上线后的新增。新增部分由 `worker/index.js` 记录在 Cloudflare KV 里，每个浏览器会话只计一次；其余请求照常由 `site/` 里的静态文件响应。配置在仓库根目录的 `wrangler.jsonc`。
 
 一次性设置：
 
-1. Cloudflare 后台 → Storage & Databases → KV → Create，名字随意（如 `pmw-visits`）。
-2. Workers & Pages → 本项目 → Settings → Bindings → Add → KV namespace：变量名填 `VISITS`，选刚建的命名空间。
-3. Deployments 里重新部署一次（或随便 push 一次）。
+1. Cloudflare 后台 → Storage & Databases → KV → Create（如 `pmw-visits`），复制它的 ID。
+2. 把 ID 填进 `wrangler.jsonc` 的 `kv_namespaces[0].id`；`name` 要与后台这个 Worker 的名字一致。
+3. Worker → Settings → Build 里的部署命令用 `npx wrangler deploy`（不带额外参数），然后 push。
 
-没绑定时接口返回 0，页面照常显示历史累计，不会报错。KV 免费额度每天 1000 次写入。
+KV 免费额度每天 1000 次写入；接口出错时页面照常显示历史累计。

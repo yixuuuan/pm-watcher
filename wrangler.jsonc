@@ -1,0 +1,11 @@
+{
+  // Cloudflare Worker（静态资源 + 访问量接口）。name 必须与 Cloudflare 后台里这个 Worker 的名字一致。
+  "name": "pm-watcher",
+  "main": "worker/index.js",
+  "compatibility_date": "2025-09-01",
+  "assets": { "directory": "./site", "binding": "ASSETS" },
+  "kv_namespaces": [
+    // 在 Cloudflare 后台 Storage & Databases → KV 新建后，把它的 ID 填到这里
+    { "binding": "VISITS", "id": "5d1fc2867ea040138e2e0c965d554b1c" }
+  ]
+}
