@@ -735,8 +735,7 @@
     buildBar();
     var mk = new URLSearchParams(location.search).get("m");
     if (mk) focusMatch(mk);
-    var seen = null; try { seen = localStorage.getItem("pmw_tour_v1"); } catch (e) {}
-    if (!mk && !seen) setTimeout(function () { tour(0); }, 900);
+    if (!mk) setTimeout(function () { tour(0); }, 900);      // 每次进入看板都弹出使用指引（从分析页深链进来的不打扰）
   }
   ready.then(function () {
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initBar);

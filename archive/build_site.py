@@ -33,6 +33,8 @@ ROOT = Path(__file__).resolve().parent.parent
 HERE = Path(__file__).resolve().parent
 PKG = ROOT / "pm_watcher"
 
+ICON = ('<link rel="icon" type="image/svg+xml" href="favicon.svg">\n'
+        '<link rel="apple-touch-icon" href="apple-touch-icon.png">\n')
 PLATFORMS = ["polymarket", "kalshi", "42", "manifold", "predict"]   # 与 ALL_PLATFORMS 同序
 FINISH_LAG = 2 * 3600 + 15 * 60     # 开球后多久视为「已结束并入库」（赛果源每 5 分钟同步）
 KO_ROUNDS = ("R32", "R16", "QF", "SF", "3P", "FIN")
@@ -174,7 +176,7 @@ def patch_dashboard(html: str, site_url: str) -> str:
     html = html.replace(old_foot, '<a href="mailto:isabel.yx.wang@gmail.com">isabel.yx.wang@gmail.com</a>'
                         ' · <a href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener">🌰 ${LANG==="zh"?"请我喝杯咖啡":"Buy me a coffee"}</a></div>`;', 1)
     # 尽早载入回放层（须在主脚本之前）
-    inj = '<link rel="stylesheet" href="archive.css">\n<script src="archive.js"></script>\n'
+    inj = '<link rel="stylesheet" href="archive.css">\n<script src="archive.js"></script>\n' + ICON
     html = html.replace("</head>", inj + "</head>", 1)
     assert n0 == 3, f"Date.now() 出现次数={n0}，与预期不符，请复核"
     return html
@@ -183,7 +185,7 @@ def patch_dashboard(html: str, site_url: str) -> str:
 def patch_pu(html: str, site_url: str) -> str:
     html = html.replace("Date.now()", "PMW_NOW()")
     html = html.replace("https://pm-watchers.up.railway.app/parallel-universe.html", site_url + "parallel-universe.html")
-    inj = '<script src="archive.js"></script>\n'
+    inj = '<script src="archive.js"></script>\n' + ICON
     if "</head>" in html:
         html = html.replace("</head>", inj + "</head>", 1)
     else:
@@ -241,7 +243,7 @@ def main():
         patch_dashboard((PKG / "dashboard.html").read_text(encoding="utf-8"), args.site_url), encoding="utf-8")
     (out / "parallel-universe.html").write_text(
         patch_pu((PKG / "parallel-universe.html").read_text(encoding="utf-8"), args.site_url), encoding="utf-8")
-    for f in ("archive.js", "archive.css", "analysis.html"):
+    for f in ("archive.js", "archive.css", "analysis.html", "favicon.svg", "apple-touch-icon.png"):
         src = HERE / "web" / f
         if src.exists():
             shutil.copy(src, out / f)

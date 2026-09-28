@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>2026 世界杯 · 全程数据复盘 | pm-watcher</title>
 <meta name="description" content="五个预测市场、20 万次定价变动，复盘 2026 世界杯：冠军争夺战、冷门、市场准不准、谁被看走眼。">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>
   :root{--bg:#07080b;--bg2:#101217;--panel:rgba(18,20,26,.88);--panel2:rgba(27,30,37,.92);--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.14);
         --ink:#f3f1ea;--mut:#9a978f;--dim:#6c6a64;--teal:#17d17f;--hot:#ff3b52;--gold:#f0c75e;--blue:#3d7bff}
@@ -19,6 +21,8 @@
   .nav .wrap{display:flex;align-items:center;gap:14px;height:52px}
   .nav .brand{font-weight:700;letter-spacing:-.01em;white-space:nowrap}
   .nav .brand b{color:var(--teal)}
+  .nav .brand{display:inline-flex;align-items:center;gap:8px}
+  .nav .logo{width:24px;height:24px;border-radius:6px}
   .nav .links{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1}
   .nav .links::-webkit-scrollbar{display:none}
   .nav .links a{text-decoration:none;color:var(--mut);font-size:13px;padding:5px 10px;border-radius:20px;white-space:nowrap}
@@ -158,6 +162,7 @@
   /* 栗子 · 请我喝杯咖啡 */
   .nut{flex:none;display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;border:.5px solid var(--line2);text-decoration:none;font-size:16px;transition:transform .25s,border-color .25s,box-shadow .25s}
   .nut:hover{transform:rotate(-14deg) scale(1.12);border-color:var(--gold);box-shadow:0 0 16px -2px rgba(240,199,94,.6)}
+  footer .fviews{font-size:13.5px;color:var(--mut);margin-bottom:10px} footer .fviews b{color:var(--ink);font-weight:700}
   footer .flinks{margin-bottom:6px} footer a{color:var(--mut);text-decoration:none} footer a:hover{color:var(--gold)}
   /* 进球地图 */
   .mhead{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:10px}
@@ -175,18 +180,20 @@
   #mapSvg .land path{fill:#1f2431;stroke:rgba(255,255,255,.09);stroke-width:.5;transition:fill .4s}
   #mapSvg .land path.wc{stroke:rgba(255,255,255,.22);cursor:pointer}
   #mapSvg .anc{fill:rgba(255,255,255,.35)}
+  #mapSvg .mlink{fill:none;stroke:rgba(150,160,180,.2);stroke-width:.8;animation:mlin 1.2s ease 1s backwards}
+  @keyframes mlin{from{opacity:0}}
   #mapSvg .marc{fill:none;stroke-width:2.2;stroke-linecap:round;animation:marc 2.4s ease-out forwards}
   @keyframes marc{0%{stroke-dashoffset:var(--L);opacity:1}40%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
   #mapSvg .mring{fill:none;stroke-width:2.5;transform-box:fill-box;transform-origin:center;animation:mring 1.3s ease-out forwards}
   @keyframes mring{from{transform:scale(.6);opacity:.95}to{transform:scale(3.2);opacity:0}}
   .m3d-bars{position:absolute;left:0;top:0;width:100%;height:100%;transform-style:preserve-3d;pointer-events:none}
   .b3{position:absolute;width:0;height:0;transform-style:preserve-3d;pointer-events:auto}
-  .b3 .f{position:absolute;left:-5px;bottom:0;width:10px;height:230px;transform-origin:50% 100%;
-    background:linear-gradient(to top,var(--c0),var(--c) 85%,#fff);box-shadow:0 0 14px var(--c);opacity:.92;transition:transform .35s ease-out;cursor:pointer}
-  .b3 .cap{position:absolute;left:-6px;top:-6px;width:12px;height:12px;border-radius:50%;background:#fff;box-shadow:0 0 12px 3px var(--c);transition:transform .35s ease-out}
+  .b3 .f{position:absolute;left:-2px;bottom:0;width:4px;height:230px;transform-origin:50% 100%;
+    background:linear-gradient(to top,var(--c0),var(--c));opacity:.9;transition:transform .35s ease-out;cursor:pointer}
+  .b3 .cap{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 4px 1px var(--c);transition:transform .35s ease-out}
   .b3.zero .f,.b3.zero .cap{opacity:0}
   .b3.hit .cap{animation:bhit .9s ease-out}
-  @keyframes bhit{30%{box-shadow:0 0 26px 10px var(--c)}}
+  @keyframes bhit{30%{box-shadow:0 0 10px 4px var(--c)}}
   .b3 .lab{position:absolute;left:0;top:0;transform-origin:0 0;display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:13px;font-weight:800;color:#fff;
     text-shadow:0 1px 6px rgba(0,0,0,.9);pointer-events:none}
   .b3 .lab img{width:20px;height:14px;border-radius:2px;object-fit:cover}
@@ -210,7 +217,7 @@
 <body>
 <canvas id="fx" aria-hidden="true"></canvas><div class="fx-tex" aria-hidden="true"></div>
 <nav class="nav"><div class="wrap">
-  <span class="brand"><b>pm</b>-watcher</span>
+  <span class="brand"><img src="favicon.svg" alt="" class="logo"><b>pm</b>-watcher</span>
   <div class="links" id="navlinks"></div>
   <a class="nut" href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener" title="Buy me a chestnut">🌰</a>
   <div class="langsw"><button data-lang="en">EN</button><button data-lang="zh">中</button></div>
@@ -333,7 +340,7 @@
   <ul class="note reveal" id="method"></ul>
 </div></section>
 
-<footer><div class="wrap"><div class="flinks"><a href="mailto:isabel.yx.wang@gmail.com" data-i="mail"></a> · <a href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener">🌰 <span data-i="coffee"></span></a> · <a href="index.html" data-i="back2"></a></div><div>© 2026 Yixuan · pm-watcher</div></div></footer>
+<footer><div class="wrap"><div class="fviews" id="fViews"></div><div class="flinks"><a href="mailto:isabel.yx.wang@gmail.com" data-i="mail"></a> · <a href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener">🌰 <span data-i="coffee"></span></a> · <a href="index.html" data-i="back2"></a></div><div>© 2026 Yixuan · pm-watcher</div></div></footer>
 <div class="tip" id="tip"></div>
 
 <script>
@@ -739,7 +746,7 @@ function mapBuild(){
   [-30,0,30,60].forEach(function(lat){ d+="M"; for(var lon=-180;lon<=180;lon+=5){ var q=proj(lon,lat); d+=(lon>-180?"L":"")+q[0].toFixed(1)+","+q[1].toFixed(1); } });
   el("path",{d:d},gr);
   MP.land=el("g",{"class":"land"},svg); MP.paths={};
-  MP.arcs=el("g",{},svg); MP.fx=el("g",{},svg); MP.dots=el("g",{},svg);
+  MP.links=el("g",{},svg); MP.linkEls=[]; MP.arcs=el("g",{},svg); MP.fx=el("g",{},svg); MP.dots=el("g",{},svg);
   var bars=document.getElementById("m3dBars"); bars.innerHTML=""; MP.nodes={};
   Object.keys(GEO).forEach(function(t){ var a=proj(GEO[t][0],GEO[t][1]);
     var b=document.createElement("div"); b.className="b3"; b.style.left=a[0].toFixed(1)+"px"; b.style.top=a[1].toFixed(1)+"px";
@@ -819,9 +826,20 @@ function mapRender(force){
   var done=MP.G.filter(function(g){ return g.t<=t; }).slice(-3).reverse(), sig=done.map(function(g){return g.h+g.a;}).join();
   if(sig!==MP.tickSig||force){ MP.tickSig=sig; document.getElementById("mapTick").innerHTML=done.map(function(g){
     return '<span>'+fl(g.h,"")+" "+nm(g.h)+'<b class="num">'+g.sa+"–"+g.sb+"</b>"+nm(g.a)+" "+fl(g.a,"")+"</span>"; }).join(""); }
-  if(t>MP.last && t-MP.last<3*86400){ MP.G.forEach(function(g){ if(g.t>MP.last&&g.t<=t) mapArc(g); }); }
+  var step=t>MP.last && t-MP.last<3*86400;
+  if(step){ MP.G.forEach(function(g){ if(g.t>MP.last&&g.t<=t) mapArc(g); }); }
+  mapLinks(t,!step);
   MP.last=t;
 }
+// 两队之间的弧线路径（动画弧线与保留的灰色连线共用）
+function arcD(g){ var A_=MP.nodes[g.h], B_=MP.nodes[g.a]; if(!A_||!B_) return null;
+  var x1=A_.x,y1=A_.y,x2=B_.x,y2=B_.y, mx=(x1+x2)/2, my=(y1+y2)/2, dx=x2-x1, dy=y2-y1, L_=Math.sqrt(dx*dx+dy*dy)||1, h=Math.min(120,L_*.35)+8;
+  var cx=mx+dy/L_*h*(dx<0?1:-1), cy=my-Math.abs(dx/L_)*h;
+  return "M"+x1.toFixed(1)+","+y1.toFixed(1)+"Q"+cx.toFixed(1)+","+cy.toFixed(1)+" "+x2.toFixed(1)+","+y2.toFixed(1); }
+// 已结束比赛的淡灰连线：越往后越像一张交织的网
+function mapLinks(t,instant){ var n=0; MP.G.forEach(function(g){ if(g.t<=t) n++; });
+  while(MP.linkEls.length>n){ MP.linkEls.pop().remove(); }
+  for(var i=MP.linkEls.length;i<n;i++){ var d=arcD(MP.G[i]); var p=el("path",{"class":"mlink",d:d||""},MP.links); if(instant) p.style.animation="none"; MP.linkEls.push(p); } }
 function mapArc(g){
   var A_=MP.nodes[g.h], B_=MP.nodes[g.a]; if(!A_||!B_) return;
   if(MP.arcs.childNodes.length>14) MP.arcs.removeChild(MP.arcs.firstChild);
@@ -871,7 +889,8 @@ function mapInit(){
   }
   if(!MP.started){ MP.tilt=0; MP.rz=0; } mapView();
 }
-function renderAll(){ statics(); hero(); raceInit(); bign(); ucards(); slope(); hitStage(); draws(); brier(); rel(); scatter(); pcards(); game(); mapInit(); method();
+function footViews(){ var v=(A.overview||{}).visits; var e=document.getElementById("fViews"); if(e&&v!=null) e.innerHTML='👀 <b class="num">'+v.toLocaleString("en-US")+'</b> '+(LANG==="zh"?"累计访问":"total views"); }
+function renderAll(){ statics(); footViews(); hero(); raceInit(); bign(); ucards(); slope(); hitStage(); draws(); brier(); rel(); scatter(); pcards(); game(); mapInit(); method();
   document.querySelectorAll("section.sec").forEach(function(s){ secIO.observe(s); }); observe();
   document.querySelectorAll(".reveal.in .hbar i[data-w]").forEach(function(i){ i.style.width=i.dataset.w; }); }
 document.querySelectorAll("[data-lang]").forEach(function(b){ b.addEventListener("click",function(){ LANG=b.dataset.lang; try{localStorage.setItem("pmw_lang",JSON.stringify(LANG));}catch(e){} var f=RB.f, pl=RB.playing; racePause(); renderAll(); RB.f=f; raceRender(); if(pl) racePlay();
