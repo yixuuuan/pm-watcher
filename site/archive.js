@@ -461,6 +461,7 @@
         '<span class="pb-flex"></span>' +
         '<button class="pb-help" id="pbHelp"></button>' +
         '<a class="pb-ana" id="pbAna" href="analysis.html"></a>' +
+        '<a class="pb-nut" href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener" title="Buy me a chestnut">🌰</a>' +
       '</div>' +
       '<div class="pb-row pb-row2"><div class="pb-track" id="pbTrack"><div class="pb-ticks" id="pbTicks"></div><input type="range" id="pbRange"></div></div>' +
       '<div class="pb-row pb-chips" id="pbChips"></div>';

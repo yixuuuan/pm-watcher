@@ -2038,7 +2038,7 @@ tick(); setInterval(tick, 12000); fetchHist(); setInterval(fetchHist, 30000);
   #sitefoot .sf-legal a{color:inherit}`;
   document.head.appendChild(st);
   const f=document.createElement("footer"); f.id="sitefoot";
-  f.innerHTML=`<div class="sf-views" id="sfViews"></div><div class="sf-legal">© 2026 Yixuan · All rights reserved · <a href="mailto:isabel.yx.wang@gmail.com">isabel.yx.wang@gmail.com</a></div>`;
+  f.innerHTML=`<div class="sf-views" id="sfViews"></div><div class="sf-legal">© 2026 Yixuan · All rights reserved · <a href="mailto:isabel.yx.wang@gmail.com">isabel.yx.wang@gmail.com</a> · <a href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener">🌰 ${LANG==="zh"?"请我喝杯咖啡":"Buy me a coffee"}</a></div>`;
   document.body.appendChild(f);
   async function pull(){ try{ const r=await fetch("/api/stats",{cache:"no-store"}); const d=await r.json();
       const n=(d.total||0).toLocaleString("en-US");

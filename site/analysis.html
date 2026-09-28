@@ -34,7 +34,8 @@
   .hero svg.bg{position:absolute;inset:0;width:100%;height:100%;opacity:.32;mix-blend-mode:screen;pointer-events:none}
   .hero .wrap{position:relative;width:100%;padding-top:40px;padding-bottom:60px}
   .kicker{font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);font-weight:600}
-  .hero h1{font-size:clamp(38px,6.6vw,84px);line-height:1.02;margin:14px 0 18px;letter-spacing:-.035em;font-weight:800;max-width:900px}
+  .hero h1{font-size:clamp(30px,6vw,80px);line-height:1.04;margin:14px 0 18px;letter-spacing:-.035em;font-weight:800;max-width:1080px}
+  .hero h1 .nb{white-space:nowrap}
   .hero h1 em{font-style:normal;background:linear-gradient(90deg,#ff3b52,#f0c75e);-webkit-background-clip:text;background-clip:text;color:transparent}
   .hero .lede{color:#c9c6bd;font-size:clamp(15px,1.6vw,18px);max-width:640px;margin:0}
   .champ{display:flex;align-items:center;gap:18px;margin-top:34px;flex-wrap:wrap}
@@ -149,6 +150,43 @@
     background-size:160px 160px,56px 56px,56px 56px;opacity:.28;
     -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 30%,transparent 100%);mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 30%,transparent 100%)}
   .fx-tex::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 120% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}
+  /* 栗子 · 请我喝杯咖啡 */
+  .nut{flex:none;display:inline-grid;place-items:center;width:32px;height:32px;border-radius:50%;border:.5px solid var(--line2);text-decoration:none;font-size:16px;transition:transform .25s,border-color .25s,box-shadow .25s}
+  .nut:hover{transform:rotate(-14deg) scale(1.12);border-color:var(--gold);box-shadow:0 0 16px -2px rgba(240,199,94,.6)}
+  footer .flinks{margin-bottom:6px} footer a{color:var(--mut);text-decoration:none} footer a:hover{color:var(--gold)}
+  /* 进球地图 */
+  .mhead{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+  .mwhen{font-size:clamp(24px,3.4vw,34px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  .mstage{font-size:12.5px;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-top:5px;font-weight:600}
+  .mctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .mapwrap{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px;align-items:start}
+  .mapbox{position:relative;border-radius:14px;overflow:hidden;background:radial-gradient(ellipse at 50% 45%,rgba(61,123,255,.09),transparent 70%)}
+  #mapSvg{display:block;width:100%;height:auto}
+  #mapSvg .grat path{fill:none;stroke:rgba(255,255,255,.05);stroke-width:.6}
+  #mapSvg .land path{fill:#1a1e28;stroke:rgba(255,255,255,.07);stroke-width:.5;transition:fill .4s}
+  #mapSvg .land path.wc{stroke:rgba(255,255,255,.2);cursor:pointer}
+  #mapSvg .lnk{stroke:rgba(255,255,255,.28);stroke-width:.7}
+  #mapSvg .anc{fill:rgba(255,255,255,.55)}
+  #mapSvg .bub{cursor:pointer}
+  #mapSvg .bub .core{stroke:rgba(255,255,255,.55);stroke-width:.8}
+  #mapSvg .bub text{font:800 10px ui-monospace,"SF Mono",Menlo,monospace;fill:#0b0c0f;text-anchor:middle;dominant-baseline:central;pointer-events:none}
+  #mapSvg .marc{fill:none;stroke-width:1.8;stroke-linecap:round;animation:marc 2.4s ease-out forwards}
+  @keyframes marc{0%{stroke-dashoffset:var(--L);opacity:1}40%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
+  #mapSvg .mring{fill:none;stroke-width:2;transform-box:fill-box;transform-origin:center;animation:mring 1.3s ease-out forwards}
+  @keyframes mring{from{transform:scale(.8);opacity:.95}to{transform:scale(2.8);opacity:0}}
+  .mload{position:absolute;left:14px;bottom:10px;font-size:12px;color:var(--dim)}
+  .mlbh{font-size:12px;color:var(--mut);letter-spacing:.12em;text-transform:uppercase;font-weight:600;margin:2px 0 10px}
+  .mlb{position:relative;height:320px;overflow:hidden}
+  .mrow{position:absolute;left:0;right:0;top:0;height:28px;display:flex;align-items:center;gap:8px;font-size:13px;transition:transform .55s cubic-bezier(.2,.7,.2,1),opacity .4s}
+  .mrow .rk{width:16px;color:var(--dim);font-size:11.5px;text-align:right;flex:none}
+  .mrow .nm{width:96px;flex:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}
+  .mrow .tr{flex:1;height:7px;border-radius:5px;background:rgba(255,255,255,.06);overflow:hidden}
+  .mrow .tr i{display:block;height:100%;border-radius:5px;transition:width .45s,background .3s}
+  .mrow .v{width:30px;flex:none;text-align:right;font-weight:750}
+  .mtick{display:flex;gap:8px;flex-wrap:wrap;min-height:30px}
+  .mtick span{font-size:12.5px;background:var(--panel2);border:.5px solid var(--line2);border-radius:20px;padding:3px 11px;animation:evin .5s ease}
+  .mtick b{color:var(--gold);margin:0 4px}
+  @media (max-width:860px){ .mapwrap{grid-template-columns:1fr} .mlb{height:160px} }
 </style>
 </head>
 <body>
@@ -156,6 +194,7 @@
 <nav class="nav"><div class="wrap">
   <span class="brand"><b>pm</b>-watcher</span>
   <div class="links" id="navlinks"></div>
+  <a class="nut" href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener" title="Buy me a chestnut">🌰</a>
   <div class="langsw"><button data-lang="en">EN</button><button data-lang="zh">中</button></div>
   <a class="back" href="index.html" data-i="back"></a>
 </div></nav>
@@ -250,11 +289,25 @@
   <div class="panel tscroll reveal"><div class="sub" style="margin:0 0 6px" data-i="ko_head"></div><div id="ko"></div></div>
 </div></section>
 
-<section class="sec" id="s-aud"><div class="wrap">
+<section class="sec" id="s-map"><div class="wrap">
   <div class="chap reveal"><i>09</i><span data-i="c9"></span></div>
-  <h2 class="reveal" data-i="h_aud"></h2>
-  <p class="sub reveal" data-i="d_aud"></p>
-  <div class="panel reveal"><div id="visits"></div></div>
+  <h2 class="reveal" id="mapH"></h2>
+  <p class="sub reveal" data-i="d_map"></p>
+  <div class="panel reveal">
+    <div class="mhead">
+      <div><div class="mwhen num" id="mapWhen"></div><div class="mstage" id="mapStage"></div></div>
+      <div class="mctl">
+        <div class="viewsw" id="mapMetric"><button data-m="gf"></button><button data-m="ga"></button><button data-m="gd"></button></div>
+        <button class="btn pri" id="mapPlay"></button>
+      </div>
+    </div>
+    <div class="mapwrap">
+      <div class="mapbox"><svg id="mapSvg" viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet"></svg><div class="mload" id="mapLoad"></div></div>
+      <div><div class="mlbh" id="mapLbH"></div><div class="mlb" id="mapLb"></div></div>
+    </div>
+    <input type="range" class="scrub" id="mapScrub">
+    <div class="mtick" id="mapTick"></div>
+  </div>
 </div></section>
 
 <section class="sec" id="s-method"><div class="wrap">
@@ -262,7 +315,7 @@
   <ul class="note reveal" id="method"></ul>
 </div></section>
 
-<footer><div class="wrap">© 2026 Yixuan · pm-watcher · <a href="mailto:isabel.yx.wang@gmail.com">isabel.yx.wang@gmail.com</a> · <a href="index.html" data-i="back2"></a></div></footer>
+<footer><div class="wrap"><div class="flinks"><a href="mailto:isabel.yx.wang@gmail.com" data-i="mail"></a> · <a href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener">🌰 <span data-i="coffee"></span></a> · <a href="index.html" data-i="back2"></a></div><div>© 2026 Yixuan · pm-watcher</div></div></footer>
 <div class="tip" id="tip"></div>
 
 <script>
@@ -279,10 +332,10 @@ try{ var sv=JSON.parse(localStorage.getItem("pmw_lang")); LANG=sv||((navigator.l
 
 var S={zh:{
   back:"← 回到历史回放看板",back2:"回到历史回放看板",kicker:"2026 世界杯 · 全程数据复盘",
-  title:"一届世界杯，<br>五个市场，<em>二十万次</em>定价。",
+  title:"一届世界杯，<br>五个市场，<span class=\"nb\"><em>二十万次</em>定价。</span>",
   lede:"pm-watcher 在整届赛事中持续记录五个预测市场平台的每一次价格变动。把它们连起来，就能看见冠军是怎样被一步步「定价」出来的——以及市场在哪里看走了眼。",
   scroll:"向下滚动 ↓",
-  n_race:"冠军争夺战",n_nums:"关键数字",n_upset:"冷门",n_swing:"转折点",n_acc:"市场准不准",n_team:"看走眼",n_plat:"平台",n_game:"比赛",n_aud:"观众",
+  n_race:"冠军争夺战",n_nums:"关键数字",n_upset:"冷门",n_swing:"转折点",n_acc:"市场准不准",n_team:"看走眼",n_plat:"平台",n_game:"比赛",n_map:"进球地图",
   c1:"冠军争夺战",h_race:"从第 2 名到捧杯：夺冠概率的 33 天",d_race:"五个平台清洗后的共识夺冠概率，每 3 小时一帧。点「播放」看排名实时变化；拖动进度条可停在任何时刻，再一键打开回放看板看当时的原貌。",
   play:"▶ 播放",pause:"❚❚ 暂停",replay_again:"↺ 重播",openBoard:"在回放看板中打开此刻 ↗",v_bar:"排名",v_line:"折线",
   c2:"关键数字",h_nums:"六个数字，读懂这届世界杯的市场",d_nums:"单场数字都用「收盘线」（开球前各平台最后一笔定价），与看板同一口径。",
@@ -295,7 +348,7 @@ var S={zh:{
   c7:"平台",h_plat:"五个平台，五种性格",d_plat:"同一场比赛、同一支球队，五个平台的定价习惯并不一样。",
   plat_note:"「热门自信度」= 该平台给共识热门的概率 − 共识概率（正值 = 比同行更自信）；「单场概率和」= 三档原始价格相加（>100% 为溢价）；「冠军盘偏离」= 与清洗后共识的平均距离；「异常报价」= 每 12 小时抽样，因偏离其他平台过多（多为其他运动的同名球队串盘）被剔除的次数。",
   c8:"比赛",h_game:"场上发生了什么",ko_head:"淘汰赛全部赛果",
-  c9:"观众",h_aud:"这个看板被多少人看过",d_aud:"原站每日访问量。",
+  c9:"进球地图",h_map:function(g){return g+" 粒进球，落在地图上";},d_map:"按时间回放整届赛事：每场比赛结束，两队之间划出一道弧线，气泡随累计数据长大。悬停气泡或国家查看详情，拖动进度条回到任意一天。",m_gf:"进球",m_ga:"失球",m_gd:"净胜球",m_play:"▶ 播放",m_pause:"⏸ 暂停",m_replay:"↻ 重播",m_lb:"排行",m_n:"场",m_load:"地图加载中…",m_tip:function(n,gf,ga){return n+" 场 · 进 "+gf+" · 失 "+ga;},m_champ:"冠军",m_out:"止步",mail:"写信给我",coffee:"请我喝杯咖啡",
   c10:"方法与数据说明",
   s_matches:"场比赛",s_goals:"粒进球",s_changes:"次定价变动",s_plat:"个预测市场",s_views:"次访问",
   champ_path:function(r,p,f){return "开赛初期市场排名第 <b>"+r+"</b>（"+p+"%）→ 决赛前 <b>"+f+"%</b> → 捧杯";},
@@ -314,10 +367,10 @@ var S={zh:{
   gpm_d:function(o){return "小组赛 "+o.gpm_group+" · 淘汰赛 "+o.gpm_ko;}},
  en:{
   back:"← Back to the replay board",back2:"Back to the replay board",kicker:"2026 World Cup · The full data recap",
-  title:"One World Cup.<br>Five markets. <em>200,000</em> prices.",
+  title:"One World Cup.<br>Five markets. <span class=\"nb\"><em>200,000</em> prices.</span>",
   lede:"Throughout the tournament pm-watcher recorded every price move on five prediction markets. Stitch them together and you can watch the champion being priced, step by step — and see where the markets got it wrong.",
   scroll:"Scroll ↓",
-  n_race:"Title race",n_nums:"Numbers",n_upset:"Upsets",n_swing:"Turning points",n_acc:"Accuracy",n_team:"Misread",n_plat:"Platforms",n_game:"Football",n_aud:"Audience",
+  n_race:"Title race",n_nums:"Numbers",n_upset:"Upsets",n_swing:"Turning points",n_acc:"Accuracy",n_team:"Misread",n_plat:"Platforms",n_game:"Football",n_map:"Goal map",
   c1:"The title race",h_race:"From #2 to the trophy: 33 days of title odds",d_race:"Cleaned five-platform consensus title probability, one frame every 3 hours. Press play to watch the ranking move; drag to stop at any moment and open the replay board as it looked then.",
   play:"▶ Play",pause:"❚❚ Pause",replay_again:"↺ Replay",openBoard:"Open this moment on the board ↗",v_bar:"Race",v_line:"Lines",
   c2:"Key numbers",h_nums:"Six numbers that explain this World Cup's markets",d_nums:"Match figures use the closing line (each platform's last price before kickoff) — same as the board.",
@@ -330,7 +383,7 @@ var S={zh:{
   c7:"Platforms",h_plat:"Five platforms, five personalities",d_plat:"Same match, same team — the platforms price differently.",
   plat_note:"“Favorite confidence” = platform's probability on the consensus favorite minus the consensus (positive = more confident). “Match overround” = three raw prices summed (>100% = margin). “Title deviation” = average distance from the cleaned consensus. “Anomalies” = sampled every 12h, quotes dropped for straying too far from the other platforms (usually a same-named team from another sport).",
   c8:"The football",h_game:"What happened on the pitch",ko_head:"All knockout results",
-  c9:"Audience",h_aud:"Who watched",d_aud:"Daily views of the original live board.",
+  c9:"Goal map",h_map:function(g){return g+" goals, on the map";},d_map:"Replay the tournament: when a match ends an arc links the two teams and each bubble grows with its running total. Hover a bubble or country for details, drag the bar to any day.",m_gf:"Scored",m_ga:"Conceded",m_gd:"Goal diff",m_play:"▶ Play",m_pause:"⏸ Pause",m_replay:"↻ Replay",m_lb:"Leaders",m_n:"played",m_load:"Loading map…",m_tip:function(n,gf,ga){return n+" played · "+gf+" scored · "+ga+" conceded";},m_champ:"Champion",m_out:"Out in",mail:"Write to me",coffee:"Buy me a coffee",
   c10:"Method & data notes",
   s_matches:"matches",s_goals:"goals",s_changes:"price changes",s_plat:"prediction markets",s_views:"views",
   champ_path:function(r,p,f){return "Ranked <b>#"+r+"</b> early on ("+p+"%) → <b>"+f+"%</b> before the final → champions";},
@@ -366,15 +419,18 @@ document.addEventListener("mousemove",function(e){ var c=e.target.closest&&e.tar
 
 // ───── 滚动出现 + 数字滚动 ─────
 var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(!en.isIntersecting) return; en.target.classList.add("in"); io.unobserve(en.target);
-  en.target.querySelectorAll("[data-count]").forEach(countUp); if(en.target.hasAttribute("data-count")) countUp(en.target);
   en.target.querySelectorAll(".hbar i[data-w]").forEach(function(i){ i.style.width=i.dataset.w; }); }); },{threshold:.15});
-function observe(){ document.querySelectorAll(".reveal:not(.in),[data-count]:not(.done)").forEach(function(el){ io.observe(el); }); }
-function countUp(el){ if(el.classList.contains("done")) return; el.classList.add("done");
+// 数字：每次滚进视野都从 0 重新滚动；滚出视野时复位，下次再进来重播
+var cio=new IntersectionObserver(function(es){ es.forEach(function(en){ var el=en.target;
+  if(en.isIntersecting) countUp(el);
+  else if(el.classList.contains("done")){ el._run=(el._run||0)+1; el.classList.remove("done"); el.innerHTML=(el.dataset.pre||"")+"0"+(el.dataset.suf||""); } }); },{threshold:.25});
+function observe(){ document.querySelectorAll(".reveal:not(.in)").forEach(function(el){ io.observe(el); }); document.querySelectorAll("[data-count]").forEach(function(el){ cio.observe(el); }); }
+function countUp(el){ if(el.classList.contains("done")) return; el.classList.add("done"); var run=el._run=(el._run||0)+1;
   var to=+el.dataset.count, dec=+(el.dataset.dec||0), pre=el.dataset.pre||"", suf=el.dataset.suf||"", fmt=el.dataset.fmt, t0=performance.now(), D=1400;
-  function f(t){ var p=Math.min(1,(t-t0)/D), e=1-Math.pow(1-p,3), v=to*e;
+  function f(t){ if(el._run!==run) return; var p=Math.min(1,(t-t0)/D), e=1-Math.pow(1-p,3), v=to*e;
     var s= fmt==="k"? Math.round(v).toLocaleString("en-US") : v.toFixed(dec);
-    el.innerHTML=pre+s+suf; if(p<1&&!el._fin) requestAnimationFrame(f); }
-  setTimeout(function(){ el._fin=1; var s=fmt==="k"?Math.round(to).toLocaleString("en-US"):to.toFixed(dec); el.innerHTML=pre+s+suf; },D+200);
+    el.innerHTML=pre+s+suf; if(p<1) requestAnimationFrame(f); }
+  setTimeout(function(){ if(el._run!==run) return; var s=fmt==="k"?Math.round(to).toLocaleString("en-US"):to.toFixed(dec); el.innerHTML=pre+s+suf; },D+200);
   requestAnimationFrame(f); }
 function cnt(v,dec,suf,pre,fmt){ return '<span data-count="'+v+'" data-dec="'+(dec||0)+'" data-suf="'+(suf||"").replace(/"/g,"&quot;")+'" data-pre="'+(pre||"")+'"'+(fmt?' data-fmt="'+fmt+'"':"")+'>'+(pre||"")+"0"+(suf||"")+'</span>'; }
 
@@ -384,7 +440,7 @@ function statics(){
   document.querySelectorAll("[data-lang]").forEach(function(b){ b.classList.toggle("on",b.dataset.lang===LANG); });
   document.getElementById("heroTitle").innerHTML=L("title");
   document.title=(LANG==="zh"?"2026 世界杯 · 全程数据复盘":"2026 World Cup · The Full Data Recap")+" | pm-watcher";
-  var nav=[["s-race","n_race"],["s-nums","n_nums"],["s-upset","n_upset"],["s-swing","n_swing"],["s-acc","n_acc"],["s-team","n_team"],["s-plat","n_plat"],["s-game","n_game"],["s-aud","n_aud"]];
+  var nav=[["s-race","n_race"],["s-nums","n_nums"],["s-upset","n_upset"],["s-swing","n_swing"],["s-acc","n_acc"],["s-team","n_team"],["s-plat","n_plat"],["s-game","n_game"],["s-map","n_map"]];
   document.getElementById("navlinks").innerHTML=nav.map(function(n){ return '<a href="#'+n[0]+'" data-sec="'+n[0]+'">'+L(n[1])+'</a>'; }).join("");
   document.querySelector('#raceView [data-v=bar]').textContent=L("v_bar"); document.querySelector('#raceView [data-v=line]').textContent=L("v_line");
 }
@@ -602,14 +658,6 @@ function game(){ var o=A.overview;
   document.getElementById("ko").innerHTML='<table><tbody>'+A.knockout.map(function(m){ return '<tr><td style="color:#9a978f;width:92px">'+stg(m.grp)+'</td><td>'+tm(m.home)+' <b class="num" style="margin:0 6px">'+m.sa+'–'+m.sb+'</b> '+tm(m.away)+'</td><td style="color:#9a978f" class="num">'+fmtD(m.kickoff)+'</td><td class="r"><a class="go2" href="'+replayMatch(m)+'">'+L("toCard")+'</a></td></tr>'; }).join("")+'</tbody></table>'; }
 
 // ───── 观众 ─────
-function visits(){ var V=A.visits; if(!V||!V.length) return; var el=document.getElementById("visits"), W=Math.max(320,el.clientWidth||900), H=200, pl=36, pb=24, mx=Math.max.apply(null,V.map(function(v){return v[1];})), bw=(W-pl-6)/V.length;
-  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
-  [0,.5,1].forEach(function(f){ var y=H-pb-f*(H-pb-12); s+='<line x1="'+pl+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="rgba(255,255,255,.06)"/><text x="'+(pl-6)+'" y="'+(y+4)+'" font-size="10" text-anchor="end" fill="#6c6a64">'+Math.round(mx*f)+'</text>'; });
-  var pk=(A.overview.peak_day||[])[0];
-  V.forEach(function(v,i){ var h=v[1]/mx*(H-pb-12), x=pl+i*bw; s+='<rect x="'+(x+1).toFixed(1)+'" y="'+(H-pb-h).toFixed(1)+'" width="'+Math.max(1,bw-2).toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+(v[0]===pk?"#ff3b52":"#17d17f")+'" data-tip="'+v[0]+' · '+v[1]+'"/>';
-    if(i%7===0) s+='<text x="'+(x+bw/2)+'" y="'+(H-6)+'" font-size="10" text-anchor="middle" fill="#6c6a64">'+v[0].slice(5).replace("-","/")+'</text>'; });
-  el.innerHTML=s+'</svg><div class="note" style="margin-top:8px">'+L("total")+" "+A.overview.visits.toLocaleString("en-US")+" · "+L("peak")+" "+pk+" ("+A.overview.peak_day[1]+")</div>"; }
-
 function method(){ var o=A.overview, zh=LANG==="zh";
   var items=zh?["数据来源：pm-watcher 在赛事期间对 Polymarket、Kalshi、42、Manifold、Predict 五个平台每约 30 秒抓取一次，价格变动 ≥0.1pt 时落盘，共 "+o.snap_rows.toLocaleString("en-US")+" 条定价变动；赛果来自 football-data.org。",
     "单场口径：「收盘线」（开球前各平台最后一笔），三档都有报价的平台才参与，先归一化再比较。Brier = 三档平方误差之和。Manifold 只有冠军盘（play money），不参与单场统计。",
@@ -626,12 +674,170 @@ function method(){ var o=A.overview, zh=LANG==="zh";
 // 导航高亮
 var secIO=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ document.querySelectorAll(".nav .links a").forEach(function(a){ a.classList.toggle("on",a.dataset.sec===en.target.id); }); } }); },{rootMargin:"-45% 0px -50% 0px"});
 
-function renderAll(){ statics(); hero(); raceInit(); bign(); ucards(); slope(); hitStage(); draws(); brier(); rel(); scatter(); pcards(); game(); visits(); method();
+// ───── 进球地图：按时间回放每粒进球 ─────
+var GEO={Algeria:[2.6,28,"012"],Argentina:[-64,-34,"032"],Australia:[134,-25,"036"],Austria:[14.5,47.5,"040"],Belgium:[4.5,50.6,"056"],
+  "Bosnia & Herzegovina":[17.8,44.2,"070"],Brazil:[-51,-10,"076"],Canada:[-100,56,"124"],"Cape Verde":[-24,16,"132"],Colombia:[-73,4,"170"],
+  Croatia:[15.5,45.3,"191"],"Curaçao":[-69,12.2,"531"],Czechia:[15.3,49.8,"203"],"DR Congo":[23.6,-2.9,"180"],Ecuador:[-78.4,-1.5,"218"],
+  Egypt:[30,26.5,"818"],England:[-1.5,52.5,"826"],France:[2.5,46.5,"250"],Germany:[10.4,51.1,"276"],Ghana:[-1,7.9,"288"],Haiti:[-72.3,19,"332"],
+  Iran:[53.7,32.4,"364"],Iraq:[43.7,33.2,"368"],"Ivory Coast":[-5.5,7.5,"384"],Japan:[138.3,36.2,"392"],Jordan:[36.2,31.2,"400"],
+  Mexico:[-102.5,23.6,"484"],Morocco:[-7.1,31.8,"504"],Netherlands:[5.3,52.1,"528"],"New Zealand":[174,-41,"554"],Norway:[9,61,"578"],
+  Panama:[-80.1,8.5,"591"],Paraguay:[-58.4,-23.4,"600"],Portugal:[-8.2,39.6,"620"],Qatar:[51.2,25.3,"634"],"Saudi Arabia":[45,24,"682"],
+  Scotland:[-4.2,56.8,"826"],Senegal:[-14.5,14.5,"686"],"South Africa":[24.7,-29,"710"],"South Korea":[127.8,36.4,"410"],Spain:[-3.7,40.2,"724"],
+  Sweden:[15.6,61.5,"752"],Switzerland:[8.2,46.8,"756"],Tunisia:[9.5,34,"788"],Turkey:[35.2,39,"792"],USA:[-98.5,39.5,"840"],
+  Uruguay:[-55.8,-32.5,"858"],Uzbekistan:[64.6,41.4,"860"]};
+var MCOL={gf:"#f0c75e",ga:"#3d7bff",gdp:"#17d17f",gdn:"#ff3b52"};
+var MP={metric:"gf",t:0,last:0,playing:false,raf:0,built:false,pos:{},auto:false,topo:null,G:[],t0:0,t1:0,max:{}};
+var MW=1000, MH=500, NS="http://www.w3.org/2000/svg";
+function ne1(lon,lat){ var l=lon*Math.PI/180,p=lat*Math.PI/180,p2=p*p,p4=p2*p2;
+  return [l*(0.8707-0.131979*p2+p4*(-0.013791+p4*(0.003971*p2-0.001529*p4))), p*(1.007226+p2*(0.015085+p4*(-0.044475+0.028874*p2-0.005916*p4)))]; }
+var PY0=ne1(0,80)[1], PY1=ne1(0,-57)[1], PX=ne1(180,0)[0];
+MH=Math.round(MW*(PY0-PY1)/(2*PX));
+function proj(lon,lat){ var q=ne1(lon,lat); return [(q[0]+PX)/(2*PX)*MW, (PY0-q[1])/(PY0-PY1)*MH]; }
+function mapStats(t){ var S={}; Object.keys(GEO).forEach(function(k){ S[k]={gf:0,ga:0,n:0}; });
+  MP.G.forEach(function(g){ if(g.t>t) return; if(S[g.h]){ S[g.h].gf+=g.sa; S[g.h].ga+=g.sb; S[g.h].n++; } if(S[g.a]){ S[g.a].gf+=g.sb; S[g.a].ga+=g.sa; S[g.a].n++; } });
+  return S; }
+function mval(s,m){ return m==="gd"? s.gf-s.ga : s[m]; }
+function mcol(v,m){ return m==="gd"? (v>=0?MCOL.gdp:MCOL.gdn) : MCOL[m]; }
+function el(tag,attrs,parent){ var e=document.createElementNS(NS,tag); for(var k in attrs) e.setAttribute(k,attrs[k]); if(parent) parent.appendChild(e); return e; }
+function topoPaths(topo){
+  var tr=topo.transform, sc=tr.scale, tl=tr.translate;
+  var arcs=topo.arcs.map(function(a){ var x=0,y=0; return a.map(function(p){ x+=p[0]; y+=p[1]; return [x*sc[0]+tl[0], y*sc[1]+tl[1]]; }); });
+  function ring(r){ var pts=[]; r.forEach(function(i,k){ var a=i<0?arcs[~i].slice().reverse():arcs[i]; pts=pts.concat(k?a.slice(1):a); });
+    return "M"+pts.map(function(p){ var q=proj(p[0],p[1]); return q[0].toFixed(1)+","+q[1].toFixed(1); }).join("L")+"Z"; }
+  return topo.objects.countries.geometries.filter(function(g){ return g.id!=="010"; }).map(function(g){
+    var polys=g.type==="Polygon"?[g.arcs]:g.type==="MultiPolygon"?g.arcs:[];
+    return {id:g.id,name:g.properties&&g.properties.name,d:polys.map(function(p){ return p.map(ring).join(""); }).join("")}; });
+}
+function mapBuild(){
+  var svg=document.getElementById("mapSvg"); svg.setAttribute("viewBox","0 0 "+MW+" "+MH); svg.innerHTML="";
+  var defs=el("defs",{},svg), lg=el("linearGradient",{id:"marcG",x1:"0",x2:"1",y1:"0",y2:"0"},defs);
+  [["0","#ff3b52"],[".5","#f0c75e"],["1","#3d7bff"]].forEach(function(s){ el("stop",{offset:s[0],"stop-color":s[1]},lg); });
+  var gr=el("g",{"class":"grat"},svg), d="";
+  for(var lon=-180;lon<=180;lon+=30){ d+="M"; for(var lat=-57;lat<=80;lat+=4){ var q=proj(lon,Math.min(lat,80)); d+=(lat>-57?"L":"")+q[0].toFixed(1)+","+q[1].toFixed(1); } }
+  [-30,0,30,60].forEach(function(lat){ d+="M"; for(var lon=-180;lon<=180;lon+=5){ var q=proj(lon,lat); d+=(lon>-180?"L":"")+q[0].toFixed(1)+","+q[1].toFixed(1); } });
+  el("path",{d:d},gr);
+  MP.land=el("g",{"class":"land"},svg); MP.paths={};
+  MP.lnk=el("g",{},svg); MP.arcs=el("g",{},svg); MP.bub=el("g",{},svg); MP.fx=el("g",{},svg);
+  MP.nodes={};
+  Object.keys(GEO).forEach(function(t){ var a=proj(GEO[t][0],GEO[t][1]);
+    var g=el("g",{"class":"bub"},MP.bub), halo=el("circle",{r:4,opacity:.2},g), core=el("circle",{"class":"core",r:3},g), tx=el("text",{},g);
+    var ln=el("line",{"class":"lnk"},MP.lnk), an=el("circle",{"class":"anc",r:1.4,cx:a[0],cy:a[1]},MP.lnk);
+    MP.nodes[t]={t:t,ax:a[0],ay:a[1],x:a[0],y:a[1],r:3,g:g,halo:halo,core:core,tx:tx,ln:ln,an:an}; });
+  if(MP.topo) mapLand();
+  // 排行
+  var lb=document.getElementById("mapLb"); lb.innerHTML=""; MP.rows={};
+  Object.keys(GEO).forEach(function(t){ var r=document.createElement("div"); r.className="mrow"; r.style.opacity=0;
+    r.innerHTML='<span class="rk num"></span><span class="nm">'+fl(t,"")+'<span>'+nm(t)+'</span></span><span class="tr"><i></i></span><span class="v num"></span>';
+    lb.appendChild(r); MP.rows[t]=r; });
+  MP.built=true;
+}
+function mapLand(){ if(!MP.land) return; MP.land.innerHTML=""; MP.paths={};
+  var byId={}; Object.keys(GEO).forEach(function(t){ (byId[GEO[t][2]]=byId[GEO[t][2]]||[]).push(t); });
+  topoPaths(MP.topo).forEach(function(c){ var p=el("path",{d:c.d},MP.land); var ts=byId[c.id];
+    if(ts){ p.setAttribute("class","wc"); ts.forEach(function(t){ MP.paths[t]=p; }); p._teams=ts; } });
+  document.getElementById("mapLoad").textContent=""; mapRender(true); }
+function mapLoadTopo(){
+  if(MP.topo) return; document.getElementById("mapLoad").textContent=L("m_load");
+  var urls=["vendor/countries-110m.json","https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"];
+  (function next(i){ if(i>=urls.length){ document.getElementById("mapLoad").textContent=""; return; }
+    fetch(urls[i]).then(function(r){ if(!r.ok) throw 0; return r.json(); }).then(function(j){ MP.topo=j; mapLand(); }).catch(function(){ next(i+1); }); })(0);
+}
+function mapRelax(){
+  var N=Object.keys(MP.nodes).map(function(k){ return MP.nodes[k]; });
+  for(var it=0;it<40;it++){
+    for(var i=0;i<N.length;i++){ var a=N[i]; a.x+=(a.ax-a.x)*.06; a.y+=(a.ay-a.y)*.06; }
+    for(var i=0;i<N.length;i++) for(var j=i+1;j<N.length;j++){ var a=N[i], b=N[j], dx=b.x-a.x, dy=b.y-a.y, d=Math.sqrt(dx*dx+dy*dy)||.01, m=a.r+b.r+1.2;
+      if(d<m){ var o=(m-d), wa=b.r/(a.r+b.r), wb=a.r/(a.r+b.r); dx/=d; dy/=d; a.x-=dx*o*wa; a.y-=dy*o*wa; b.x+=dx*o*wb; b.y+=dy*o*wb; } }
+  }
+}
+function mapRender(force){
+  if(!MP.built) return;
+  var t=MP.t, m=MP.metric, S=mapStats(t), mx=MP.max[m]||1, k=19/Math.sqrt(mx);
+  Object.keys(MP.nodes).forEach(function(tm){ var n=MP.nodes[tm], v=mval(S[tm],m), av=Math.abs(v); n.v=v; n.r=av?4+Math.sqrt(av)*k:2.6; });
+  mapRelax();
+  Object.keys(MP.nodes).forEach(function(tm){ var n=MP.nodes[tm], s=S[tm], c=mcol(n.v,m);
+    n.g.setAttribute("transform","translate("+n.x.toFixed(1)+","+n.y.toFixed(1)+")");
+    n.core.setAttribute("r",n.r.toFixed(1)); n.core.setAttribute("fill",n.v?c:"#3a3f4b");
+    n.halo.setAttribute("r",(n.r*1.7).toFixed(1)); n.halo.setAttribute("fill",c); n.halo.setAttribute("opacity",n.v?.18:0);
+    n.tx.textContent=n.r>=9?String(n.v):""; n.tx.setAttribute("font-size",Math.max(8,Math.min(15,n.r*.8)).toFixed(1));
+    var dx=n.x-n.ax, dy=n.y-n.ay, far=Math.sqrt(dx*dx+dy*dy)>n.r*.7;
+    n.ln.setAttribute("x1",n.ax); n.ln.setAttribute("y1",n.ay); n.ln.setAttribute("x2",n.x.toFixed(1)); n.ln.setAttribute("y2",n.y.toFixed(1));
+    n.ln.style.display=far?"":"none"; n.an.style.display=far?"":"none";
+    var tm2=(A.teams||[]).filter(function(x){return x.team===tm;})[0], out="";
+    if(tm2&&t>=MP.t1-3600) out='<br>'+(tm===A.race.champion?"🏆 "+L("m_champ"):L("m_out")+" · "+stg(tm2.reached));
+    var tip='<b>'+nm(tm)+'</b><br>'+L("m_tip")(s.n,s.gf,s.ga)+out;
+    n.g.setAttribute("data-tip",tip);
+    var p=MP.paths[tm]; if(p){ var vv=p._teams.map(function(x){ return Math.abs(mval(S[x],m)); }), top=Math.max.apply(null,vv);
+      p.style.fill=top? hexA(c, .12+.5*Math.min(1,top/mx)) : "#232836";
+      p.setAttribute("data-tip",p._teams.map(function(x){ return '<b>'+nm(x)+'</b> · '+L("m_tip")(S[x].n,S[x].gf,S[x].ga); }).join("<br>")); }
+  });
+  // 排行
+  var mobile=innerWidth<=860, shown=mobile?5:10;
+  var order=Object.keys(MP.nodes).sort(function(a,b){ return (MP.nodes[b].v-MP.nodes[a].v)||(S[b].gf-S[a].gf)||a.localeCompare(b); });
+  var lbMax=Math.max(1,Math.abs(MP.nodes[order[0]].v));
+  order.forEach(function(tm,i){ var r=MP.rows[tm], n=MP.nodes[tm];
+    r.style.transform="translateY("+(i*32)+"px)"; r.style.opacity=i<shown?1:0; r.style.pointerEvents=i<shown?"":"none";
+    r.children[0].textContent=i+1; r.children[3].textContent=(m==="gd"&&n.v>0?"+":"")+n.v;
+    var bar=r.children[2].firstChild; bar.style.width=Math.max(0,Math.abs(n.v)/lbMax*100)+"%"; bar.style.background=mcol(n.v,m); });
+  document.getElementById("mapLb").style.height=(shown*32)+"px";
+  // 时间 / 阶段 / 最近赛果
+  var d=new Date(t*1000);
+  document.getElementById("mapWhen").textContent=LANG==="zh"?(d.getMonth()+1)+"月"+d.getDate()+"日":d.toLocaleDateString("en-GB",{day:"numeric",month:"short"});
+  document.getElementById("mapStage").textContent=stageAt(t);
+  document.getElementById("mapScrub").value=t;
+  var done=MP.G.filter(function(g){ return g.t<=t; }).slice(-3).reverse(), sig=done.map(function(g){return g.h+g.a;}).join();
+  if(sig!==MP.tickSig||force){ MP.tickSig=sig; document.getElementById("mapTick").innerHTML=done.map(function(g){
+    return '<span>'+fl(g.h,"")+" "+nm(g.h)+'<b class="num">'+g.sa+"–"+g.sb+"</b>"+nm(g.a)+" "+fl(g.a,"")+"</span>"; }).join(""); }
+  // 刚结束的比赛：两队之间划弧线 + 光圈（只在向前播放/小步拖动时）
+  if(t>MP.last && t-MP.last<3*86400){ MP.G.forEach(function(g){ if(g.t>MP.last&&g.t<=t) mapArc(g); }); }
+  MP.last=t;
+}
+function hexA(h,a){ var n=parseInt(h.slice(1),16); return "rgba("+(n>>16)+","+(n>>8&255)+","+(n&255)+","+a.toFixed(3)+")"; }
+function mapArc(g){
+  var A_=MP.nodes[g.h], B_=MP.nodes[g.a]; if(!A_||!B_) return;
+  if(MP.arcs.childNodes.length>14) MP.arcs.removeChild(MP.arcs.firstChild);
+  var x1=A_.x,y1=A_.y,x2=B_.x,y2=B_.y, mx=(x1+x2)/2, my=(y1+y2)/2, dx=x2-x1, dy=y2-y1, L_=Math.sqrt(dx*dx+dy*dy)||1, h=Math.min(120,L_*.35)+8;
+  var cx=mx+dy/L_*h*(dx<0?1:-1), cy=my-Math.abs(dx/L_)*h;
+  var p=el("path",{"class":"marc",d:"M"+x1.toFixed(1)+","+y1.toFixed(1)+"Q"+cx.toFixed(1)+","+cy.toFixed(1)+" "+x2.toFixed(1)+","+y2.toFixed(1),stroke:"url(#marcG)"},MP.arcs);
+  var len=p.getTotalLength(); p.style.strokeDasharray=len; p.style.setProperty("--L",len);
+  setTimeout(function(){ p.remove(); },2500);
+  [[A_,g.sa>g.sb?"#17d17f":g.sa<g.sb?"#ff3b52":"#f0c75e"],[B_,g.sb>g.sa?"#17d17f":g.sb<g.sa?"#ff3b52":"#f0c75e"]].forEach(function(x){
+    var c=el("circle",{"class":"mring",cx:x[0].x.toFixed(1),cy:x[0].y.toFixed(1),r:Math.max(6,x[0].r),stroke:x[1]},MP.fx); setTimeout(function(){ c.remove(); },1400); });
+}
+function mapLabels(){ document.getElementById("mapH").textContent=L("h_map")(A.overview.goals);
+  document.querySelectorAll("#mapMetric button").forEach(function(b){ b.textContent=L("m_"+b.dataset.m); b.classList.toggle("on",b.dataset.m===MP.metric); });
+  document.getElementById("mapPlay").textContent=MP.playing?L("m_pause"):(MP.t>=MP.t1?L("m_replay"):L("m_play"));
+  document.getElementById("mapLbH").textContent=L("m_lb")+" · "+L("m_"+MP.metric); }
+function mapPlay(){ if(MP.t>=MP.t1){ MP.t=MP.t0; MP.last=MP.t0; }
+  MP.playing=true; mapLabels(); var prev=performance.now(), rate=(MP.t1-MP.t0)/34;
+  cancelAnimationFrame(MP.raf);
+  function f(ts){ if(!MP.playing) return; var dt=Math.max(0,Math.min(.25,(ts-prev)/1000)); prev=ts;
+    MP.t=Math.min(MP.t1,MP.t+rate*dt); mapRender(); if(MP.t>=MP.t1){ mapPause(); return; } MP.raf=requestAnimationFrame(f); }
+  MP.raf=requestAnimationFrame(f); }
+function mapPause(){ MP.playing=false; cancelAnimationFrame(MP.raf); mapLabels(); }
+function mapInit(){
+  MP.G=(A.per_match||[]).map(function(g){ return {h:g.home,a:g.away,sa:g.sa,sb:g.sb,t:g.kickoff+2*3600,grp:g.grp}; }).filter(function(g){ return g.sa!=null; }).sort(function(a,b){ return a.t-b.t; });
+  if(!MP.G.length) return;
+  MP.t0=MP.G[0].t-12*3600; MP.t1=MP.G[MP.G.length-1].t+3600;
+  var fin=mapStats(MP.t1); ["gf","ga","gd"].forEach(function(m){ MP.max[m]=Math.max.apply(null,Object.keys(fin).map(function(k){ return Math.abs(mval(fin[k],m)); })); });
+  if(!MP.started){ MP.t=MP.t1; MP.last=MP.t1; }
+  var sc=document.getElementById("mapScrub"); sc.min=MP.t0; sc.max=MP.t1; sc.step=600;
+  mapBuild(); mapLabels(); mapRender(true); mapLoadTopo();
+  if(!MP.wired){ MP.wired=true;
+    sc.addEventListener("input",function(){ mapPause(); MP.t=+sc.value; mapRender(); mapLabels(); });
+    document.getElementById("mapPlay").addEventListener("click",function(){ MP.playing?mapPause():mapPlay(); });
+    document.getElementById("mapMetric").addEventListener("click",function(e){ var b=e.target.closest("[data-m]"); if(!b) return; MP.metric=b.dataset.m; mapLabels(); mapRender(true); });
+    new IntersectionObserver(function(es){ es.forEach(function(en){
+      if(en.isIntersecting){ if(!MP.started){ MP.started=true; MP.t=MP.t0; MP.last=MP.t0; mapPlay(); } else if(MP.auto){ MP.auto=false; mapPlay(); } }
+      else if(MP.playing){ MP.auto=true; mapPause(); } }); },{threshold:.35}).observe(document.getElementById("s-map"));
+  }
+}
+function renderAll(){ statics(); hero(); raceInit(); bign(); ucards(); slope(); hitStage(); draws(); brier(); rel(); scatter(); pcards(); game(); mapInit(); method();
   document.querySelectorAll("section.sec").forEach(function(s){ secIO.observe(s); }); observe();
   document.querySelectorAll(".reveal.in .hbar i[data-w]").forEach(function(i){ i.style.width=i.dataset.w; }); }
 document.querySelectorAll("[data-lang]").forEach(function(b){ b.addEventListener("click",function(){ LANG=b.dataset.lang; try{localStorage.setItem("pmw_lang",JSON.stringify(LANG));}catch(e){} var f=RB.f, pl=RB.playing; racePause(); renderAll(); RB.f=f; raceRender(); if(pl) racePlay();
   document.querySelectorAll("[data-count]").forEach(function(el){ if(el.closest(".reveal.in")||el.closest(".hero")) countUp(el); }); }); });
-var rt; addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(function(){ if(!A) return; slope(); rel(); scatter(); visits(); if(RB.view==="line") raceLine(); },200); });
+var rt; addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(function(){ if(!A) return; slope(); rel(); scatter(); if(MP.built) mapRender(true); if(RB.view==="line") raceLine(); },200); });
 fetch("data/analysis.json").then(function(r){return r.json();}).then(function(j){ A=j; renderAll(); document.querySelectorAll(".hero [data-count]").forEach(countUp); });
 })();
 </script>

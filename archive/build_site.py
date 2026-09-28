@@ -168,6 +168,11 @@ def patch_dashboard(html: str, site_url: str) -> str:
     old_meta = '`${DATA.live?"LIVE":"MOCK"} · ${L("updated")} ${upd} · ${L("every")} ${DATA.interval}s ${L("refresh")}`'
     assert old_meta in html, "meta 行结构变了"
     html = html.replace(old_meta, "(window.PMW?PMW.metaText():" + old_meta + ")")
+    # 页脚：加「请我喝杯咖啡」
+    old_foot = '<a href="mailto:isabel.yx.wang@gmail.com">isabel.yx.wang@gmail.com</a></div>`;'
+    assert old_foot in html, "页脚结构变了"
+    html = html.replace(old_foot, '<a href="mailto:isabel.yx.wang@gmail.com">isabel.yx.wang@gmail.com</a>'
+                        ' · <a href="https://buymeacoffee.com/yixuuuan" target="_blank" rel="noopener">🌰 ${LANG==="zh"?"请我喝杯咖啡":"Buy me a coffee"}</a></div>`;', 1)
     # 尽早载入回放层（须在主脚本之前）
     inj = '<link rel="stylesheet" href="archive.css">\n<script src="archive.js"></script>\n'
     html = html.replace("</head>", inj + "</head>", 1)
@@ -240,6 +245,20 @@ def main():
         src = HERE / "web" / f
         if src.exists():
             shutil.copy(src, out / f)
+    # 进球地图的世界底图：优先用仓库里的本地副本（永久可用），没有就尝试下载一份存进仓库；都失败时页面会退回 CDN
+    vend = HERE / "web" / "vendor" / "countries-110m.json"
+    if not vend.exists():
+        import subprocess
+        vend.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["curl", "-sSfL", "--max-time", "30", "-o", str(vend),
+                        "https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json"], check=False)
+        if vend.exists() and vend.stat().st_size < 50000:
+            vend.unlink()
+    if vend.exists():
+        (out / "vendor").mkdir(exist_ok=True)
+        shutil.copy(vend, out / "vendor" / vend.name)
+    else:
+        print("（未能下载世界底图，分析页将从 CDN 加载）")
     for d in ("flags", "fonts", "fonts-subset"):
         if (PKG / d).exists():
             shutil.copytree(PKG / d, out / d)

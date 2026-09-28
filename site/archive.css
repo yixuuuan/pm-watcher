@@ -59,6 +59,9 @@
   background:linear-gradient(#141821,#141821) padding-box,linear-gradient(90deg,var(--wr),var(--wy),var(--wg),var(--wb)) border-box;border:1px solid transparent}
 #pmwbar .pb-ana:hover{box-shadow:0 0 18px -4px rgba(240,199,94,.7)}
 
+#pmwbar .pb-nut{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;text-decoration:none;font-size:17px;
+  border:1px solid var(--ln);background:rgba(255,255,255,.05);transition:transform .25s,border-color .25s,box-shadow .25s}
+#pmwbar .pb-nut:hover{transform:rotate(-14deg) scale(1.12);border-color:var(--wy);box-shadow:0 0 16px -2px rgba(240,199,94,.6)}
 /* 时间轴：彩色进度 + 发光滑块 + 阶段刻度 */
 #pmwbar .pb-row2{margin-top:10px}
 #pmwbar .pb-track{position:relative;flex:1;height:22px}
@@ -91,6 +94,7 @@
   #pmwbar .pb-time{font-size:19px}
   #pmwbar .pb-badge{order:1}
   #pmwbar .pb-help{order:2;margin-left:auto}
+  #pmwbar .pb-nut{order:2;width:30px;height:30px;font-size:15px}
   #pmwbar .pb-clock{order:3;width:100%;flex:none;flex-direction:row;align-items:baseline;gap:10px}
   #pmwbar .pb-time{white-space:nowrap}
   #pmwbar .pb-stage{margin:0}
