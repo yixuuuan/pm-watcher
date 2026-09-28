@@ -133,10 +133,14 @@ def export_news():
     if not f.exists():
         return []
     items = json.loads(f.read_text(encoding="utf-8"))
-    out = []
-    for x in items:
+    out, seen = [], set()
+    for x in sorted(items, key=lambda x: int(x.get("ts") or x.get("first_seen") or 0)):
         if not x.get("title") or not x.get("url"):
             continue
+        key = re.sub(r"^https?://(www\.)?", "", x["url"].split("?")[0].split("#")[0]).rstrip("/").lower()
+        if key in seen:                    # 同一篇报道出现在多个频道/带不同跟踪参数 → 只留一条
+            continue
+        seen.add(key)
         out.append([int(x.get("ts") or x.get("first_seen") or 0), x.get("source", ""),
                     x["title"], x["url"], x.get("teams") or [], bool(x.get("wc"))])
     out.sort(key=lambda r: r[0])

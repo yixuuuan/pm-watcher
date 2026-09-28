@@ -28,7 +28,8 @@
 
   var PLATS = ["polymarket", "kalshi", "42", "manifold", "predict"];
   var MOM_WIN = 90;          // 秒：最近一次刷新在此窗口内，才显示 ▲▼ 动量（原站每次刷新间隔约 30s）
-  var HIST_N = 90;           // 与 serve.py 相同：history 保留最近 90 次刷新
+  var HIST_N = 90;
+  var NEWS_WIN = 72 * 3600;  // 新闻窗口：原站 RSS 源通常只保留最近一两天的条目           // 与 serve.py 相同：history 保留最近 90 次刷新
   var KO = ["R32", "R16", "QF", "SF", "3P", "FIN"];
   var KO_ORDER = { R32: 0, R16: 1, QF: 2, SF: 3, "3P": 4, FIN: 5 };
 
@@ -319,16 +320,17 @@
 
   // ───────── 访问量 / 新闻 ─────────
   function dayStr(T) { return new Date(T * 1000).toISOString().slice(0, 10); }
-  function visitsAt(T) {
-    var day = dayStr(T), total = 0, th = 0, tu = 0;
-    D.visits.forEach(function (v) { if (v[0] <= day) total += v[1]; if (v[0] === day) { th = v[1]; tu = v[2]; } });
-    return { total: total, today_hits: th, today_unique: tu };
+  function visitsAt() {                 // 访问量不随回放时刻变化：始终显示原站最终的累计值
+    var total = 0, last = D.visits[D.visits.length - 1] || [null, 0, 0];
+    D.visits.forEach(function (v) { total += v[1]; });
+    return { total: total, today_hits: last[1], today_unique: last[2] };
   }
   function newsAt(T) {
     var out = [];
     for (var i = NEWS.length - 1; i >= 0 && out.length < 50; i--) {
       var x = NEWS[i];
       if (x[0] > T) continue;
+      if (x[0] < T - NEWS_WIN) break;
       out.push({ source: x[1], title: x[2], url: x[3], ts: x[0], teams: x[4] || [], wc: !!x[5] });
     }
     return out;
@@ -419,7 +421,6 @@
     var G = D.games, first = function (r) { var x = G.filter(function (g) { return g.grp === r; }).map(function (g) { return g.kickoff; }); return x.length ? Math.min.apply(null, x) : null; };
     var grp = G.filter(function (g) { return KO.indexOf(g.grp) < 0; }).map(function (g) { return g.kickoff; });
     var list = [
-      { id: "open", zh: "揭幕战", en: "Opener", t: Math.min.apply(null, grp) - 1800 },
       { id: "gend", zh: "小组赛收官", en: "Groups end", t: Math.max.apply(null, grp) + D.lag + 600 },
       { id: "R32", zh: "32强", en: "R32", t: first("R32") - 1800 },
       { id: "R16", zh: "16强", en: "R16", t: first("R16") - 1800 },
@@ -550,7 +551,7 @@
     if (sv) { var v = visitsAt(PMW.T); sv.innerHTML = "👀 <b>" + (v.total || 0).toLocaleString("en-US") + "</b> " + tx("累计访问", "total views"); }
     if (jump || now - lastUrl > 1500) {
       lastUrl = now;
-      var u = new URL(location.href); u.searchParams.set("t", isoUTC(PMW.T));
+      var u = new URL(location.href); u.searchParams.set("t", isoUTC(PMW.T)); u.searchParams.delete("m");
       try { history.replaceState(null, "", u.pathname + u.search + u.hash); } catch (e) {}
     }
   }
@@ -581,10 +582,43 @@
   function stop() { PMW.playing = false; clearInterval(playTimer); playTimer = null; labels(); }
   PMW.setT = setT;
 
+
+  // ───────── 直接定位到某场比赛的复盘小卡（?m=主队|客队） ─────────
+  function focusMatch(mk) {
+    var tries = 0;
+    (function attempt() {
+      tries++;
+      try { if (typeof TAB !== "undefined" && TAB !== "recap") { var tb = document.querySelector('[data-tab="recap"]'); if (tb) tb.click(); } } catch (e) {}
+      var btn = null;
+      document.querySelectorAll("#recap [data-rcexport]").forEach(function (b) {
+        var v = b.getAttribute("data-rcexport");
+        if (v === mk || v === mk.split("|").reverse().join("|")) btn = b;
+      });
+      if (!btn) { if (tries < 40) setTimeout(attempt, 250); return; }
+      var card = btn.closest(".node") || btn.parentElement;
+      var sec = document.getElementById("rcmatch");
+      if (sec && sec.tagName === "DETAILS") sec.open = true;
+      var panel = card.closest("[data-rcdaypanel]");
+      if (panel) {
+        var i = panel.getAttribute("data-rcdaypanel");
+        var tab = (sec || document).querySelector('[data-rcdaytab="' + i + '"]');
+        if (tab && !tab.classList.contains("on")) tab.click();
+      }
+      setTimeout(function () {
+        card.scrollIntoView({ behavior: "smooth", block: "center" });
+        card.classList.add("pmw-focus");
+        setTimeout(function () { card.classList.remove("pmw-focus"); }, 4200);
+      }, 120);
+    })();
+  }
+  PMW.focusMatch = focusMatch;
+
   function initBar() {
     if (!document.getElementById("meta")) return;    // 只有看板页才有控制栏
     lastSig = recapSigAt(PMW.T);
     buildBar();
+    var mk = new URLSearchParams(location.search).get("m");
+    if (mk) focusMatch(mk);
   }
   ready.then(function () {
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initBar);

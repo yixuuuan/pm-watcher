@@ -176,11 +176,15 @@ def build(H, N, series, games, archive):
     grid = list(range(t_start, fin_end, 3 * 3600))
     grid += [fin["kickoff"] - 1800, fin_end, fin_end + 3 * 3600]    # 决赛前、终场、赛后：保证画出最终结果
     grid = sorted(set(grid))
-    race = {}
+    race, bar = {}, {}
     for team in wc:
         pts = [cons(team, t) for t in grid]
-        if max((x or 0) for x in pts) >= 0.05 or team == champion:
-            race[team] = [None if x is None else round(x * 100, 2) for x in pts]
+        mx = max((x or 0) for x in pts)
+        vals = [None if x is None else round(x * 100, 2) for x in pts]
+        if mx >= 0.05 or team == champion:
+            race[team] = vals
+        if mx >= 0.01:                      # 动态条形图：曾经 ≥1% 的球队都参与排名
+            bar[team] = vals
     start_rank = sorted(((cons(t, t_start) or 0, t) for t in wc), reverse=True)
     start_top = [{"team": t, "p": round(v * 100, 1)} for v, t in start_rank[:10]]
     champ_start_rank = next(i for i, (_, t) in enumerate(start_rank, 1) if t == champion)
@@ -359,8 +363,8 @@ def build(H, N, series, games, archive):
             "priced_matches": n_priced,
             "visits": sum(v[1] for v in visits), "peak_day": peak,
         },
-        "race": {"t": grid, "series": race, "champion": champion, "start_top": start_top,
-                 "champ_start_rank": champ_start_rank, "elim": {k: v for k, v in elim.items() if k in race}},
+        "race": {"t": grid, "series": race, "bar": bar, "champion": champion, "start_top": start_top,
+                 "champ_start_rank": champ_start_rank, "elim": {k: v for k, v in elim.items() if k in bar or k in race}},
         "accuracy": {
             "hit": {k: {"hit": v[0], "n": v[1], "rate": round(v[0] / v[1] * 100, 1) if v[1] else None} for k, v in acc.items()},
             "brier": brier,

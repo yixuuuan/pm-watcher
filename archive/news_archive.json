@@ -1,1 +1,1219 @@
-[]
+[
+{
+"source": "BBC",
+"title": "The greatest World Cup shirts - and what makes them iconic",
+"url": "https://www.bbc.com/sport/football/articles/cdxp7gy2ljro?at_medium=RSS&at_campaign=rss",
+"ts": 1780290997,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "How Cornish miners brought football to Mexico",
+"url": "https://www.bbc.com/sport/football/articles/cx21q453l4jo?at_medium=RSS&at_campaign=rss",
+"ts": 1780378105,
+"teams": [
+"Mexico"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "How Cornish miners brought football to Mexico",
+"url": "https://www.bbc.co.uk/sport/football/articles/cx21q453l4jo?at_medium=RSS&at_campaign=rss",
+"ts": 1780378105,
+"teams": [
+"Mexico"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Tuchel tackles questions from team of under-11s",
+"url": "https://www.bbc.com/sport/football/videos/c707pjg3wk8o?at_medium=RSS&at_campaign=rss",
+"ts": 1780378380,
+"teams": [
+"England"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "World Cup 2026: How to follow on the BBC",
+"url": "https://www.bbc.com/sport/football/articles/c62dy77g8e8o?at_medium=RSS&at_campaign=rss",
+"ts": 1780378391,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Download your World Cup 2026 wallchart",
+"url": "https://www.bbc.com/sport/football/articles/c4g51wd9px6o?at_medium=RSS&at_campaign=rss",
+"ts": 1780398399,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "World Cup 2026: All 48 squads confirmed",
+"url": "https://www.bbc.com/sport/football/articles/cvgz43lgn15o?at_medium=RSS&at_campaign=rss",
+"ts": 1780404201,
+"teams": [
+"Mexico",
+"Canada"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "The anatomy of a Golden Boot winner - and who could win it in 2026?",
+"url": "https://www.bbc.com/sport/football/articles/ce3pe9nxe7jo?at_medium=RSS&at_campaign=rss",
+"ts": 1780464166,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Who needs what in World Cup qualifying?",
+"url": "https://www.bbc.com/sport/football/articles/cr5p01m5ne9o?at_medium=RSS&at_campaign=rss",
+"ts": 1780471752,
+"teams": [
+"Spain",
+"England",
+"Brazil"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "What are the deadlines for World Cup squads?",
+"url": "https://www.bbc.com/sport/football/articles/ckgp482v49xo?at_medium=RSS&at_campaign=rss",
+"ts": 1780474338,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Diana Ross & 'GOAT' Ronaldo - Richards watches World Cup moments",
+"url": "https://www.bbc.com/sport/football/videos/c1w2xy0r2r3o?at_medium=RSS&at_campaign=rss",
+"ts": 1780477206,
+"teams": [
+"England"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Scott poised to make England debut in World Cup friendlies",
+"url": "https://www.bbc.com/sport/football/articles/cy72rnnelpzo?at_medium=RSS&at_campaign=rss",
+"ts": 1780482547,
+"teams": [
+"England",
+"USA"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Back shaving & biggest posers - the Scotland squad in their own words",
+"url": "https://www.bbc.com/sport/football/articles/cvgz2e8g4e8o?at_medium=RSS&at_campaign=rss",
+"ts": 1780483211,
+"teams": [
+"Scotland"
+],
+"wc": false,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Is spying as common in Germany as Southampton boss Eckert claims?",
+"url": "https://www.bbc.com/sport/football/articles/c87q93jw4w9o?at_medium=RSS&at_campaign=rss",
+"ts": 1780495856,
+"teams": [
+"Germany"
+],
+"wc": false,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Most experience? Youngest? Best leagues? World Cup squads in numbers",
+"url": "https://www.bbc.com/sport/football/articles/c89348x0x14o?at_medium=RSS&at_campaign=rss",
+"ts": 1780509657,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "A higher ceiling than Messi? What next for Lamine Yamal?",
+"url": "https://www.bbc.com/sport/football/articles/cy82mpzg3n4o?at_medium=RSS&at_campaign=rss",
+"ts": 1780550859,
+"teams": [
+"Spain"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Robodogs and helicopters: One Mexican city's approach to World Cup security",
+"url": "https://www.bbc.com/news/videos/c4g4n4nzl2yo?at_medium=RSS&at_campaign=rss",
+"ts": 1780551754,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Video vault and Leeds litter picking - inside the mind of Bielsa",
+"url": "https://www.bbc.com/sport/football/articles/c5ye2m00y5ro?at_medium=RSS&at_campaign=rss",
+"ts": 1780552026,
+"teams": [
+"Uruguay"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Heroes and villains - the stories behind Scotland's World Cup bogeymen",
+"url": "https://www.bbc.com/sport/football/articles/c2k2ewk2x2vo?at_medium=RSS&at_campaign=rss",
+"ts": 1780554339,
+"teams": [
+"Scotland"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Man City consider legal action over Real candidate's promise to sign Haaland",
+"url": "https://www.bbc.com/sport/football/articles/c3r2g5zgl0vo?at_medium=RSS&at_campaign=rss",
+"ts": 1780561655,
+"teams": [
+"Spain"
+],
+"wc": false,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Toone learned 'massive lesson' from hip injury setback",
+"url": "https://www.bbc.com/sport/football/articles/c4g8113ngyno?at_medium=RSS&at_campaign=rss",
+"ts": 1780563836,
+"teams": [
+"England"
+],
+"wc": false,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Heat experts warn 'reckless' Fifa of bottle ban health risk",
+"url": "https://www.bbc.com/sport/football/articles/c302gelj8evo?at_medium=RSS&at_campaign=rss",
+"ts": 1780568463,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Former Scotland forward Brazil 'lucky' to be alive",
+"url": "https://www.bbc.com/sport/football/articles/c17244y58kko?at_medium=RSS&at_campaign=rss",
+"ts": 1780569727,
+"teams": [
+"Brazil",
+"Scotland"
+],
+"wc": false,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Unsold Scotland World Cup tickets put on resale sites",
+"url": "https://www.bbc.com/news/articles/c5y71n7292xo?at_medium=RSS&at_campaign=rss",
+"ts": 1780572214,
+"teams": [
+"Scotland"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Argentina fans arrive after cycling to Kansas City",
+"url": "https://www.bbc.com/sport/football/videos/ckgp5gx5nryo?at_medium=RSS&at_campaign=rss",
+"ts": 1780573840,
+"teams": [
+"Argentina"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Brighton expect second Spurs bid for Van Hecke",
+"url": "https://www.bbc.com/sport/football/articles/c2020rr6pggo?at_medium=RSS&at_campaign=rss",
+"ts": 1780580511,
+"teams": [
+"Netherlands"
+],
+"wc": false,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Shearer on Beckham, pressure and Argentina heartbreak",
+"url": "https://www.bbc.com/sport/football/videos/cgrpvk91vvro?at_medium=RSS&at_campaign=rss",
+"ts": 1780581967,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "WSL has 'the edge' to attract Europe's best players",
+"url": "https://www.bbc.com/sport/football/articles/ckgpvgjpywlo?at_medium=RSS&at_campaign=rss",
+"ts": 1780582959,
+"teams": [
+"England"
+],
+"wc": false,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Who are the World Cup's record holders?",
+"url": "https://www.bbc.com/sport/football/articles/cx217277w8wo?at_medium=RSS&at_campaign=rss",
+"ts": 1780583050,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "What is happening with World Cup ticket prices?",
+"url": "https://www.bbc.com/sport/football/articles/ckgpv7v4p9lo?at_medium=RSS&at_campaign=rss",
+"ts": 1780589536,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "Wilkinson spends night in airport but says Wales will be ready",
+"url": "https://www.bbc.com/sport/football/articles/c332ggpx76po?at_medium=RSS&at_campaign=rss",
+"ts": 1780589790,
+"teams": [],
+"wc": true,
+"first_seen": 1780596827
+},
+{
+"source": "BBC",
+"title": "How are the TV picks decided for the World Cup's round of 32?",
+"url": "https://www.bbc.co.uk/sport/football/articles/c5yzlw6gz8jo?at_medium=RSS&at_campaign=rss",
+"ts": 1782471734,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "What is the World Cup prize money?",
+"url": "https://www.bbc.co.uk/sport/articles/c9821x9lpdjo?at_medium=RSS&at_campaign=rss",
+"ts": 1782508586,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "In spotlight but shunning limelight - Olise's unique rise to top",
+"url": "https://www.bbc.co.uk/sport/football/articles/c5yzr42943lo?at_medium=RSS&at_campaign=rss",
+"ts": 1783162922,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "When the World Cup finishes, the football continues on BBC Sport",
+"url": "https://www.bbc.co.uk/sport/football/articles/c9w2zr9wzj1o?at_medium=RSS&at_campaign=rss",
+"ts": 1783749815,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Argentina v England 1998 - Owen, Beckham and penalty pain",
+"url": "https://www.bbc.co.uk/sport/football/videos/cz75405qe3wo?at_medium=RSS&at_campaign=rss",
+"ts": 1783882313,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Argentina v England 2002 - Redemption for Beckham",
+"url": "https://www.bbc.co.uk/sport/football/videos/cy5vxevngndo?at_medium=RSS&at_campaign=rss",
+"ts": 1783882483,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "How Maradona dominated England in 1986",
+"url": "https://www.bbc.co.uk/sport/football/videos/clyxj3x99l9o?at_medium=RSS&at_campaign=rss",
+"ts": 1783882700,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Borrowed shoes, no Golden Boot - the story of the World Cup's greatest scorer",
+"url": "https://www.bbc.co.uk/sport/football/articles/c621xndyd7no?at_medium=RSS&at_campaign=rss",
+"ts": 1783925824,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Who is the African World Cup goalscorer older than Ronaldo and Messi?",
+"url": "https://www.bbc.co.uk/sport/football/articles/cpwe19xldqqo?at_medium=RSS&at_campaign=rss",
+"ts": 1783952917,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Spain into World Cup final with victory over France",
+"url": "https://www.bbc.co.uk/sport/football/videos/cq6160n8y71o?at_medium=RSS&at_campaign=rss",
+"ts": 1784064779,
+"teams": [
+"Spain",
+"France"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "All the goals from England's 2026 World Cup campaign so far",
+"url": "https://www.bbc.co.uk/sport/videos/cewqex0vl85o?at_medium=RSS&at_campaign=rss",
+"ts": 1784091413,
+"teams": [
+"England",
+"Norway"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "England and Argentina national anthems drowned out",
+"url": "https://www.bbc.co.uk/sport/football/videos/c04yw0dz035o?at_medium=RSS&at_campaign=rss",
+"ts": 1784145091,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Gordon puts England ahead against Argentina",
+"url": "https://www.bbc.co.uk/sport/football/videos/c07re9rxd29o?at_medium=RSS&at_campaign=rss",
+"ts": 1784147334,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Late Martinez header sends Argentina to World Cup final",
+"url": "https://www.bbc.co.uk/sport/football/videos/ckg3184ymemo?at_medium=RSS&at_campaign=rss",
+"ts": 1784150318,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Fernandez fires in equaliser for Argentina",
+"url": "https://www.bbc.co.uk/sport/football/videos/cj4kx9n4pv5o?at_medium=RSS&at_campaign=rss",
+"ts": 1784150438,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Argentina celebrate progressing to World Cup final",
+"url": "https://www.bbc.co.uk/sport/football/videos/c9w0jlx451go?at_medium=RSS&at_campaign=rss",
+"ts": 1784152407,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Argentina shatter England's World Cup dreams in semi-final",
+"url": "https://www.bbc.co.uk/sport/football/videos/cwy059qwdg4o?at_medium=RSS&at_campaign=rss",
+"ts": 1784153115,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "'Gutted' - Kane disappointed over World Cup exit",
+"url": "https://www.bbc.co.uk/sport/football/videos/czrjg3j4jx1o?at_medium=RSS&at_campaign=rss",
+"ts": 1784154236,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "'No regrets' - Tuchel on England's defeat by Argentina",
+"url": "https://www.bbc.co.uk/sport/football/videos/c62v3q3qp99o?at_medium=RSS&at_campaign=rss",
+"ts": 1784155205,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Who has been eliminated from the World Cup?",
+"url": "https://www.bbc.co.uk/sport/football/articles/c74y970len4o?at_medium=RSS&at_campaign=rss",
+"ts": 1784186955,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Why you should care about World Cup third-place play-off",
+"url": "https://www.bbc.co.uk/sport/football/articles/cly5we2lgq4o?at_medium=RSS&at_campaign=rss",
+"ts": 1784198643,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "How coach-on-pitch Messi undid England's tactics on the fly",
+"url": "https://www.bbc.co.uk/sport/football/articles/cly5lq03l7do?at_medium=RSS&at_campaign=rss",
+"ts": 1784198791,
+"teams": [
+"England"
+],
+"wc": false,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "60 years of hurt - England's World Cup wait in numbers",
+"url": "https://www.bbc.co.uk/sport/football/articles/czrjgpy48pgo?at_medium=RSS&at_campaign=rss",
+"ts": 1784206983,
+"teams": [
+"England"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "All 11 last-minute winners at the World Cup",
+"url": "https://www.bbc.co.uk/sport/football/videos/cp8xn9y46xdo?at_medium=RSS&at_campaign=rss",
+"ts": 1784209260,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "French defender Rastocle signs for Birmingham",
+"url": "https://www.bbc.co.uk/sport/football/articles/c5yrpq2q7z9o?at_medium=RSS&at_campaign=rss",
+"ts": 1784211352,
+"teams": [
+"France"
+],
+"wc": false,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Palace sign England Under-23 striker Lloyd-Smith",
+"url": "https://www.bbc.co.uk/sport/football/articles/cz64xe19dy8o?at_medium=RSS&at_campaign=rss",
+"ts": 1784220877,
+"teams": [
+"England"
+],
+"wc": false,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Effort, spirit and moments - but do England lack all-round quality?",
+"url": "https://www.bbc.co.uk/sport/football/articles/cz64xyn4vz2o?at_medium=RSS&at_campaign=rss",
+"ts": 1784266355,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "West Ham sign forward Gago and defender Cascarino",
+"url": "https://www.bbc.co.uk/sport/football/articles/c5yzye502vko?at_medium=RSS&at_campaign=rss",
+"ts": 1784280647,
+"teams": [
+"France"
+],
+"wc": false,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Spain 2010 v Spain 2026: How do the two XIs compare?",
+"url": "https://www.bbc.co.uk/sport/football/articles/c5yzy1rzxepo?at_medium=RSS&at_campaign=rss",
+"ts": 1784281012,
+"teams": [
+"Spain"
+],
+"wc": true,
+"first_seen": 1784414879
+},
+{
+"source": "BBC",
+"title": "Aston Villa sign defender Harviken from Juventus",
+"url": "https://www.bbc.co.uk/sport/football/articles/c98v152z33ro?at_medium=RSS&at_campaign=rss",
+"ts": 1784282416,
+"teams": [
+"Norway"
+],
+"wc": false,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Underdogs, history and late goals - Africa's World Cup",
+"url": "https://www.bbc.co.uk/sport/football/articles/cx2d2w8gxpvo?at_medium=RSS&at_campaign=rss",
+"ts": 1784283537,
+"teams": [],
+"wc": true,
+"first_seen": 1784414879
+},
+{
+"source": "ESPN",
+"title": "What's in an emote? Analyzing 747 gestures during the World Cup group stage",
+"url": "https://www.espn.com/soccer/story/_/id/49352194/emote-analyzing-747-gestures-world-cup-group-stage",
+"ts": 1784286051,
+"teams": [],
+"wc": true,
+"first_seen": 1784409708
+},
+{
+"source": "BBC",
+"title": "Pele at the Azteca? England in '66? Ranking the best World Cup finals",
+"url": "https://www.bbc.co.uk/sport/football/articles/cgjx946py51o?at_medium=RSS&at_campaign=rss",
+"ts": 1784289254,
+"teams": [
+"England",
+"Brazil"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "How World Cup final could be pivotal in Ballon d'Or race",
+"url": "https://www.bbc.co.uk/sport/football/articles/c87ngl370p4o?at_medium=RSS&at_campaign=rss",
+"ts": 1784292983,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Birmingham City sign Canada defender Levasseur",
+"url": "https://www.bbc.co.uk/sport/football/articles/cx2d5l4q8jpo?at_medium=RSS&at_campaign=rss",
+"ts": 1784294185,
+"teams": [
+"Canada"
+],
+"wc": false,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Uefa will not use VAR for diving like at World Cup",
+"url": "https://www.bbc.co.uk/sport/football/articles/c89nlvwx410o?at_medium=RSS&at_campaign=rss",
+"ts": 1784295555,
+"teams": [],
+"wc": true,
+"first_seen": 1784414879
+},
+{
+"source": "BBC",
+"title": "Five reasons for England to be cheerful despite World Cup exit",
+"url": "https://www.bbc.co.uk/sport/football/articles/clyxllv7lmpo?at_medium=RSS&at_campaign=rss",
+"ts": 1784295913,
+"teams": [
+"England"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "ESPN",
+"title": "After globetrotting with USWNT, PSG and more, Lind...",
+"url": "https://www.espn.com/soccer/story/_/id/49363167/for-uswnt-star-lindsey-heaps-transfer-denver-summit-marks-welcome-return-home",
+"ts": 1784296410,
+"teams": [
+"France"
+],
+"wc": false,
+"first_seen": 1784409708
+},
+{
+"source": "ESPN",
+"title": "World Cup time capsule: Images the USMNT will reme...",
+"url": "https://www.espn.com/soccer/story/_/id/49352246/2026-world-cup-capsule-images-usmnt-remember-forever",
+"ts": 1784297190,
+"teams": [
+"USA"
+],
+"wc": true,
+"first_seen": 1784409708
+},
+{
+"source": "BBC",
+"title": "Keep calm and carry on - Spain trust team identity to deliver World Cup",
+"url": "https://www.bbc.co.uk/sport/football/articles/czxedvre7ryo?at_medium=RSS&at_campaign=rss",
+"ts": 1784300698,
+"teams": [
+"Spain",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "'Chaos v calm' - Sutton's World Cup final and third-place predictions",
+"url": "https://www.bbc.co.uk/sport/football/articles/c4g3zrgxkzdo?at_medium=RSS&at_campaign=rss",
+"ts": 1784305603,
+"teams": [
+"Spain",
+"France",
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Are Argentina being treated favourably at World Cup?",
+"url": "https://www.bbc.co.uk/sport/football/articles/cx2wkwd7e6go?at_medium=RSS&at_campaign=rss",
+"ts": 1784305603,
+"teams": [
+"Argentina",
+"Egypt"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "ESPN",
+"title": "Press and possess: Spain's secret sauce is a suffo...",
+"url": "https://www.espn.com/soccer/story/_/id/49377661/press-possess-spain-secret-sauce-2026-fifa-world-cup-suffocating-defense",
+"ts": 1784328052,
+"teams": [
+"Spain"
+],
+"wc": true,
+"first_seen": 1784409708
+},
+{
+"source": "ESPN",
+"title": "The forgotten tape: How Messi almost played for Sp...",
+"url": "https://www.espn.com/soccer/story/_/id/48636037/lionel-messi-forgotten-vhs-tape-oral-history-argentina-spain-recruit-barcelona-world-cup",
+"ts": 1784328052,
+"teams": [
+"Argentina"
+],
+"wc": false,
+"first_seen": 1784409708
+},
+{
+"source": "ESPN",
+"title": "This World Cup seals it: Messi is the greatest mal...",
+"url": "https://www.espn.com/soccer/story/_/id/49379413/messi-best-player-2026-world-cup-best-male-athlete-ever",
+"ts": 1784333705,
+"teams": [],
+"wc": true,
+"first_seen": 1784409708
+},
+{
+"source": "BBC",
+"title": "Argentina like to leave mark on opponents - Laporte",
+"url": "https://www.bbc.co.uk/sport/football/articles/cj63e8l0kjjo?at_medium=RSS&at_campaign=rss",
+"ts": 1784335085,
+"teams": [
+"Spain",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "'They made him a defensive player' - Trump questions Kane role in semi",
+"url": "https://www.bbc.co.uk/sport/football/articles/cjej3y1jgdpo?at_medium=RSS&at_campaign=rss",
+"ts": 1784340772,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Defiant Tuchel defends decisions and says loss is 'scar we carry now'",
+"url": "https://www.bbc.co.uk/sport/football/articles/c3r0l4zn9jpo?at_medium=RSS&at_campaign=rss",
+"ts": 1784343036,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Who am I? Guess World Cup star No 41",
+"url": "https://www.bbc.co.uk/sport/football/articles/clyp7m9qg4po?at_medium=RSS&at_campaign=rss",
+"ts": 1784353896,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "Sky",
+"title": "Lehmann: Langer would be 'really good' in England Test coach role",
+"url": "https://www.skysports.com/cricket/news/12040/13564664/england-test-coach-justin-langer-backed-by-darren-lehmann-as-harry-brook-hopes-for-swift-decision",
+"ts": 1784358000,
+"teams": [
+"England",
+"Australia"
+],
+"wc": false,
+"first_seen": 1784405741
+},
+{
+"source": "BBC",
+"title": "Best finishers, defensive kings & runners - World Cup finalists in numbers",
+"url": "https://www.bbc.co.uk/sport/football/articles/c0rd8zrwvwno?at_medium=RSS&at_campaign=rss",
+"ts": 1784360140,
+"teams": [
+"Spain",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "Sky",
+"title": "No Kane or Bellingham for England as Mbappe starts for France LIVE!",
+"url": "https://www.skysports.com/football/france-vs-england/live/549868",
+"ts": 1784363400,
+"teams": [
+"France",
+"England"
+],
+"wc": false,
+"first_seen": 1784405741
+},
+{
+"source": "BBC",
+"title": "Messi and Brady in disbelief over 'prophetic' Lamine Yamal photo",
+"url": "https://www.bbc.co.uk/sport/football/articles/c5yejxqll3go?at_medium=RSS&at_campaign=rss",
+"ts": 1784365163,
+"teams": [
+"Spain",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "More games, more controversy - good and bad of biggest World Cup yet",
+"url": "https://www.bbc.co.uk/sport/football/articles/ce8k0njm23yo?at_medium=RSS&at_campaign=rss",
+"ts": 1784366214,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "The harrowing dark side of England's World Cup exit",
+"url": "https://www.bbc.co.uk/sport/football/articles/cwymljn8y10o?at_medium=RSS&at_campaign=rss",
+"ts": 1784368774,
+"teams": [
+"England"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "ESPN",
+"title": "World's most remote World Cup final watch parties, from Antarctica to 'Mars of the mid-Atlantic'",
+"url": "https://www.espn.com/soccer/story/_/id/49363512/worlds-most-remote-fifa-world-cup-final-viewers-spain-argentina",
+"ts": 1784369022,
+"teams": [],
+"wc": true,
+"first_seen": 1784409708
+},
+{
+"source": "BBC",
+"title": "False nines or firing forwards - England's potential life after Kane",
+"url": "https://www.bbc.co.uk/sport/football/articles/cp87llz7539o?at_medium=RSS&at_campaign=rss",
+"ts": 1784371327,
+"teams": [
+"England"
+],
+"wc": false,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "World Cup winner Capdevila appeals to Trump after US travel permit denied",
+"url": "https://www.bbc.co.uk/sport/football/articles/cx2l5jn17yjo?at_medium=RSS&at_campaign=rss",
+"ts": 1784371420,
+"teams": [
+"Spain",
+"USA"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "Sky",
+"title": "Tempers flare as England extend lead vs Argentina LIVE!",
+"url": "https://www.skysports.com/rugby-union/live-blog/12040/13564551/nations-championship-live-new-zealand-vs-ireland-south-africa-vs-wales-argentina-vs-england-updates-latest-score-team-news-commentary",
+"ts": 1784373300,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": false,
+"first_seen": 1784405741
+},
+{
+"source": "BBC",
+"title": "Gemmill leaves Scotland U21 role after 13 years",
+"url": "https://www.bbc.co.uk/sport/football/articles/c3ek9weyyv4o?at_medium=RSS&at_campaign=rss",
+"ts": 1784373384,
+"teams": [
+"Scotland"
+],
+"wc": false,
+"first_seen": 1784405827
+},
+{
+"source": "Sky",
+"title": "Trump, rings, Messi and a half-time show - A World Cup final like no other",
+"url": "https://www.skysports.com/football/news/12040/13564766/world-cup-2026-spain-and-argentina-meet-in-a-final-like-no-other-with-donald-trump-involved-winners-rings-and-a-first-ever-half-time-show",
+"ts": 1784374140,
+"teams": [],
+"wc": true,
+"first_seen": 1784405741
+},
+{
+"source": "BBC",
+"title": "A bit 'blah' or a worthy host? Is MetLife  right World Cup final choice?",
+"url": "https://www.bbc.co.uk/sport/football/articles/cvgj5dlr45zo?at_medium=RSS&at_campaign=rss",
+"ts": 1784374247,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "ESPN",
+"title": "Transfer rumors, news: Barcelona, Real Madrid both...",
+"url": "https://www.espn.com/soccer/story/_/id/49389509/transfer-rumors-news-barcelona-real-madrid-atletico-inter-milan-tottenham-argentina-cristian-romero",
+"ts": 1784376290,
+"teams": [
+"Argentina"
+],
+"wc": false,
+"first_seen": 1784409708
+},
+{
+"source": "Sky",
+"title": "TMO drama in chaotic finale as 13-man England hold on for win in Argentina",
+"url": "https://www.skysports.com/rugby-union/news/12040/13564782/argentina-24-31-england-late-tmo-drama-as-13-man-england-seal-dramatic-nations-championship-win",
+"ts": 1784376780,
+"teams": [
+"England",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784412054
+},
+{
+"source": "BBC",
+"title": "Quiz: Name every men's World Cup final host city",
+"url": "https://www.bbc.co.uk/sport/football/articles/cvgzp820y9xo?at_medium=RSS&at_campaign=rss",
+"ts": 1784379303,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "The classroom moment that bonds finalists De la Fuente & Scaloni forever",
+"url": "https://www.bbc.co.uk/sport/football/articles/c98v13rgyrmo?at_medium=RSS&at_campaign=rss",
+"ts": 1784379618,
+"teams": [
+"Spain",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Huge rise in harmful social media posts this World Cup",
+"url": "https://www.bbc.co.uk/sport/football/articles/c7vg6q24e18o?at_medium=RSS&at_campaign=rss",
+"ts": 1784380047,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "The Bronze Final - the unwanted tie or a match with a 'golden layer'?",
+"url": "https://www.bbc.co.uk/sport/football/articles/c4gk5jq2lj1o?at_medium=RSS&at_campaign=rss",
+"ts": 1784380993,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Will the World Cup affect Arsenal's transfer plans?",
+"url": "https://www.bbc.co.uk/sport/football/articles/c4gj5z33e2lo?at_medium=RSS&at_campaign=rss",
+"ts": 1784386065,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Spain's final training session before World Cup final cancelled",
+"url": "https://www.bbc.co.uk/sport/football/articles/cly878gpgrlo?at_medium=RSS&at_campaign=rss",
+"ts": 1784395965,
+"teams": [
+"Spain"
+],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Chelsea agree record £117m deal for Villa's Rogers",
+"url": "https://www.bbc.co.uk/sport/football/articles/c0ej1jyy8yyo?at_medium=RSS&at_campaign=rss",
+"ts": 1784397768,
+"teams": [
+"England"
+],
+"wc": false,
+"first_seen": 1784405827
+},
+{
+"source": "BBC",
+"title": "Make your predictions for the last two games of World Cup 2026",
+"url": "https://www.bbc.co.uk/sport/football/predictor/mwc2026?at_medium=RSS&at_campaign=rss",
+"ts": 1784401170,
+"teams": [],
+"wc": true,
+"first_seen": 1784405827
+},
+{
+"source": "ESPN",
+"title": "It's Lamine Yamal vs. Lionel Messi: The young pret...",
+"url": "https://www.espn.com/soccer/story/_/id/49381908/world-cup-final-spain-argentina-lamine-yamal-lionel-messi-gab-marcotti",
+"ts": 1784407747,
+"teams": [],
+"wc": true,
+"first_seen": 1784409708
+},
+{
+"source": "ESPN",
+"title": "Back to his Ballon d'Or-winning best, Rodri has po...",
+"url": "https://www.espn.com/soccer/story/_/id/49385857/back-best-rodri-powered-spain-2026-world-cup-final",
+"ts": 1784407747,
+"teams": [
+"Spain",
+"Argentina"
+],
+"wc": false,
+"first_seen": 1784409708
+},
+{
+"source": "BBC",
+"title": "Fifa to review 'unpopular' hydration breaks - Wenger",
+"url": "https://www.bbc.co.uk/sport/football/articles/c24m30v0gy9o?at_medium=RSS&at_campaign=rss",
+"ts": 1784410943,
+"teams": [],
+"wc": true,
+"first_seen": 1784411469
+},
+{
+"source": "ESPN",
+"title": "Argentina's Martínez admits playing with pain",
+"url": "https://www.espn.com/soccer/story/_/id/49392007/argentina-emiliano-martinez-admits-playing-pain-broken-finger",
+"ts": 1784411176,
+"teams": [
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784409708
+},
+{
+"source": "ESPN",
+"title": "Live updates: England's Rice nets early goal in ga...",
+"url": "https://www.espn.com/soccer/story/_/id/49387153/world-cup-daily-kevin-durant-tom-brady-lionel-messi-selfie-france-england-third-place-playoff",
+"ts": 1784412588,
+"teams": [
+"England",
+"France"
+],
+"wc": false,
+"first_seen": 1784409708
+},
+{
+"source": "ESPN",
+"title": "Messi: Yamal photo 'incredible' path to WC final",
+"url": "https://www.espn.com/soccer/story/_/id/49387821/lionel-messi-viral-lamine-yamal-baby-photo-incredible-playing-world-cup-final",
+"ts": 1784412770,
+"teams": [
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784409708
+},
+{
+"source": "ESPN",
+"title": "Cheapest WC final last-minute ticket is $10,000",
+"url": "https://www.espn.com/soccer/story/_/id/49392880/spain-argentina-world-cup-final-last-minute-tickets-start-10k",
+"ts": 1784412770,
+"teams": [
+"Spain",
+"Argentina"
+],
+"wc": true,
+"first_seen": 1784409708
+},
+{
+"source": "ESPN",
+"title": "Storms due to clear smoke ahead of WCup final",
+"url": "https://www.espn.com/soccer/story/_/id/49392587/storms-due-clear-wildfire-smoke-world-cup-final-spain-argentina",
+"ts": 1784412770,
+"teams": [],
+"wc": true,
+"first_seen": 1784409708
+},
+{
+"source": "ESPN",
+"title": "⚽ USMNT: 11 potential Pochettino replacements",
+"url": "https://www.espn.com/soccer/story/_/id/49344382/who-new-usmnt-coach-11-candidates-pochettino-world-cup-2026",
+"ts": 1784412770,
+"teams": [
+"USA"
+],
+"wc": false,
+"first_seen": 1784409708
+},
+{
+"source": "BBC",
+"title": "Rate England and France players in third-place play-off",
+"url": "https://www.bbc.co.uk/sport/football/articles/c2lylzk04npo?at_medium=RSS&at_campaign=rss",
+"ts": 1784414422,
+"teams": [
+"France",
+"England"
+],
+"wc": false,
+"first_seen": 1784414879
+},
+{
+"source": "ESPN",
+"title": "Mbappé equals Messi's all-time WCup goal record",
+"url": "https://www.espn.com/soccer/story/_/id/49257085/kylian-mbappe-lionel-messi-all-world-cup-goals-record",
+"ts": 1784417462,
+"teams": [],
+"wc": true,
+"first_seen": 1784414149
+}
+]

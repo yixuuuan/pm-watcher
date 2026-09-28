@@ -4,411 +4,700 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>2026 世界杯 · 全程数据复盘 | pm-watcher</title>
-<meta name="description" content="用五个预测市场平台 20 万条定价记录，复盘 2026 世界杯：市场准不准、谁被看走眼、冠军之路如何一步步定价。">
+<meta name="description" content="五个预测市场、20 万次定价变动，复盘 2026 世界杯：冠军争夺战、冷门、市场准不准、谁被看走眼。">
 <style>
-  :root{ --bg:#faf9f6; --card:#ffffff; --ink:#2c2c2a; --mut:#6b6a64; --hint:#9a988f;
-         --line:rgba(0,0,0,.10); --teal:#1d9e75; --up:#1d9e75; --down:#d85a30; --gold:#c2a23a; }
+  :root{--bg:#07080b;--bg2:#101217;--panel:rgba(20,22,28,.78);--panel2:rgba(27,30,37,.85);--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.14);
+        --ink:#f3f1ea;--mut:#9a978f;--dim:#6c6a64;--teal:#17d17f;--hot:#ff3b52;--gold:#f0c75e;--blue:#3d7bff}
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 -apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
   a{color:inherit}
-  .wrap{max-width:1040px;margin:0 auto;padding:22px 20px 60px}
-  .top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-  .back{text-decoration:none;font-size:13px;color:var(--mut);border:.5px solid var(--line);background:var(--card);border-radius:9px;padding:5px 11px}
-  .back:hover{color:var(--ink);border-color:var(--hint)}
-  .langsw{display:inline-flex;border:.5px solid var(--line);border-radius:9px;overflow:hidden}
-  .langsw button{font:inherit;cursor:pointer;border:0;background:var(--card);color:var(--mut);padding:5px 12px;font-size:13px}
-  .langsw button.on{background:var(--ink);color:#fff}
-  h1{font-size:34px;line-height:1.2;margin:26px 0 6px;letter-spacing:-.01em}
-  .lede{color:var(--mut);max-width:760px;margin:0}
-  h2{font-size:22px;margin:0 0 4px}
-  .sec{margin-top:46px;padding-top:26px;border-top:.5px solid var(--line)}
-  .sub{color:var(--mut);font-size:13.5px;margin:0 0 16px;max-width:780px}
-  .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:22px}
-  .mc{background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:13px 15px;border-left:3px solid var(--accent,var(--teal))}
-  .mc .l{font-size:12px;color:var(--mut)} .mc .v{font-size:22px;font-weight:650;margin-top:2px;line-height:1.25} .mc .s{font-size:12px;color:var(--hint)}
-  .ins{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px}
-  .in{background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:14px 16px}
-  .in b.k{display:block;font-size:12px;letter-spacing:.04em;color:var(--mut);font-weight:600;margin-bottom:3px}
-  .in .t{font-size:15px}
-  .panel{background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:16px 16px 12px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media (max-width:760px){ .grid2{grid-template-columns:1fr} h1{font-size:27px} }
-  svg text{font-family:inherit}
-  .legend{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px}
-  .lg{font-size:12px;border:.5px solid var(--line);border-radius:20px;padding:2px 10px 2px 8px;cursor:pointer;background:var(--card);display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
-  .lg i{width:10px;height:10px;border-radius:50%;display:inline-block}
-  .lg.off{opacity:.38}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+  .num{font-variant-numeric:tabular-nums}
+  /* 顶部导航 */
+  .nav{position:sticky;top:0;z-index:40;background:rgba(7,8,11,.78);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-bottom:.5px solid var(--line)}
+  .nav .wrap{display:flex;align-items:center;gap:14px;height:52px}
+  .nav .brand{font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+  .nav .brand b{color:var(--teal)}
+  .nav .links{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1}
+  .nav .links::-webkit-scrollbar{display:none}
+  .nav .links a{text-decoration:none;color:var(--mut);font-size:13px;padding:5px 10px;border-radius:20px;white-space:nowrap}
+  .nav .links a:hover,.nav .links a.on{color:var(--ink);background:rgba(255,255,255,.07)}
+  .langsw{display:inline-flex;border:.5px solid var(--line2);border-radius:9px;overflow:hidden;flex:none}
+  .langsw button{font:inherit;cursor:pointer;border:0;background:transparent;color:var(--mut);padding:4px 10px;font-size:12.5px}
+  .langsw button.on{background:var(--ink);color:#111}
+  .back{flex:none;text-decoration:none;font-size:12.5px;color:var(--ink);border:.5px solid var(--line2);border-radius:9px;padding:5px 10px}
+  .back:hover{border-color:var(--teal);color:var(--teal)}
+  /* 开场 */
+  .hero{position:relative;min-height:calc(100vh - 52px);display:flex;align-items:center;overflow:hidden;
+        background:linear-gradient(90deg,rgba(7,8,11,.72) 0%,rgba(7,8,11,.35) 45%,transparent 75%)}
+  .hero svg.bg{position:absolute;inset:0;width:100%;height:100%;opacity:.32;mix-blend-mode:screen;pointer-events:none}
+  .hero .wrap{position:relative;width:100%;padding-top:40px;padding-bottom:60px}
+  .kicker{font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);font-weight:600}
+  .hero h1{font-size:clamp(38px,6.6vw,84px);line-height:1.02;margin:14px 0 18px;letter-spacing:-.035em;font-weight:800;max-width:900px}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,#ff3b52,#f0c75e);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .hero .lede{color:#c9c6bd;font-size:clamp(15px,1.6vw,18px);max-width:640px;margin:0}
+  .champ{display:flex;align-items:center;gap:18px;margin-top:34px;flex-wrap:wrap}
+  .champ .trophy{font-size:44px;filter:drop-shadow(0 6px 18px rgba(245,196,81,.35))}
+  .champ .who{font-size:clamp(28px,4vw,44px);font-weight:800;letter-spacing:-.02em;display:flex;align-items:center;gap:12px}
+  .champ .who img{width:52px;height:36px;border-radius:5px;object-fit:cover;box-shadow:0 0 0 1px rgba(255,255,255,.15)}
+  .champ .path{color:var(--mut);font-size:14px}
+  .champ .path b{color:var(--gold)}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;margin-top:40px;background:var(--line);border:.5px solid var(--line);border-radius:16px;overflow:hidden}
+  .stat{background:rgba(21,23,29,.86);padding:16px 18px}
+  .stat .v{font-size:clamp(26px,3vw,36px);font-weight:800;letter-spacing:-.02em;line-height:1.1}
+  .stat .l{font-size:12.5px;color:var(--mut);margin-top:4px}
+  .scrollhint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);color:var(--dim);font-size:12px;animation:bob 2s ease-in-out infinite}
+  @keyframes bob{50%{transform:translate(-50%,6px)}}
+  /* 章节 */
+  section.sec{padding:96px 0 20px}
+  .chap{font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);font-weight:600;display:flex;align-items:center;gap:10px}
+  .chap i{font-style:normal;color:var(--teal)}
+  h2{font-size:clamp(28px,4vw,46px);line-height:1.08;letter-spacing:-.03em;margin:12px 0 12px;font-weight:800;max-width:860px}
+  .sub{color:var(--mut);max-width:720px;margin:0 0 26px;font-size:15px}
+  .panel{background:var(--panel);border:.5px solid var(--line);border-radius:18px;padding:20px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:820px){.grid2{grid-template-columns:1fr}section.sec{padding-top:70px}}
+  .reveal{opacity:0;transform:translateY(26px);transition:opacity .8s ease,transform .8s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  .flag{width:22px;height:15px;border-radius:3px;object-fit:cover;vertical-align:-3px;box-shadow:0 0 0 .5px rgba(255,255,255,.2)}
+  .btn{font:inherit;font-size:13px;cursor:pointer;border:.5px solid var(--line2);background:var(--panel2);color:var(--ink);border-radius:10px;padding:7px 13px;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+  .btn:hover{border-color:var(--teal)}
+  .btn.pri{background:var(--teal);color:#032613;border-color:transparent;font-weight:650}
+  .tip{position:fixed;z-index:80;pointer-events:none;background:#f3f1ea;color:#111;font-size:12.5px;line-height:1.55;padding:8px 11px;border-radius:9px;display:none;max-width:280px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  /* 冠军争夺战 */
+  .race{padding:22px 22px 16px}
+  .race-top{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+  .race-date{font-size:clamp(30px,4.2vw,52px);font-weight:800;letter-spacing:-.03em;line-height:1}
+  .race-stage{font-size:13px;color:var(--gold);letter-spacing:.08em;text-transform:uppercase;margin-top:6px;font-weight:600}
+  .race-ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .race-ctl select{font:inherit;font-size:13px;background:var(--panel2);color:var(--ink);border:.5px solid var(--line2);border-radius:10px;padding:6px 8px}
+  .bars{position:relative;height:calc(10 * 46px);margin-top:6px}
+  .bar{position:absolute;left:0;right:0;height:40px;display:flex;align-items:center;gap:10px;transition:transform .5s cubic-bezier(.3,.8,.3,1),opacity .5s}
+  .bar .rk{width:22px;text-align:right;color:var(--dim);font-size:13px;font-weight:600}
+  .bar .nm{width:128px;display:flex;align-items:center;gap:8px;font-weight:650;font-size:14px;white-space:nowrap;overflow:hidden}
+  .bar .nm img{width:26px;height:18px}
+  .bar .track{flex:1;position:relative;height:30px}
+  .bar .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;min-width:3px;transition:width .12s linear;box-shadow:inset 0 -2px 0 rgba(0,0,0,.18)}
+  .bar .val{position:absolute;top:50%;transform:translateY(-50%);font-weight:800;font-size:15px;white-space:nowrap;transition:left .12s linear}
+  .bar.out .fill{background:#3a3c42!important}
+  .bar.out .nm{color:var(--dim);text-decoration:line-through}
+  .bar .tag{font-size:11px;color:var(--hot);border:.5px solid rgba(255,59,82,.5);border-radius:10px;padding:0 6px;margin-left:6px}
+  .scrub{width:100%;margin:14px 0 4px;accent-color:var(--teal)}
+  .ticker{min-height:30px;display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .ev{font-size:12.5px;background:var(--panel2);border:.5px solid var(--line2);border-radius:20px;padding:4px 11px;animation:evin .5s ease}
+  .ev b{color:var(--gold);font-weight:650;margin-right:5px}
+  @keyframes evin{from{opacity:0;transform:translateY(8px)}}
+  .viewsw{display:inline-flex;border:.5px solid var(--line2);border-radius:10px;overflow:hidden}
+  .viewsw button{font:inherit;font-size:12.5px;border:0;background:transparent;color:var(--mut);padding:6px 11px;cursor:pointer}
+  .viewsw button.on{background:var(--ink);color:#111}
+  .legend{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .lg{font-size:12px;border:.5px solid var(--line2);border-radius:20px;padding:2px 10px 2px 8px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
+  .lg i{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .lg.off{opacity:.35}
+  /* 关键数字 */
+  .bign{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+  .bn{background:var(--panel);border:.5px solid var(--line);border-radius:18px;padding:22px 22px 20px;position:relative;overflow:hidden}
+  .bn::after{content:"";position:absolute;right:-40px;top:-40px;width:140px;height:140px;border-radius:50%;background:var(--glow,rgba(23,209,127,.10));filter:blur(8px)}
+  .bn .v{font-size:clamp(40px,5vw,58px);font-weight:800;letter-spacing:-.04em;line-height:1;color:var(--c,var(--ink))}
+  .bn .v small{font-size:.45em;letter-spacing:0;color:var(--mut);font-weight:600;margin-left:4px}
+  .bn .k{font-size:13px;color:var(--mut);margin-top:12px;font-weight:600;letter-spacing:.02em}
+  .bn .d{font-size:14.5px;margin-top:6px;color:#d6d3ca}
+  /* 冷门卡 */
+  .ucards{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:10px;scrollbar-width:thin}
+  .uc{flex:0 0 min(330px,82vw);scroll-snap-align:start;background:linear-gradient(160deg,#1c1f27,#121419);border:.5px solid var(--line);border-radius:20px;padding:20px;position:relative}
+  .uc .rank{position:absolute;right:18px;top:14px;font-size:44px;font-weight:800;color:rgba(255,255,255,.06);letter-spacing:-.04em}
+  .uc .meta{font-size:12px;color:var(--mut);letter-spacing:.04em}
+  .uc .teams{display:flex;align-items:center;justify-content:space-between;margin:14px 0 4px}
+  .uc .t{display:flex;flex-direction:column;align-items:center;gap:6px;width:36%;text-align:center;font-weight:650;font-size:14px}
+  .uc .t img{width:44px;height:30px;border-radius:4px;object-fit:cover}
+  .uc .sc{font-size:44px;font-weight:800;letter-spacing:-.03em}
+  .uc .gauge{display:block;margin:10px auto 0}
+  .uc .pa{text-align:center;margin-top:-34px;font-size:28px;font-weight:800;color:var(--hot)}
+  .uc .pl{text-align:center;font-size:12px;color:var(--mut)}
+  .uc .fav{margin-top:14px;font-size:13px;color:#cfccc3;text-align:center}
+  .uc .go{margin-top:14px;display:flex;justify-content:center}
+  /* 表格 */
   table{width:100%;border-collapse:collapse;font-size:13.5px}
-  th{font-weight:500;color:var(--mut);font-size:12px;text-align:left;padding:7px 8px;border-bottom:.5px solid var(--line);white-space:nowrap}
-  td{padding:8px;border-bottom:.5px solid var(--line);vertical-align:middle}
+  th{font-weight:500;color:var(--mut);font-size:12px;text-align:left;padding:8px;border-bottom:.5px solid var(--line2);white-space:nowrap}
+  td{padding:9px 8px;border-bottom:.5px solid var(--line)}
   tr:last-child td{border-bottom:0}
-  .r{text-align:right} .num{font-variant-numeric:tabular-nums}
-  .flag{width:18px;height:13px;border-radius:2px;vertical-align:-2px;margin-right:5px;box-shadow:0 0 0 .5px rgba(0,0,0,.12);object-fit:cover}
-  .pill{display:inline-block;border-radius:20px;padding:1px 9px;font-size:12px;font-weight:600}
-  .up{color:var(--up)} .down{color:var(--down)}
+  .r{text-align:right}
   .tscroll{overflow-x:auto}
-  .go{font-size:12px;color:var(--mut);text-decoration:none;border:.5px solid var(--line);border-radius:7px;padding:2px 7px;white-space:nowrap}
-  .go:hover{color:var(--ink);border-color:var(--ink)}
-  .bar{height:8px;border-radius:5px;background:#eeece6;overflow:hidden} .bar i{display:block;height:100%;border-radius:5px}
-  .tip{position:fixed;z-index:50;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;line-height:1.55;padding:7px 10px;border-radius:8px;display:none;max-width:260px}
-  .podium{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-  .pd{flex:1;min-width:150px;background:var(--card);border:.5px solid var(--line);border-radius:14px;padding:12px 14px}
-  .pd .n{font-size:12px;color:var(--mut)} .pd .tm{font-size:18px;font-weight:650}
-  .note{font-size:12.5px;color:var(--mut);line-height:1.7}
-  .note li{margin-bottom:4px}
-  footer{margin-top:56px;padding-top:18px;border-top:.5px solid var(--line);text-align:center;color:var(--hint);font-size:12.5px}
+  .hbar{height:9px;border-radius:5px;background:rgba(255,255,255,.07);overflow:hidden}
+  .hbar i{display:block;height:100%;border-radius:5px;width:0;transition:width 1.2s cubic-bezier(.2,.7,.2,1)}
+  .up{color:var(--teal)} .down{color:var(--hot)}
+  .go2{font-size:12px;color:var(--mut);text-decoration:none;border:.5px solid var(--line2);border-radius:8px;padding:3px 8px;white-space:nowrap}
+  .go2:hover{color:var(--teal);border-color:var(--teal)}
+  /* 平台卡 */
+  .pcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+  .pc{background:var(--panel);border:.5px solid var(--line);border-radius:18px;padding:18px;border-top:3px solid var(--pc)}
+  .pc .n{font-size:20px;font-weight:800;letter-spacing:-.02em}
+  .pc .badges{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px;min-height:22px}
+  .pc .badge{font-size:11px;border-radius:20px;padding:2px 8px;background:rgba(255,255,255,.08);color:#e7e4db}
+  .pc .row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-top:.5px solid var(--line)}
+  .pc .row span:first-child{color:var(--mut)}
+  .note{font-size:12.5px;color:var(--mut);line-height:1.75}
+  .note li{margin-bottom:6px}
+  footer{margin:90px 0 0;padding:26px 0 40px;border-top:.5px solid var(--line);color:var(--dim);font-size:12.5px;text-align:center}
+  svg text{font-family:inherit}
+  /* 动态背景：流动色彩曲线（2026 世界杯配色） */
+  #fx{position:fixed;inset:0;width:100vw;height:100vh;z-index:-2;pointer-events:none;display:block}
+  .fx-tex{position:fixed;inset:0;z-index:-1;pointer-events:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+      linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);
+    background-size:160px 160px,56px 56px,56px 56px;opacity:.28;
+    -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 30%,transparent 100%);mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 30%,transparent 100%)}
+  .fx-tex::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 120% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}
+  .panel,.bn,.pc{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="top">
-    <a class="back" href="index.html" data-i="back"></a>
-    <div class="langsw"><button data-lang="en">EN</button><button data-lang="zh">中</button></div>
+<canvas id="fx" aria-hidden="true"></canvas><div class="fx-tex" aria-hidden="true"></div>
+<nav class="nav"><div class="wrap">
+  <span class="brand"><b>pm</b>-watcher</span>
+  <div class="links" id="navlinks"></div>
+  <div class="langsw"><button data-lang="en">EN</button><button data-lang="zh">中</button></div>
+  <a class="back" href="index.html" data-i="back"></a>
+</div></nav>
+
+<header class="hero" id="top">
+  <svg class="bg" id="heroBg" preserveAspectRatio="none"></svg>
+  <div class="wrap">
+    <div class="kicker" data-i="kicker"></div>
+    <h1 id="heroTitle"></h1>
+    <p class="lede" data-i="lede"></p>
+    <div class="champ" id="champ"></div>
+    <div class="stats" id="stats"></div>
   </div>
-  <h1 data-i="title"></h1>
-  <p class="lede" data-i="lede"></p>
-  <div class="cards" id="hero"></div>
+  <div class="scrollhint" data-i="scroll"></div>
+</header>
 
-  <div class="sec"><h2 data-i="s_find"></h2><p class="sub" data-i="s_find_sub"></p><div class="ins" id="insights"></div></div>
-
-  <div class="sec"><h2 data-i="s_race"></h2><p class="sub" data-i="s_race_sub"></p>
-    <div class="panel"><div id="race"></div><div class="legend" id="raceLg"></div></div>
-    <div class="grid2" style="margin-top:12px">
-      <div class="panel"><div class="sub" style="margin:0 0 6px" data-i="start_top"></div><div id="startTop"></div></div>
-      <div class="panel"><div class="sub" style="margin:0 0 6px" data-i="podium"></div><div id="podium"></div></div>
+<section class="sec" id="s-race"><div class="wrap">
+  <div class="chap reveal"><i>01</i><span data-i="c1"></span></div>
+  <h2 class="reveal" data-i="h_race"></h2>
+  <p class="sub reveal" data-i="d_race"></p>
+  <div class="panel race reveal">
+    <div class="race-top">
+      <div><div class="race-date num" id="raceDate">—</div><div class="race-stage" id="raceStage"></div></div>
+      <div class="race-ctl">
+        <div class="viewsw" id="raceView"><button data-v="bar" class="on"></button><button data-v="line"></button></div>
+        <button class="btn pri" id="racePlay"></button>
+        <select id="raceSpeed"></select>
+        <a class="btn" id="raceOpen" href="index.html"></a>
+      </div>
     </div>
+    <div id="raceBarWrap"><div class="bars" id="bars"></div></div>
+    <div id="raceLineWrap" style="display:none"><div id="raceLine"></div><div class="legend" id="raceLg"></div></div>
+    <input type="range" class="scrub" id="raceScrub" min="0" step="0.01">
+    <div class="ticker" id="ticker"></div>
   </div>
+</div></section>
 
-  <div class="sec"><h2 data-i="s_swing"></h2><p class="sub" data-i="s_swing_sub"></p><div class="panel tscroll" id="swings"></div></div>
+<section class="sec" id="s-nums"><div class="wrap">
+  <div class="chap reveal"><i>02</i><span data-i="c2"></span></div>
+  <h2 class="reveal" data-i="h_nums"></h2>
+  <p class="sub reveal" data-i="d_nums"></p>
+  <div class="bign" id="bign"></div>
+</div></section>
 
-  <div class="sec"><h2 data-i="s_acc"></h2><p class="sub" data-i="s_acc_sub"></p>
-    <div class="grid2">
-      <div class="panel"><div class="sub" style="margin:0 0 8px" data-i="hit_by_stage"></div><div id="hitStage"></div></div>
-      <div class="panel"><div class="sub" style="margin:0 0 8px" data-i="draw_head"></div><div id="draws"></div></div>
-    </div>
-    <div class="panel tscroll" style="margin-top:12px"><div class="sub" style="margin:0 0 6px" data-i="brier_head"></div><div id="brier"></div></div>
-    <div class="panel" style="margin-top:12px"><div class="sub" style="margin:0 0 6px" data-i="rel_head"></div><div id="rel"></div><div class="legend" id="relLg"></div></div>
+<section class="sec" id="s-upset"><div class="wrap">
+  <div class="chap reveal"><i>03</i><span data-i="c3"></span></div>
+  <h2 class="reveal" data-i="h_upset"></h2>
+  <p class="sub reveal" data-i="d_upset"></p>
+  <div class="ucards reveal" id="ucards"></div>
+</div></section>
+
+<section class="sec" id="s-swing"><div class="wrap">
+  <div class="chap reveal"><i>04</i><span data-i="c4"></span></div>
+  <h2 class="reveal" data-i="h_swing"></h2>
+  <p class="sub reveal" data-i="d_swing"></p>
+  <div class="panel reveal"><div id="slope"></div></div>
+</div></section>
+
+<section class="sec" id="s-acc"><div class="wrap">
+  <div class="chap reveal"><i>05</i><span data-i="c5"></span></div>
+  <h2 class="reveal" data-i="h_acc"></h2>
+  <p class="sub reveal" data-i="d_acc"></p>
+  <div class="grid2">
+    <div class="panel reveal"><div class="sub" style="margin:0 0 10px" data-i="hit_by_stage"></div><div id="hitStage"></div></div>
+    <div class="panel reveal"><div class="sub" style="margin:0 0 10px" data-i="draw_head"></div><div id="draws"></div></div>
   </div>
-
-  <div class="sec"><h2 data-i="s_upset"></h2><p class="sub" data-i="s_upset_sub"></p>
-    <div class="panel tscroll" id="upsets"></div>
-    <div class="panel tscroll" style="margin-top:12px"><div class="sub" style="margin:0 0 6px" data-i="sure_head"></div><div id="sure"></div></div>
+  <div class="grid2" style="margin-top:14px">
+    <div class="panel reveal"><div class="sub" style="margin:0 0 10px" data-i="brier_head"></div><div id="brier"></div></div>
+    <div class="panel reveal"><div class="sub" style="margin:0 0 6px" data-i="rel_head"></div><div id="rel"></div><div class="legend" id="relLg"></div></div>
   </div>
+</div></section>
 
-  <div class="sec"><h2 data-i="s_team"></h2><p class="sub" data-i="s_team_sub"></p><div class="panel" id="teams"></div></div>
+<section class="sec" id="s-team"><div class="wrap">
+  <div class="chap reveal"><i>06</i><span data-i="c6"></span></div>
+  <h2 class="reveal" data-i="h_team"></h2>
+  <p class="sub reveal" data-i="d_team"></p>
+  <div class="panel reveal"><div id="scatter"></div></div>
+</div></section>
 
-  <div class="sec"><h2 data-i="s_plat"></h2><p class="sub" data-i="s_plat_sub"></p><div class="panel tscroll" id="plats"></div></div>
+<section class="sec" id="s-plat"><div class="wrap">
+  <div class="chap reveal"><i>07</i><span data-i="c7"></span></div>
+  <h2 class="reveal" data-i="h_plat"></h2>
+  <p class="sub reveal" data-i="d_plat"></p>
+  <div class="pcards reveal" id="pcards"></div>
+  <p class="note reveal" style="margin-top:12px" data-i="plat_note"></p>
+</div></section>
 
-  <div class="sec"><h2 data-i="s_game"></h2><p class="sub" data-i="s_game_sub"></p>
-    <div class="cards" id="gameCards" style="margin-top:0"></div>
-    <div class="grid2" style="margin-top:12px">
-      <div class="panel tscroll"><div class="sub" style="margin:0 0 6px" data-i="high_head"></div><div id="high"></div></div>
-      <div class="panel tscroll"><div class="sub" style="margin:0 0 6px" data-i="big_head"></div><div id="big"></div></div>
-    </div>
-    <div class="panel tscroll" style="margin-top:12px"><div class="sub" style="margin:0 0 6px" data-i="ko_head"></div><div id="ko"></div></div>
-  </div>
+<section class="sec" id="s-game"><div class="wrap">
+  <div class="chap reveal"><i>08</i><span data-i="c8"></span></div>
+  <h2 class="reveal" data-i="h_game"></h2>
+  <div class="bign reveal" id="gnums" style="margin-bottom:14px"></div>
+  <div class="panel tscroll reveal"><div class="sub" style="margin:0 0 6px" data-i="ko_head"></div><div id="ko"></div></div>
+</div></section>
 
-  <div class="sec"><h2 data-i="s_aud"></h2><p class="sub" data-i="s_aud_sub"></p><div class="panel"><div id="visits"></div></div></div>
+<section class="sec" id="s-aud"><div class="wrap">
+  <div class="chap reveal"><i>09</i><span data-i="c9"></span></div>
+  <h2 class="reveal" data-i="h_aud"></h2>
+  <p class="sub reveal" data-i="d_aud"></p>
+  <div class="panel reveal"><div id="visits"></div></div>
+</div></section>
 
-  <div class="sec"><h2 data-i="s_method"></h2><ul class="note" id="method"></ul></div>
+<section class="sec" id="s-method"><div class="wrap">
+  <div class="chap reveal"><i>—</i><span data-i="c10"></span></div>
+  <ul class="note reveal" id="method"></ul>
+</div></section>
 
-  <footer>© 2026 Yixuan · pm-watcher · <a href="mailto:isabel.yx.wang@gmail.com">isabel.yx.wang@gmail.com</a></footer>
-</div>
+<footer><div class="wrap">© 2026 Yixuan · pm-watcher · <a href="mailto:isabel.yx.wang@gmail.com">isabel.yx.wang@gmail.com</a> · <a href="index.html" data-i="back2"></a></div></footer>
 <div class="tip" id="tip"></div>
 
 <script>
 (function(){
 "use strict";
-var PCOLOR={polymarket:"#2563ab",kalshi:"#1d9e75","42":"#d85a30",manifold:"#9a6bd6",predict:"#c2a23a",consensus:"#2c2c2a"};
-var TEAMC={Spain:"#c8102e",France:"#1f3a93",England:"#6b7fa8",Argentina:"#5fa8d3",Portugal:"#1b7f4a",Brazil:"#e0b000",Germany:"#444",Netherlands:"#f07c00",Norway:"#8f2d56",Morocco:"#0f6e3c",Belgium:"#b8860b"};
-var FALLBACK=["#7a5c99","#3c8d93","#a0522d","#5d6d7e","#9c6644","#2e86ab"];
+var PCOLOR={polymarket:"#3d7bff",kalshi:"#17d17f","42":"#ff7a45",manifold:"#b58cff",predict:"#f0c75e",consensus:"#f3f1ea"};
+var TEAMC={Spain:"#ff4b4b",Argentina:"#7cc4f0",France:"#4f6ff0",England:"#e8e6df",Portugal:"#1fae6a",Brazil:"#f7d23a",Germany:"#9c9a94",
+  Netherlands:"#ff8a1f",Norway:"#d8436b",Morocco:"#c0392b",Belgium:"#e0a526",Mexico:"#2e9e5b",USA:"#3b63c9",Croatia:"#e25b5b",
+  Switzerland:"#ff6f6f",Colombia:"#f4c542",Japan:"#6f86d6",Uruguay:"#8fd0ff",Senegal:"#35b56f","South Korea":"#d14c6c",Canada:"#ff5a5a",
+  "Ivory Coast":"#ff9f40","Curaçao":"#4a6fd1",Ecuador:"#f0d24a",Paraguay:"#d9534f",Egypt:"#c9a227"};
+var FALL=["#a78bfa","#34d399","#f472b6","#60a5fa","#fbbf24","#f87171"];
 var A=null, LANG="zh";
-try{ var sv=JSON.parse(localStorage.getItem("pmw_lang")); if(sv) LANG=sv; else LANG=(navigator.language||"").toLowerCase().indexOf("zh")===0?"zh":"en"; }catch(e){}
+try{ var sv=JSON.parse(localStorage.getItem("pmw_lang")); LANG=sv||((navigator.language||"").toLowerCase().indexOf("zh")===0?"zh":"en"); }catch(e){}
 
-var S={
- zh:{back:"← 回到历史回放看板",title:"2026 世界杯 · 全程数据复盘",
-  lede:"pm-watcher 在整届赛事期间持续记录了五个预测市场平台的定价。这里用这些记录回答三个问题：市场到底准不准？谁被看走眼了？冠军之路是怎样被一步步定价的？",
-  s_find:"关键结论",s_find_sub:"数字都来自赛前「收盘线」（开球前各平台最后一笔定价），与看板同一口径。",
-  s_race:"冠军之路：夺冠概率怎么变",s_race_sub:"五个平台的共识夺冠概率（每 3 小时一个点）。被淘汰即记为 0，决赛后冠军记 100%。点击图中任一位置，可跳到回放看板的那一刻。",
-  start_top:"开赛初期（6/16）市场的夺冠排序",podium:"最终名次",
-  s_swing:"改写冠军格局的比赛",s_swing_sub:"赛前 1 小时 → 赛后 3 小时，单场比赛让某队的共识夺冠概率变化了多少。",
-  s_acc:"市场准不准",s_acc_sub:"「共识热门」= 五个平台归一化后平均概率最高的结果。Brier 分数越低越准：完美 = 0，每档都猜 ⅓ ≈ 0.667。",
-  hit_by_stage:"共识热门命中率 · 按阶段",draw_head:"平局：市场以为的 vs 实际发生的",brier_head:"各平台 Brier 分数（越低越准）",
-  rel_head:"校准曲线：市场说 X% 的事，实际发生了多少？落在对角线上 = 校准完美；在线上方 = 市场偏保守，在线下方 = 市场偏自信。",
-  s_upset:"冷门榜",s_upset_sub:"按「实际结果的赛前共识概率」从低到高排列。点「回放」可回到开球前半小时，看当时五个平台怎么定价。",
-  sure_head:"最稳的判断：市场最有把握且猜中的比赛",
-  s_team:"被市场看走眼的球队",s_team_sub:"横轴 = 实际拿分率 − 市场赛前预期的拿分率（与看板「球队名片」同公式）。右侧 = 被低估、越打越好；左侧 = 被高估、名不副实。",
-  s_plat:"五个平台的画像",s_plat_sub:"同一场比赛、同一支球队，五个平台的定价习惯并不一样。",
-  s_game:"比赛本身",s_game_sub:"",high_head:"进球最多的比赛",big_head:"分差最大的比赛",ko_head:"淘汰赛全部赛果",
-  s_aud:"这个看板被多少人看过",s_aud_sub:"原站每日访问量。",
-  s_method:"方法与数据说明",
-  c_champ:"冠军",c_final:"决赛",c_matches:"比赛",c_goals:"进球",c_changes:"定价变动记录",c_plat:"平台",c_views:"累计访问",
-  gpm:"场均",stage:{group:"小组赛",R32:"32强",R16:"16强","QF+":"1/4决赛及以后",QF:"1/4决赛",SF:"半决赛","3P":"季军赛",FIN:"决赛"},
-  th_match:"比赛",th_stage:"阶段",th_score:"比分",th_pact:"结果赛前概率",th_fav:"赛前热门",th_team:"球队",th_before:"赛前",th_after:"赛后",th_delta:"变化",
-  th_plat:"平台",th_all:"全部",th_grp:"小组赛",th_ko:"淘汰赛",th_n:"场次",th_changes:"定价变动",th_over:"单场概率和",th_bias:"热门自信度",th_out:"最离群次数",th_dev:"冠军盘偏离",th_poll:"被剔除的异常报价",
-  replay:"回放",draw:"平局",implied:"市场隐含",actual:"实际发生",hit:"命中",n:"场",place:["冠军","亚军","季军","殿军"],
-  only_champ:"只有冠军盘",cons:"共识",win:"胜",
-  bias_note:"「热门自信度」= 该平台给共识热门的概率 − 共识概率，正值表示比同行更自信；「单场概率和」= 三档原始价格相加（>100% 为抽水/溢价）；「冠军盘偏离」= 该平台冠军报价与清洗后共识的平均距离（pt）；「被剔除的异常报价」= 每 12 小时抽样一次，该平台报价因偏离其他平台过多（多为其他运动的同名球队串盘）被剔除的次数。",
-  peak:"峰值",total:"累计",day:"天"},
- en:{back:"← Back to the replay board",title:"2026 World Cup · The Full Data Recap",
-  lede:"pm-watcher recorded how five prediction-market platforms priced the 2026 World Cup, start to finish. This page uses those records to answer three questions: were the markets right, who did they misread, and how was the title race priced step by step?",
-  s_find:"Key findings",s_find_sub:"All match numbers use the closing line (each platform's last price before kickoff) — same as the board.",
-  s_race:"The title race, priced",s_race_sub:"Five-platform consensus title probability, every 3 hours. Eliminated teams drop to 0; the champion goes to 100% after the final. Click anywhere on the chart to open the replay at that moment.",
-  start_top:"Market's title ranking early on (Jun 16)",podium:"Final standings",
-  s_swing:"Matches that reshaped the title race",s_swing_sub:"Change in a team's consensus title probability from 1h before kickoff to 3h after.",
-  s_acc:"Were the markets right?",s_acc_sub:"Consensus favorite = the outcome with the highest average normalized probability across platforms. Brier: lower is better (perfect = 0, always ⅓ ≈ 0.667).",
-  hit_by_stage:"Consensus-favorite hit rate by stage",draw_head:"Draws: what markets expected vs. what happened",brier_head:"Brier score by platform (lower = better)",
-  rel_head:"Calibration: when the market said X%, how often did it happen? On the diagonal = perfect; above = markets too cautious; below = too confident.",
-  s_upset:"The upsets",s_upset_sub:"Ranked by the pre-match consensus probability of what actually happened. Hit “replay” to see the board half an hour before kickoff.",
-  sure_head:"Safest calls: the most confident predictions that came true",
-  s_team:"Teams the market misread",s_team_sub:"Actual points rate minus the market's pre-match expected points rate (same formula as the Team Cards). Right = underrated, got better; left = overrated.",
-  s_plat:"Five platforms, five personalities",s_plat_sub:"Same match, same team — the platforms price differently.",
-  s_game:"The football itself",s_game_sub:"",high_head:"Highest-scoring matches",big_head:"Biggest margins",ko_head:"All knockout results",
-  s_aud:"Who watched",s_aud_sub:"Daily views of the original live board.",
-  s_method:"Method & data notes",
-  c_champ:"Champion",c_final:"Final",c_matches:"Matches",c_goals:"Goals",c_changes:"Price changes recorded",c_plat:"Platforms",c_views:"Total views",
-  gpm:"per match",stage:{group:"Group",R32:"R32",R16:"R16","QF+":"QF onwards",QF:"QF",SF:"SF","3P":"3rd place",FIN:"Final"},
-  th_match:"Match",th_stage:"Stage",th_score:"Score",th_pact:"Pre-match prob. of result",th_fav:"Pre-match favorite",th_team:"Team",th_before:"Before",th_after:"After",th_delta:"Change",
-  th_plat:"Platform",th_all:"All",th_grp:"Group",th_ko:"KO",th_n:"n",th_changes:"Price changes",th_over:"Match overround",th_bias:"Favorite confidence",th_out:"Times most off",th_dev:"Title-market deviation",th_poll:"Anomalies removed",
-  replay:"replay",draw:"Draw",implied:"Market-implied",actual:"Actual",hit:"hit",n:"matches",place:["Champion","Runner-up","Third","Fourth"],
-  only_champ:"title market only",cons:"consensus",win:"win",
-  bias_note:"“Favorite confidence” = platform's probability on the consensus favorite minus the consensus (positive = more confident than peers). “Match overround” = the three raw prices summed (>100% = margin). “Title-market deviation” = average distance (pt) from the cleaned consensus. “Anomalies removed” = sampled every 12h, how often a quote was dropped for straying too far from the other platforms (usually a same-named team from another sport).",
-  peak:"Peak",total:"Total",day:"days"}
-};
+var S={zh:{
+  back:"← 回到历史回放看板",back2:"回到历史回放看板",kicker:"2026 世界杯 · 全程数据复盘",
+  title:"一届世界杯，<br>五个市场，<em>二十万次</em>定价。",
+  lede:"pm-watcher 在整届赛事中持续记录五个预测市场平台的每一次价格变动。把它们连起来，就能看见冠军是怎样被一步步「定价」出来的——以及市场在哪里看走了眼。",
+  scroll:"向下滚动 ↓",
+  n_race:"冠军争夺战",n_nums:"关键数字",n_upset:"冷门",n_swing:"转折点",n_acc:"市场准不准",n_team:"看走眼",n_plat:"平台",n_game:"比赛",n_aud:"观众",
+  c1:"冠军争夺战",h_race:"从第 2 名到捧杯：夺冠概率的 33 天",d_race:"五个平台清洗后的共识夺冠概率，每 3 小时一帧。点「播放」看排名实时变化；拖动进度条可停在任何时刻，再一键打开回放看板看当时的原貌。",
+  play:"▶ 播放",pause:"❚❚ 暂停",replay_again:"↺ 重播",openBoard:"在回放看板中打开此刻 ↗",v_bar:"排名",v_line:"折线",
+  c2:"关键数字",h_nums:"六个数字，读懂这届世界杯的市场",d_nums:"单场数字都用「收盘线」（开球前各平台最后一笔定价），与看板同一口径。",
+  c3:"冷门",h_upset:"市场最没想到的十场比赛",d_upset:"按「实际结果的赛前共识概率」从低到高排列。左右滑动查看，点按钮直达这场比赛的复盘小卡。",
+  c4:"转折点",h_swing:"改写冠军格局的 90 分钟",d_swing:"赛前 1 小时 → 赛后 3 小时，单场比赛让一支球队的夺冠概率变化了多少。",
+  c5:"市场准不准",h_acc:"猜中了七成，但越到后面越难",d_acc:"「共识热门」= 五个平台归一化后平均概率最高的结果。Brier 分数越低越准：完美 = 0，每档都猜 ⅓ ≈ 0.667。",
+  hit_by_stage:"共识热门命中率 · 按阶段",draw_head:"平局：市场以为的 vs 实际发生的",brier_head:"各平台 Brier 分数（越低越准）",rel_head:"校准曲线：市场说 X% 的事，实际发生了多少？落在虚线上 = 校准完美",
+  c6:"看走眼",h_team:"谁被低估，谁名不副实",d_team:"横轴 = 市场赛前预期的拿分率，纵轴 = 实际拿分率（与看板「球队名片」同公式）。虚线以上 = 被低估、越打越好；以下 = 被高估。悬停看细节。",
+  x_lab:"市场预期拿分率",y_lab:"实际拿分率",under:"被低估 ↑",over:"被高估 ↓",
+  c7:"平台",h_plat:"五个平台，五种性格",d_plat:"同一场比赛、同一支球队，五个平台的定价习惯并不一样。",
+  plat_note:"「热门自信度」= 该平台给共识热门的概率 − 共识概率（正值 = 比同行更自信）；「单场概率和」= 三档原始价格相加（>100% 为溢价）；「冠军盘偏离」= 与清洗后共识的平均距离；「异常报价」= 每 12 小时抽样，因偏离其他平台过多（多为其他运动的同名球队串盘）被剔除的次数。",
+  c8:"比赛",h_game:"场上发生了什么",ko_head:"淘汰赛全部赛果",
+  c9:"观众",h_aud:"这个看板被多少人看过",d_aud:"原站每日访问量。",
+  c10:"方法与数据说明",
+  s_matches:"场比赛",s_goals:"粒进球",s_changes:"次定价变动",s_plat:"个预测市场",s_views:"次访问",
+  champ_path:function(r,p,f){return "开赛初期市场排名第 <b>"+r+"</b>（"+p+"%）→ 决赛前 <b>"+f+"%</b> → 捧杯";},
+  bn_hit:"共识热门命中率",bn_hit_d:function(h){return "在 "+h.all.n+" 场有定价的比赛里猜中 "+h.all.hit+" 场；32 强阶段最准（"+h.R32.rate+"%），1/4 决赛之后只剩 "+h["QF+"].rate+"%。";},
+  bn_up:"最大冷门的赛前概率",bn_up_d:function(u,nm){return nm(u.home)+" "+u.sa+"–"+u.sb+" "+nm(u.away)+"：市场几乎没给这个结果留余地。";},
+  bn_draw:"市场高估平局",bn_draw_d:function(a){return "平均每场隐含平局概率 "+a.draw_implied+"%，实际只有 "+a.draw_actual+"% 的比赛打平。";},
+  bn_best:"最准的平台",bn_best_d:function(b,w){return b.p+" 的 Brier 最低（"+b.all.toFixed(3)+"），"+w.p+" 最高（"+w.all.toFixed(3)+"）——平台之间差距其实很小。";},
+  bn_sw:"单场最大冲击",bn_sw_d:function(s,nm){return nm(s.home)+" "+s.sa+"–"+s.sb+" "+nm(s.away)+" 让"+nm(s.team)+"的夺冠概率从 "+s.before+"% 变成 "+s.after+"%。";},
+  bn_mis:"最被低估",bn_mis_d:function(t,nm){return nm(t.team)+"：市场预期拿分率 "+t.mkt+"%，实际拿到 "+t.act+"%。";},
+  fav:"赛前热门",draw:"平局",win:"胜",p_actual:"这个结果的赛前概率",toCard:"直达复盘小卡 →",
+  stage:{group:"小组赛",R32:"32强",R16:"16强","QF+":"1/4决赛及以后",QF:"1/4决赛",SF:"半决赛","3P":"季军赛",FIN:"决赛",all:"全部"},
+  implied:"市场隐含",actual:"实际发生",cons:"共识",only_champ:"只有冠军盘",
+  b_best:"最准",b_active:"最活跃",b_out:"最常离群",b_conf:"最自信",b_poll:"串盘最多",
+  r_changes:"定价变动",r_matches:"定价场次",r_brier:"Brier",r_over:"单场概率和",r_bias:"热门自信度",r_dev:"冠军盘偏离",r_poll:"异常报价",
+  g_goals:"总进球",g_gpm:"场均进球",g_gpm_ko:"淘汰赛场均",g_draws:"平局",out:"出局",peak:"峰值",total:"累计",
+  gpm_d:function(o){return "小组赛 "+o.gpm_group+" · 淘汰赛 "+o.gpm_ko;}},
+ en:{
+  back:"← Back to the replay board",back2:"Back to the replay board",kicker:"2026 World Cup · The full data recap",
+  title:"One World Cup.<br>Five markets. <em>200,000</em> prices.",
+  lede:"Throughout the tournament pm-watcher recorded every price move on five prediction markets. Stitch them together and you can watch the champion being priced, step by step — and see where the markets got it wrong.",
+  scroll:"Scroll ↓",
+  n_race:"Title race",n_nums:"Numbers",n_upset:"Upsets",n_swing:"Turning points",n_acc:"Accuracy",n_team:"Misread",n_plat:"Platforms",n_game:"Football",n_aud:"Audience",
+  c1:"The title race",h_race:"From #2 to the trophy: 33 days of title odds",d_race:"Cleaned five-platform consensus title probability, one frame every 3 hours. Press play to watch the ranking move; drag to stop at any moment and open the replay board as it looked then.",
+  play:"▶ Play",pause:"❚❚ Pause",replay_again:"↺ Replay",openBoard:"Open this moment on the board ↗",v_bar:"Race",v_line:"Lines",
+  c2:"Key numbers",h_nums:"Six numbers that explain this World Cup's markets",d_nums:"Match figures use the closing line (each platform's last price before kickoff) — same as the board.",
+  c3:"Upsets",h_upset:"The ten results markets least expected",d_upset:"Ranked by the pre-match consensus probability of what actually happened. Swipe through; jump straight to each match's recap card.",
+  c4:"Turning points",h_swing:"The 90 minutes that reshaped the title race",d_swing:"How much one match moved a team's title odds, 1h before kickoff → 3h after.",
+  c5:"Accuracy",h_acc:"Right seven times in ten — less so as the stakes rose",d_acc:"Consensus favorite = the outcome with the highest average normalized probability. Brier: lower is better (perfect = 0, always ⅓ ≈ 0.667).",
+  hit_by_stage:"Consensus-favorite hit rate by stage",draw_head:"Draws: expected vs. actual",brier_head:"Brier score by platform (lower = better)",rel_head:"Calibration: when the market said X%, how often did it happen? On the dashed line = perfect",
+  c6:"Misread",h_team:"Who was underrated, who was overrated",d_team:"x = market's expected points rate, y = actual points rate (same formula as the Team Cards). Above the line = underrated; below = overrated. Hover for details.",
+  x_lab:"market-expected points rate",y_lab:"actual points rate",under:"underrated ↑",over:"overrated ↓",
+  c7:"Platforms",h_plat:"Five platforms, five personalities",d_plat:"Same match, same team — the platforms price differently.",
+  plat_note:"“Favorite confidence” = platform's probability on the consensus favorite minus the consensus (positive = more confident). “Match overround” = three raw prices summed (>100% = margin). “Title deviation” = average distance from the cleaned consensus. “Anomalies” = sampled every 12h, quotes dropped for straying too far from the other platforms (usually a same-named team from another sport).",
+  c8:"The football",h_game:"What happened on the pitch",ko_head:"All knockout results",
+  c9:"Audience",h_aud:"Who watched",d_aud:"Daily views of the original live board.",
+  c10:"Method & data notes",
+  s_matches:"matches",s_goals:"goals",s_changes:"price changes",s_plat:"prediction markets",s_views:"views",
+  champ_path:function(r,p,f){return "Ranked <b>#"+r+"</b> early on ("+p+"%) → <b>"+f+"%</b> before the final → champions";},
+  bn_hit:"Consensus-favorite hit rate",bn_hit_d:function(h){return "Won "+h.all.hit+" of "+h.all.n+" priced matches; best in the R32 ("+h.R32.rate+"%), only "+h["QF+"].rate+"% from the quarter-finals on.";},
+  bn_up:"Pre-match odds of the biggest upset",bn_up_d:function(u,nm){return nm(u.home)+" "+u.sa+"–"+u.sb+" "+nm(u.away)+": the market left almost no room for it.";},
+  bn_draw:"Markets overpriced the draw",bn_draw_d:function(a){return a.draw_implied+"% implied on average, but only "+a.draw_actual+"% of matches were drawn.";},
+  bn_best:"Best-calibrated platform",bn_best_d:function(b,w){return b.p+" had the lowest Brier ("+b.all.toFixed(3)+"), "+w.p+" the highest ("+w.all.toFixed(3)+") — the gap is small.";},
+  bn_sw:"Biggest single-match swing",bn_sw_d:function(s,nm){return nm(s.home)+" "+s.sa+"–"+s.sb+" "+nm(s.away)+" moved "+nm(s.team)+" from "+s.before+"% to "+s.after+"%.";},
+  bn_mis:"Most underrated",bn_mis_d:function(t,nm){return nm(t.team)+": expected points rate "+t.mkt+"%, actual "+t.act+"%.";},
+  fav:"Pre-match favorite",draw:"Draw",win:"win",p_actual:"pre-match probability of this result",toCard:"Open the recap card →",
+  stage:{group:"Group",R32:"R32",R16:"R16","QF+":"QF onwards",QF:"QF",SF:"SF","3P":"3rd place",FIN:"Final",all:"All"},
+  implied:"Implied",actual:"Actual",cons:"consensus",only_champ:"title market only",
+  b_best:"Most accurate",b_active:"Most active",b_out:"Most often the outlier",b_conf:"Most confident",b_poll:"Most glitches",
+  r_changes:"Price changes",r_matches:"Matches priced",r_brier:"Brier",r_over:"Match overround",r_bias:"Favorite confidence",r_dev:"Title deviation",r_poll:"Anomalies",
+  g_goals:"Goals",g_gpm:"Goals per match",g_gpm_ko:"Knockout average",g_draws:"Draws",out:"out",peak:"Peak",total:"Total",
+  gpm_d:function(o){return "Group "+o.gpm_group+" · Knockouts "+o.gpm_ko;}}};
 function L(k){ return (S[LANG]||S.zh)[k]; }
 function nm(t){ return LANG==="zh"? ((A.names.cn||{})[t]||t) : t; }
-function fl(t){ var c=(A.names.flag||{})[t]; return c? '<img class="flag" src="flags/'+c+'.svg" alt="">' : ""; }
-function tm(t){ return fl(t)+nm(t); }
-function fmtD(ts,withTime){ var d=new Date(ts*1000); return withTime? d.toLocaleString(LANG==="zh"?"zh-CN":"en-GB",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}) : (d.getMonth()+1)+"/"+d.getDate(); }
+function flagSrc(t){ var c=(A.names.flag||{})[t]; return c? "flags/"+c+".svg" : ""; }
+function fl(t,cls){ var s=flagSrc(t); return s? '<img class="'+(cls||"flag")+'" src="'+s+'" alt="">' : ""; }
+function tm(t){ return fl(t)+" "+nm(t); }
 function stg(g){ return (L("stage")[g]) || (LANG==="zh"? g+"组" : "Group "+g); }
+function fmtD(ts,time){ var d=new Date(ts*1000); if(!time) return (d.getMonth()+1)+"/"+d.getDate();
+  return LANG==="zh"? (d.getMonth()+1)+"月"+d.getDate()+"日 "+String(d.getHours()).padStart(2,"0")+":00" : d.toLocaleDateString("en-GB",{day:"numeric",month:"short"})+" "+String(d.getHours()).padStart(2,"0")+":00"; }
 function iso(ts){ var d=new Date(ts*1000).toISOString(); return d.slice(0,13)+d.slice(14,16)+"Z"; }
-function replay(ts){ return 'index.html?t='+iso(ts); }
-function score(m){ return tm(m.home)+' <b class="num">'+m.sa+"–"+m.sb+"</b> "+tm(m.away); }
-function res(m){ return m.result==="D"? L("draw") : nm(m.result==="A"?m.home:m.away)+" "+L("win"); }
-function pct(x,d){ return x==null?"—":(+x).toFixed(d==null?1:d)+"%"; }
+function replayAt(ts){ return "index.html?t="+iso(ts); }
+function replayMatch(m){ return "index.html?t="+iso(m.kickoff+8100+600)+"&m="+encodeURIComponent(m.home+"|"+m.away); }
+function tcol(t,i){ return TEAMC[t]||FALL[(i||0)%FALL.length]; }
 var tip=document.getElementById("tip");
-function showTip(e,html){ tip.innerHTML=html; tip.style.display="block"; var x=e.clientX+14, y=e.clientY+14; if(x+270>innerWidth) x=e.clientX-274; tip.style.left=x+"px"; tip.style.top=y+"px"; }
+function showTip(e,h){ tip.innerHTML=h; tip.style.display="block"; var x=e.clientX+16,y=e.clientY+16; if(x+290>innerWidth)x=e.clientX-296; if(y+120>innerHeight)y=e.clientY-110; tip.style.left=x+"px"; tip.style.top=y+"px"; }
 function hideTip(){ tip.style.display="none"; }
+document.addEventListener("mousemove",function(e){ var c=e.target.closest&&e.target.closest("[data-tip]"); if(c) showTip(e,c.getAttribute("data-tip")); else hideTip(); });
+
+// ───── 滚动出现 + 数字滚动 ─────
+var io=new IntersectionObserver(function(es){ es.forEach(function(en){ if(!en.isIntersecting) return; en.target.classList.add("in"); io.unobserve(en.target);
+  en.target.querySelectorAll("[data-count]").forEach(countUp); if(en.target.hasAttribute("data-count")) countUp(en.target);
+  en.target.querySelectorAll(".hbar i[data-w]").forEach(function(i){ i.style.width=i.dataset.w; }); }); },{threshold:.15});
+function observe(){ document.querySelectorAll(".reveal:not(.in),[data-count]:not(.done)").forEach(function(el){ io.observe(el); }); }
+function countUp(el){ if(el.classList.contains("done")) return; el.classList.add("done");
+  var to=+el.dataset.count, dec=+(el.dataset.dec||0), pre=el.dataset.pre||"", suf=el.dataset.suf||"", fmt=el.dataset.fmt, t0=performance.now(), D=1400;
+  function f(t){ var p=Math.min(1,(t-t0)/D), e=1-Math.pow(1-p,3), v=to*e;
+    var s= fmt==="k"? Math.round(v).toLocaleString("en-US") : v.toFixed(dec);
+    el.innerHTML=pre+s+suf; if(p<1) requestAnimationFrame(f); }
+  requestAnimationFrame(f); }
+function cnt(v,dec,suf,pre,fmt){ return '<span data-count="'+v+'" data-dec="'+(dec||0)+'" data-suf="'+(suf||"").replace(/"/g,"&quot;")+'" data-pre="'+(pre||"")+'"'+(fmt?' data-fmt="'+fmt+'"':"")+'>'+(pre||"")+"0"+(suf||"")+'</span>'; }
 
 function statics(){
   document.documentElement.lang=LANG==="zh"?"zh":"en";
-  document.querySelectorAll("[data-i]").forEach(function(el){ var v=L(el.dataset.i); if(typeof v==="string") el.textContent=v; });
+  document.querySelectorAll("[data-i]").forEach(function(el){ var v=L(el.dataset.i); if(typeof v==="string") el.innerHTML=v; });
   document.querySelectorAll("[data-lang]").forEach(function(b){ b.classList.toggle("on",b.dataset.lang===LANG); });
-  document.title=L("title")+" | pm-watcher";
+  document.getElementById("heroTitle").innerHTML=L("title");
+  document.title=(LANG==="zh"?"2026 世界杯 · 全程数据复盘":"2026 World Cup · The Full Data Recap")+" | pm-watcher";
+  var nav=[["s-race","n_race"],["s-nums","n_nums"],["s-upset","n_upset"],["s-swing","n_swing"],["s-acc","n_acc"],["s-team","n_team"],["s-plat","n_plat"],["s-game","n_game"],["s-aud","n_aud"]];
+  document.getElementById("navlinks").innerHTML=nav.map(function(n){ return '<a href="#'+n[0]+'" data-sec="'+n[0]+'">'+L(n[1])+'</a>'; }).join("");
+  document.querySelector('#raceView [data-v=bar]').textContent=L("v_bar"); document.querySelector('#raceView [data-v=line]').textContent=L("v_line");
 }
 
+// ───── 开场 ─────
 function hero(){
-  var o=A.overview;
-  var c=function(l,v,s,acc){ return '<div class="mc" style="--accent:'+(acc||"#1d9e75")+'"><div class="l">'+l+'</div><div class="v">'+v+'</div>'+(s?'<div class="s">'+s+'</div>':"")+'</div>'; };
-  document.getElementById("hero").innerHTML=
-    c(L("c_champ"), tm(o.champion), "🏆", "#c2a23a")+
-    c(L("c_final"), '<span class="num">'+o.final.sa+"–"+o.final.sb+"</span>", nm(o.final.home)+" vs "+nm(o.final.away)+" · "+fmtD(o.final.kickoff), "#2c2c2a")+
-    c(L("c_matches"), o.matches, stg("group")+" "+o.group_matches+" · KO "+o.ko_matches, "#2563ab")+
-    c(L("c_goals"), o.goals, o.gpm+" "+L("gpm"), "#d85a30")+
-    c(L("c_changes"), LANG==="zh"? (o.snap_rows/10000).toFixed(1)+" 万" : Math.round(o.snap_rows/1000)+"k", L("c_plat")+" "+o.platforms, "#9a6bd6")+
-    c(L("c_views"), o.visits.toLocaleString("en-US"), o.peak_day? L("peak")+" "+o.peak_day[0].slice(5)+" · "+o.peak_day[1] : "", "#1d9e75");
+  var o=A.overview, R=A.race, T=R.t;
+  var champSer=R.series[R.champion]||[], preFinal=null;
+  for(var i=T.length-1;i>=0;i--){ if(T[i]<o.final.kickoff && champSer[i]!=null){ preFinal=champSer[i]; break; } }
+  var st=R.start_top.filter(function(x){return x.team===R.champion;})[0];
+  document.getElementById("champ").innerHTML='<div class="trophy">🏆</div><div><div class="who">'+fl(R.champion,"")+nm(R.champion)+'</div><div class="path">'+L("champ_path")(R.champ_start_rank,st?st.p.toFixed(1):"—",preFinal!=null?preFinal.toFixed(0):"—")+' · '+stg("FIN")+' '+o.final.sa+'–'+o.final.sb+' '+nm(o.final.away)+'</div></div>';
+  document.getElementById("stats").innerHTML=[[o.matches,0,"",L("s_matches")],[o.goals,0,"",L("s_goals")],[o.snap_rows,0,"",L("s_changes"),"k"],[o.platforms,0,"",L("s_plat")],[o.visits,0,"",L("s_views"),"k"]]
+    .map(function(s){ return '<div class="stat"><div class="v num">'+cnt(s[0],s[1],s[2],"",s[4])+'</div><div class="l">'+s[3]+'</div></div>'; }).join("");
+  // 背景：整届夺冠概率走势（淡）
+  var svg=document.getElementById("heroBg"), W=1200, H=700; svg.setAttribute("viewBox","0 0 "+W+" "+H);
+  var t0=T[0], t1=T[T.length-1], s="";
+  Object.keys(R.series).forEach(function(tm_,k){ var p="",on=false; R.series[tm_].forEach(function(v,i){ if(v==null){on=false;return;} var x=(T[i]-t0)/(t1-t0)*W, y=H-40-v/100*(H-120); p+=(on?"L":"M")+x.toFixed(1)+","+y.toFixed(1); on=true; });
+    var c=tcol(tm_,k), champ=tm_===R.champion; s+='<path d="'+p+'" fill="none" stroke="'+c+'" stroke-width="'+(champ?3:1.4)+'" opacity="'+(champ?.9:.35)+'" stroke-dasharray="4000" stroke-dashoffset="4000"><animate attributeName="stroke-dashoffset" from="4000" to="0" dur="'+(champ?3.2:2.4)+'s" begin="'+(k*0.08)+'s" fill="freeze"/></path>'; });
+  svg.innerHTML=s;
 }
 
-function insights(){
-  var o=A.overview, r=A.race, a=A.accuracy, b=a.brier.filter(function(x){return x.p!=="consensus";});
-  var best=b[0], worst=b[b.length-1], up=A.upsets[0], hit=a.hit;
-  var champSer=r.series[r.champion]||[], preFinal=null;
-  for(var i=r.t.length-1;i>=0;i--){ if(r.t[i]<o.final.kickoff && champSer[i]!=null){ preFinal=champSer[i]; break; } }
-  var start=r.start_top.filter(function(x){return x.team===r.champion;})[0];
-  var over=A.teams.slice(0,3), under=A.teams.slice(-2).reverse();
-  var sw=A.swings[0];
-  var zh=LANG==="zh", items;
-  if(zh) items=[
-    ["冠军之路", nm(r.champion)+"开赛初只排市场第 "+r.champ_start_rank+"（"+pct(start&&start.p)+"），决赛开球前升到 "+pct(preFinal)+"，最终 "+o.final.sa+"–"+o.final.sb+" 击败"+nm(o.final.away)+"夺冠。"],
-    ["市场准不准","共识热门在 "+hit.all.n+" 场比赛里猜中 "+hit.all.hit+" 场（"+hit.all.rate+"%）。32强最准（"+hit.R32.rate+"%），1/4 决赛之后只剩 "+hit["QF+"].rate+"%——越到后面越难猜。"],
-    ["系统性偏差","市场一直高估平局：平均隐含平局概率 "+a.draw_implied+"%，实际只有 "+a.draw_actual+"% 的比赛打平。"],
-    ["谁最准",best.p+" 的校准最好（Brier "+best.all.toFixed(3)+"），"+worst.p+" 最差（"+worst.all.toFixed(3)+"）。五个平台之间的差距其实很小。"],
-    ["最大冷门",nm(up.home)+" "+up.sa+"–"+up.sb+" "+nm(up.away)+"（"+stg(up.grp)+"）：这个结果赛前共识只给了 "+up.p_actual+"%。"],
-    ["被看走眼", over.map(function(t){return nm(t.team);}).join("、")+" 的实际拿分率比市场预期高出 "+over[0].gap+" 个百分点以上；"+under.map(function(t){return nm(t.team);}).join("、")+" 则被明显高估。"],
-    ["最关键的一场", nm(sw.home)+" "+sw.sa+"–"+sw.sb+" "+nm(sw.away)+"（"+stg(sw.grp)+"）让"+nm(sw.team)+"的夺冠概率从 "+sw.before+"% 变成 "+sw.after+"%。"]
-  ];
-  else items=[
-    ["The title race", r.champion+" was only #"+r.champ_start_rank+" early on ("+pct(start&&start.p)+"), rose to "+pct(preFinal)+" by the final's kickoff, then beat "+o.final.away+" "+o.final.sa+"–"+o.final.sb+"."],
-    ["Were markets right?","The consensus favorite won "+hit.all.hit+" of "+hit.all.n+" matches ("+hit.all.rate+"%). Best in the R32 ("+hit.R32.rate+"%); from the quarter-finals on, only "+hit["QF+"].rate+"%."],
-    ["A systematic bias","Markets kept overpricing the draw: "+a.draw_implied+"% implied on average, but only "+a.draw_actual+"% of matches were drawn."],
-    ["Best calibrated",best.p+" had the best Brier ("+best.all.toFixed(3)+"), "+worst.p+" the worst ("+worst.all.toFixed(3)+") — the spread between platforms is small."],
-    ["Biggest upset",up.home+" "+up.sa+"–"+up.sb+" "+up.away+" ("+stg(up.grp)+"): the consensus gave this result just "+up.p_actual+"%."],
-    ["Misread",over.map(function(t){return t.team;}).join(", ")+" earned points at a rate "+over[0].gap+"+ pts above market expectations; "+under.map(function(t){return t.team;}).join(", ")+" were clearly overrated."],
-    ["The pivotal match", sw.home+" "+sw.sa+"–"+sw.sb+" "+sw.away+" ("+stg(sw.grp)+") moved "+sw.team+"'s title odds from "+sw.before+"% to "+sw.after+"%."]
-  ];
-  document.getElementById("insights").innerHTML=items.map(function(x){ return '<div class="in"><b class="k">'+x[0]+'</b><div class="t">'+x[1]+'</div></div>'; }).join("");
+// ───── 冠军争夺战：动态条形图 + 折线 ─────
+var RB={f:0,playing:false,timer:null,speed:1,rows:{},started:false,view:"bar"};
+function raceVal(team,f){ var R=A.race, ser=R.bar[team]||R.series[team]; if(!ser) return null; var i=Math.floor(f), j=Math.min(i+1,ser.length-1), a=ser[i], b=ser[j], w=f-i;
+  if(a==null&&b==null) return null; if(a==null) return b; if(b==null) return a; return a+(b-a)*w; }
+function raceTime(f){ var T=A.race.t, i=Math.floor(f), j=Math.min(i+1,T.length-1); return T[i]+(T[j]-T[i])*(f-i); }
+function stageAt(t){ var ko=A.knockout, firstOf=function(r){ var x=ko.filter(function(k){return k.grp===r;}).map(function(k){return k.kickoff;}); return x.length?Math.min.apply(null,x):Infinity; };
+  var o=A.overview; if(t>=o.final.kickoff+8100) return LANG==="zh"?"赛事结束":"Full time"; var st="group";
+  ["R32","R16","QF","SF","FIN"].forEach(function(r){ if(t>=firstOf(r)-12*3600) st=r; }); return stg(st); }
+function raceEvents(){ var ev=A.knockout.map(function(k){ return {t:k.kickoff+8100, g:k.grp, h:k.home, a:k.away, sa:k.sa, sb:k.sb}; });
+  A.upsets.slice(0,4).forEach(function(u){ if(!ev.some(function(e){return e.h===u.home&&e.a===u.away;})) ev.push({t:u.kickoff+8100,g:u.grp,h:u.home,a:u.away,sa:u.sa,sb:u.sb,up:1}); });
+  return ev.sort(function(a,b){return a.t-b.t;}); }
+var EVENTS=[];
+function raceBuild(){
+  var R=A.race, box=document.getElementById("bars"); box.innerHTML=""; RB.rows={};
+  Object.keys(R.bar).forEach(function(t,k){ var el=document.createElement("div"); el.className="bar"; el.style.opacity=0;
+    el.innerHTML='<div class="rk num"></div><div class="nm">'+fl(t,"")+'<span>'+nm(t)+'</span></div><div class="track"><div class="fill" style="background:'+tcol(t,k)+'"></div><div class="val num"></div></div>';
+    box.appendChild(el); RB.rows[t]=el; });
+  var sc=document.getElementById("raceScrub"); sc.max=R.t.length-1;
+  EVENTS=raceEvents();
 }
-
-// ─── 冠军走势折线图 ───
-var RACE_OFF={};
-function race(){
+function raceRender(){
+  var R=A.race, f=RB.f, t=raceTime(f), elim=R.elim||{}, items=[], elimRound={};
+  A.knockout.forEach(function(k){ [k.home,k.away].forEach(function(tm_){ if(elim[tm_] && Math.abs(elim[tm_]-(k.kickoff+8100))<60) elimRound[tm_]=stg(k.grp==="3P"?"SF":k.grp); }); });
+  Object.keys(elim).forEach(function(tm_){ if(!elimRound[tm_]) elimRound[tm_]=stg("group"); });
+  Object.keys(R.bar).forEach(function(tm_){ var v=raceVal(tm_,f); var out=elim[tm_]&&t>=elim[tm_]; if(v==null&&!out) return; items.push({t:tm_,v:out?0:(v||0),out:out,outAge:out?t-elim[tm_]:0}); });
+  items.sort(function(a,b){ return b.v-a.v; });
+  // 还在争冠的按概率排在前面；已出局的按出局先后（最近出局的在前）灰色排在后面，让后期也能看到「谁倒在了哪一轮」
+  var live=items.filter(function(x){return !x.out;}), outs=items.filter(function(x){return x.out;}).sort(function(a,b){return a.outAge-b.outAge;});
+  var show=live.slice(0,10); if(show.length<10) show=show.concat(outs.slice(0,10-show.length));
+  var mx=Math.max(12,(show[0]&&show[0].v||0)*1.12), rowH=46;
+  var vis={}; show.forEach(function(x,i){ vis[x.t]=i; });
+  Object.keys(RB.rows).forEach(function(tm_){ var el=RB.rows[tm_], i=vis[tm_];
+    if(i==null){ el.style.opacity=0; el.style.transform="translateY("+(10*rowH)+"px)"; return; }
+    var x=show[i]; el.style.opacity=1; el.style.transform="translateY("+(i*rowH)+"px)"; el.classList.toggle("out",x.out);
+    el.querySelector(".rk").textContent=x.out?"—":(i+1);
+    var w=Math.max(0.4,x.v/mx*100); var fill=el.querySelector(".fill"); fill.style.width=w+"%";
+    var val=el.querySelector(".val"); val.innerHTML=x.out?'<span class="tag">'+L("out")+(elimRound[x.t]?" · "+elimRound[x.t]:"")+'</span>':x.v.toFixed(1)+"%"; val.style.left="calc("+w+"% + 8px)"; });
+  document.getElementById("raceDate").textContent=fmtD(t,true);
+  document.getElementById("raceStage").textContent=stageAt(t);
+  document.getElementById("raceScrub").value=f;
+  document.getElementById("raceOpen").href=replayAt(Math.round(t));
+  var tk=EVENTS.filter(function(e){return e.t<=t && e.t>t-60*3600;}).slice(-3).reverse();
+  var key=tk.map(function(e){return e.t;}).join(",");
+  var box=document.getElementById("ticker"); if(box.dataset.key!==key){ box.dataset.key=key;
+    box.innerHTML=tk.map(function(e){ return '<span class="ev"><b>'+stg(e.g)+'</b>'+fl(e.h)+" "+nm(e.h)+' <span class="num">'+e.sa+"–"+e.sb+'</span> '+nm(e.a)+" "+fl(e.a)+'</span>'; }).join(""); }
+  if(RB.view==="line") raceLineCursor(t);
+}
+function racePlay(){ var R=A.race; if(RB.f>=R.t.length-1.001) RB.f=0; RB.playing=true; setPlayLabel();
+  var last=performance.now();
+  (function step(now){ if(!RB.playing) return; var dt=(now-last)/1000; last=now; RB.f=Math.min(R.t.length-1,RB.f+dt*6.5*RB.speed); raceRender();
+    if(RB.f>=R.t.length-1){ RB.playing=false; setPlayLabel(); return; } requestAnimationFrame(step); })(last); }
+function racePause(){ RB.playing=false; setPlayLabel(); }
+function setPlayLabel(){ var b=document.getElementById("racePlay"); b.textContent=RB.playing?L("pause"):(RB.f>=A.race.t.length-1.001?L("replay_again"):L("play")); }
+// 折线视图
+var LINE_OFF={};
+function raceLine(){
   var R=A.race, T=R.t, teams=Object.keys(R.series);
   teams.sort(function(a,b){ return Math.max.apply(null,R.series[b].map(function(v){return v||0;}))-Math.max.apply(null,R.series[a].map(function(v){return v||0;})); });
-  var col={}; var fi=0; teams.forEach(function(t){ col[t]=TEAMC[t]||FALLBACK[fi++%FALLBACK.length]; });
-  var el=document.getElementById("race"), W=Math.max(320,el.clientWidth||900), H=Math.round(Math.min(420,Math.max(260,W*.42)));
-  var pl=38,pr=40,pt=16,pb=26, t0=T[0], t1=T[T.length-1];
-  var X=function(t){return pl+(t-t0)/(t1-t0)*(W-pl-pr);}, Y=function(v){return pt+(1-v/100)*(H-pt-pb);};
-  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;cursor:crosshair" id="raceSvg">';
-  [0,25,50,75,100].forEach(function(v){ s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="rgba(0,0,0,.07)"/><text x="'+(pl-6)+'" y="'+(Y(v)+4)+'" font-size="10" text-anchor="end" fill="#9a988f">'+v+'%</text>'; });
-  // 阶段分隔
-  var firstOf=function(r){ var x=A.knockout.filter(function(k){return k.grp===r;}).map(function(k){return k.kickoff;}); return x.length?Math.min.apply(null,x):null; };
-  ["R32","R16","QF","SF","FIN"].forEach(function(r){ var t=firstOf(r); if(!t||t<t0) return; var x=X(t);
-    s+='<line x1="'+x+'" x2="'+x+'" y1="'+pt+'" y2="'+(H-pb)+'" stroke="rgba(0,0,0,.12)" stroke-dasharray="3,4"/><text x="'+(x+3)+'" y="'+(pt+9)+'" font-size="10" fill="#9a988f">'+stg(r)+'</text>'; });
-  // x 轴日期
-  var day=86400, d0=Math.ceil(t0/day)*day;
-  for(var d=d0; d<=t1; d+=day*4) s+='<text x="'+X(d)+'" y="'+(H-8)+'" font-size="10" text-anchor="middle" fill="#9a988f">'+fmtD(d)+'</text>';
-  teams.slice().reverse().forEach(function(t){
-    if(RACE_OFF[t]) return;
-    var p="", on=false, ser=R.series[t];
-    for(var i=0;i<T.length;i++){ var v=ser[i]; if(v==null){ on=false; continue; } p+=(on?"L":"M")+X(T[i]).toFixed(1)+","+Y(v).toFixed(1); on=true; }
-    s+='<path d="'+p+'" fill="none" stroke="'+col[t]+'" stroke-width="'+(t===R.champion?2.6:1.6)+'" stroke-linejoin="round" opacity="'+(t===R.champion?1:.85)+'"/>';
-  });
-  s+='<line id="raceCur" x1="0" x2="0" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#2c2c2a" stroke-width=".8" style="display:none"/></svg>';
-  el.innerHTML=s;
-  document.getElementById("raceLg").innerHTML=teams.map(function(t){ return '<span class="lg'+(RACE_OFF[t]?" off":"")+'" data-t="'+t+'"><i style="background:'+col[t]+'"></i>'+nm(t)+'</span>'; }).join("");
-  var svg=document.getElementById("raceSvg"), cur=document.getElementById("raceCur");
-  function at(e){ var r=svg.getBoundingClientRect(), x=(e.clientX-r.left)*(W/r.width); var t=t0+(x-pl)/(W-pl-pr)*(t1-t0);
-    var i=0, best=Infinity; for(var k=0;k<T.length;k++){ var d=Math.abs(T[k]-t); if(d<best){best=d;i=k;} } return i; }   // 网格末尾不等距，取最近点
-  svg.addEventListener("mousemove",function(e){ var i=at(e); cur.setAttribute("x1",X(T[i])); cur.setAttribute("x2",X(T[i])); cur.style.display="";
-    var rows=teams.filter(function(t){return !RACE_OFF[t] && R.series[t][i]!=null;}).sort(function(a,b){return R.series[b][i]-R.series[a][i];}).slice(0,8);
-    showTip(e,'<b>'+fmtD(T[i],true)+'</b><br>'+rows.map(function(t){return '<span style="color:'+col[t]+'">●</span> '+nm(t)+' '+R.series[t][i].toFixed(1)+'%';}).join("<br>")+'<br><span style="opacity:.7">'+(LANG==="zh"?"点击 → 回放这一刻":"click → replay this moment")+'</span>'); });
-  svg.addEventListener("mouseleave",function(){ cur.style.display="none"; hideTip(); });
-  svg.addEventListener("click",function(e){ location.href=replay(T[at(e)]); });
+  var el=document.getElementById("raceLine"), W=Math.max(320,el.clientWidth||900), H=Math.round(Math.min(440,Math.max(280,W*.44)));
+  var pl=40,pr=44,pt=16,pb=26,t0=T[0],t1=T[T.length-1], X=function(t){return pl+(t-t0)/(t1-t0)*(W-pl-pr);}, Y=function(v){return pt+(1-v/100)*(H-pt-pb);};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" id="raceSvg" style="display:block;cursor:crosshair">';
+  [0,25,50,75,100].forEach(function(v){ s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="rgba(255,255,255,.06)"/><text x="'+(pl-6)+'" y="'+(Y(v)+4)+'" font-size="10" text-anchor="end" fill="#6c6a64">'+v+'%</text>'; });
+  var day=86400; for(var d=Math.ceil(t0/day)*day; d<=t1; d+=day*4) s+='<text x="'+X(d)+'" y="'+(H-8)+'" font-size="10" text-anchor="middle" fill="#6c6a64">'+fmtD(d)+'</text>';
+  teams.slice().reverse().forEach(function(t,k){ if(LINE_OFF[t]) return; var p="",on=false; R.series[t].forEach(function(v,i){ if(v==null){on=false;return;} p+=(on?"L":"M")+X(T[i]).toFixed(1)+","+Y(v).toFixed(1); on=true; });
+    s+='<path d="'+p+'" fill="none" stroke="'+tcol(t,k)+'" stroke-width="'+(t===R.champion?3:1.6)+'" stroke-linejoin="round"/>'; });
+  s+='<line id="raceCur" x1="0" x2="0" y1="'+pt+'" y2="'+(H-pb)+'" stroke="#f3f1ea" stroke-width="1" opacity=".7"/></svg>';
+  el.innerHTML=s; el.dataset.w=W; el.dataset.pl=pl; el.dataset.pr=pr;
+  document.getElementById("raceLg").innerHTML=teams.map(function(t,k){ return '<span class="lg'+(LINE_OFF[t]?" off":"")+'" data-t="'+t+'"><i style="background:'+tcol(t,k)+'"></i>'+nm(t)+'</span>'; }).join("");
+  var svg=document.getElementById("raceSvg");
+  function fAt(e){ var r=svg.getBoundingClientRect(), x=(e.clientX-r.left)*(W/r.width), t=t0+(x-pl)/(W-pl-pr)*(t1-t0); var best=0,bd=Infinity; T.forEach(function(tt,i){ var dd=Math.abs(tt-t); if(dd<bd){bd=dd;best=i;} }); return best; }
+  svg.addEventListener("mousemove",function(e){ var i=fAt(e); racePause(); RB.f=i; raceRender();
+    var rows=teams.filter(function(t){return !LINE_OFF[t]&&R.series[t][i]!=null;}).sort(function(a,b){return R.series[b][i]-R.series[a][i];}).slice(0,8);
+    showTip(e,'<b>'+fmtD(T[i],true)+'</b><br>'+rows.map(function(t){return nm(t)+" "+R.series[t][i].toFixed(1)+"%";}).join("<br>")); });
+  svg.addEventListener("click",function(e){ location.href=replayAt(T[fAt(e)]); });
+  raceLineCursor(raceTime(RB.f));
 }
-document.addEventListener("click",function(e){ var g=e.target.closest("#raceLg .lg"); if(g){ RACE_OFF[g.dataset.t]=!RACE_OFF[g.dataset.t]; race(); } });
-
-function startTop(){
-  var R=A.race, place={}; var o=A.overview; [o.champion,o.runner,o.third,o.fourth].forEach(function(t,i){ place[t]=L("place")[i]; });
-  var reach={}; A.teams.forEach(function(t){ reach[t.team]=t.reached; });
-  document.getElementById("startTop").innerHTML='<table><tbody>'+R.start_top.map(function(x,i){
-    var fin=place[x.team] || stg(reach[x.team]||"group");
-    return '<tr><td class="num" style="color:#9a988f;width:22px">'+(i+1)+'</td><td>'+tm(x.team)+'</td><td class="r num">'+x.p.toFixed(1)+'%</td><td class="r" style="color:'+(place[x.team]?"#c2a23a":"#9a988f")+'">'+fin+'</td></tr>'; }).join("")+'</tbody></table>';
-  var o2=A.overview, med=["🥇","🥈","🥉","4"];
-  document.getElementById("podium").innerHTML='<div class="podium">'+[o2.champion,o2.runner,o2.third,o2.fourth].map(function(t,i){ return '<div class="pd"><div class="n">'+med[i]+" "+L("place")[i]+'</div><div class="tm">'+tm(t)+'</div></div>'; }).join("")+'</div>'+
-    '<div class="note" style="margin-top:10px">'+L("c_final")+": "+score(o2.final)+(o2.third_match? "<br>"+stg("3P")+": "+score(o2.third_match):"")+'</div>';
+function raceLineCursor(t){ var el=document.getElementById("raceLine"), c=document.getElementById("raceCur"); if(!c) return; var R=A.race,T=R.t, W=+el.dataset.w, pl=+el.dataset.pl, pr=+el.dataset.pr, x=pl+(t-T[0])/(T[T.length-1]-T[0])*(W-pl-pr); c.setAttribute("x1",x); c.setAttribute("x2",x); }
+function raceInit(){
+  raceBuild(); RB.f=0; raceRender(); setPlayLabel();
+  var sp=document.getElementById("raceSpeed"); sp.innerHTML=[[0.5,"0.5×"],[1,"1×"],[2,"2×"],[4,"4×"]].map(function(s){ return '<option value="'+s[0]+'"'+(s[0]===RB.speed?" selected":"")+'>'+s[1]+'</option>'; }).join("");
+  document.getElementById("raceOpen").textContent=L("openBoard");
+  if(RB.view==="line") raceLine();
 }
+document.addEventListener("click",function(e){
+  if(e.target.id==="racePlay"){ RB.started=true; RB.playing?racePause():racePlay(); }
+  var v=e.target.closest("#raceView button"); if(v){ RB.view=v.dataset.v; document.querySelectorAll("#raceView button").forEach(function(b){b.classList.toggle("on",b===v);});
+    document.getElementById("raceBarWrap").style.display=RB.view==="bar"?"":"none"; document.getElementById("raceLineWrap").style.display=RB.view==="line"?"":"none"; if(RB.view==="line") raceLine(); }
+  var g=e.target.closest("#raceLg .lg"); if(g){ LINE_OFF[g.dataset.t]=!LINE_OFF[g.dataset.t]; raceLine(); }
+  var r=e.target.closest("#relLg .lg"); if(r){ REL_OFF[r.dataset.k]=!REL_OFF[r.dataset.k]; rel(); }
+});
+document.addEventListener("input",function(e){ if(e.target.id==="raceScrub"){ racePause(); RB.f=+e.target.value; raceRender(); } if(e.target.id==="raceSpeed"){ RB.speed=+e.target.value; } });
+document.addEventListener("change",function(e){ if(e.target.id==="raceSpeed") RB.speed=+e.target.value; });
+new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting && !RB.started && A){ RB.started=true; setTimeout(racePlay,500); } }); },{threshold:.45}).observe(document.getElementById("s-race"));
 
-function swings(){
-  var rows=A.swings.slice(0,12);
-  document.getElementById("swings").innerHTML='<table><thead><tr><th>'+L("th_team")+'</th><th>'+L("th_match")+'</th><th>'+L("th_stage")+'</th><th class="r">'+L("th_before")+'</th><th class="r">'+L("th_after")+'</th><th class="r">'+L("th_delta")+'</th><th></th></tr></thead><tbody>'+
-    rows.map(function(s){ var c=s.delta>0?"up":"down";
-      return '<tr><td>'+tm(s.team)+'</td><td>'+score(s)+'</td><td>'+stg(s.grp)+'</td><td class="r num">'+s.before.toFixed(1)+'%</td><td class="r num">'+s.after.toFixed(1)+'%</td><td class="r num '+c+'"><b>'+(s.delta>0?"+":"")+s.delta.toFixed(1)+'pt</b></td><td class="r"><a class="go" href="'+replay(s.kickoff+8100+3600)+'">'+L("replay")+' →</a></td></tr>'; }).join("")+'</tbody></table>';
+// ───── 关键数字 ─────
+function bign(){
+  var a=A.accuracy, b=a.brier.filter(function(x){return x.p!=="consensus";}), up=A.upsets[0], sw=A.swings[0], mis=A.teams[0];
+  var cards=[
+    {v:cnt(a.hit.all.rate,1,"<small>%</small>"),k:L("bn_hit"),d:L("bn_hit_d")(a.hit),c:"var(--teal)",g:"rgba(23,209,127,.14)"},
+    {v:cnt(up.p_actual,1,"<small>%</small>"),k:L("bn_up"),d:L("bn_up_d")(up,nm),c:"var(--hot)",g:"rgba(255,59,82,.16)"},
+    {v:cnt(a.draw_implied,1,"")+'<small>% → '+a.draw_actual+'%</small>',k:L("bn_draw"),d:L("bn_draw_d")(a),c:"var(--gold)",g:"rgba(245,196,81,.14)"},
+    {v:cnt(b[0].all,3,""),k:L("bn_best")+" · "+b[0].p,d:L("bn_best_d")(b[0],b[b.length-1]),c:PCOLOR[b[0].p],g:"rgba(245,196,81,.10)"},
+    {v:cnt(Math.abs(sw.delta),1,"<small>pt</small>",sw.delta>0?"+":"−"),k:L("bn_sw"),d:L("bn_sw_d")(sw,nm),c:"var(--ink)",g:"rgba(255,255,255,.08)"},
+    {v:cnt(mis.gap,0,"<small>pt</small>","+"),k:L("bn_mis")+" · "+nm(mis.team),d:L("bn_mis_d")(mis,nm),c:"var(--teal)",g:"rgba(23,209,127,.12)"}];
+  document.getElementById("bign").innerHTML=cards.map(function(c){ return '<div class="bn reveal" style="--c:'+c.c+';--glow:'+c.g+'"><div class="v num">'+c.v+'</div><div class="k">'+c.k+'</div><div class="d">'+c.d+'</div></div>'; }).join("");
 }
 
-function hitStage(){
-  var h=A.accuracy.hit, keys=["group","R32","R16","QF+","all"];
-  document.getElementById("hitStage").innerHTML=keys.map(function(k){ var x=h[k]; if(!x||!x.n) return "";
-    var lab=k==="all"?(LANG==="zh"?"全部":"All"):stg(k);
-    return '<div style="display:flex;align-items:center;gap:10px;margin:9px 0"><div style="width:96px;font-size:13px;'+(k==="all"?"font-weight:650":"")+'">'+lab+'</div><div class="bar" style="flex:1"><i style="width:'+x.rate+'%;background:'+(k==="all"?"#2c2c2a":"#1d9e75")+'"></i></div><div class="num" style="width:110px;text-align:right;font-size:13px"><b>'+x.rate.toFixed(1)+'%</b> <span style="color:#9a988f">'+x.hit+"/"+x.n+'</span></div></div>'; }).join("");
+// ───── 冷门卡 ─────
+function gauge(p){ var r=62, cx=80, cy=76, a=Math.PI*(1-p/100), x=cx+r*Math.cos(a), y=cy-r*Math.sin(a);
+  return '<svg class="gauge" width="160" height="88" viewBox="0 0 160 88"><path d="M18,76 A62,62 0 0 1 142,76" fill="none" stroke="rgba(255,255,255,.09)" stroke-width="10" stroke-linecap="round"/>'+
+    '<path d="M18,76 A62,62 0 0 1 '+x.toFixed(1)+','+y.toFixed(1)+'" fill="none" stroke="#ff3b52" stroke-width="10" stroke-linecap="round"/></svg>'; }
+function ucards(){
+  document.getElementById("ucards").innerHTML=A.upsets.slice(0,10).map(function(m,i){
+    var favName=m.fav==="D"?L("draw"):nm(m.fav==="A"?m.home:m.away);
+    return '<div class="uc"><div class="rank num">#'+(i+1)+'</div><div class="meta">'+stg(m.grp)+' · '+fmtD(m.kickoff)+'</div>'+
+      '<div class="teams"><div class="t">'+fl(m.home,"")+nm(m.home)+'</div><div class="sc num">'+m.sa+'–'+m.sb+'</div><div class="t">'+fl(m.away,"")+nm(m.away)+'</div></div>'+
+      gauge(m.p_actual)+'<div class="pa num">'+m.p_actual.toFixed(1)+'%</div><div class="pl">'+L("p_actual")+'</div>'+
+      '<div class="fav">'+L("fav")+'：<b>'+favName+'</b> '+m.p_fav.toFixed(0)+'%</div><div class="go"><a class="btn" href="'+replayMatch(m)+'">'+L("toCard")+'</a></div></div>'; }).join("");
 }
-function draws(){
-  var a=A.accuracy;
-  var bar=function(lab,v,c){ return '<div style="display:flex;align-items:center;gap:10px;margin:14px 0"><div style="width:96px;font-size:13px">'+lab+'</div><div class="bar" style="flex:1;height:14px"><i style="width:'+(v/40*100)+'%;background:'+c+'"></i></div><div class="num" style="width:60px;text-align:right"><b>'+v.toFixed(1)+'%</b></div></div>'; };
-  document.getElementById("draws").innerHTML=bar(L("implied"),a.draw_implied,"#c2a23a")+bar(L("actual"),a.draw_actual,"#2c2c2a")+
-    '<div class="note">'+(LANG==="zh"?"平均每场比赛，市场给「平局」的概率 vs 实际打平的比例（同一批有定价的比赛）。":"Average draw probability per match vs. the share of those matches that were actually drawn.")+'</div>';
-}
-function brier(){
-  var rows=A.accuracy.brier, mx=0.667;
-  document.getElementById("brier").innerHTML='<table><thead><tr><th>#</th><th>'+L("th_plat")+'</th><th class="r">'+L("th_all")+'</th><th style="width:34%"></th><th class="r">'+L("th_grp")+'</th><th class="r">'+L("th_ko")+'</th><th class="r">'+L("th_n")+'</th></tr></thead><tbody>'+
-    rows.map(function(b,i){ var isC=b.p==="consensus"; var w=Math.max(3,(1-b.all/mx)*100*2.4);
-      return '<tr'+(isC?' style="background:rgba(0,0,0,.025)"':"")+'><td class="num" style="color:#9a988f">'+(isC?"—":i+1)+'</td><td><span style="color:'+(PCOLOR[b.p]||"#888")+'">●</span> '+(isC?L("cons"):b.p)+'</td><td class="r num"><b>'+b.all.toFixed(3)+'</b></td><td><div class="bar"><i style="width:'+Math.min(100,w)+'%;background:'+(PCOLOR[b.p]||"#888")+'"></i></div></td><td class="r num">'+(b.group!=null?b.group.toFixed(3):"—")+'</td><td class="r num">'+(b.ko!=null?b.ko.toFixed(3):"—")+'</td><td class="r num" style="color:#9a988f">'+b.n+'</td></tr>'; }).join("")+
-    '<tr><td class="num" style="color:#9a988f">—</td><td><span style="color:#9a6bd6">●</span> manifold</td><td class="r" colspan="5" style="color:#9a988f">'+L("only_champ")+'</td></tr></tbody></table>'+
-    '<div class="note" style="margin-top:8px">'+(LANG==="zh"?"参考：完美 = 0.000 · 每档都猜 ⅓ ≈ 0.667。各平台覆盖的场次（n）不同，比较时请留意。":"Reference: perfect = 0.000 · always ⅓ ≈ 0.667. Platforms cover different numbers of matches (n).")+'</div>';
-}
-var REL_OFF={};
-function rel(){
-  var R=A.accuracy.reliability, keys=["consensus","polymarket","kalshi","42","predict"].filter(function(k){return R[k]&&R[k].length;});
-  var el=document.getElementById("rel"), W=Math.min(560,Math.max(300,el.clientWidth||520)), H=W*0.78, p=36;
-  var X=function(v){return p+v/100*(W-p-10);}, Y=function(v){return H-p+ -v/100*(H-p-10);};
-  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;max-width:560px">';
-  [0,25,50,75,100].forEach(function(v){ s+='<line x1="'+X(v)+'" x2="'+X(v)+'" y1="'+Y(0)+'" y2="'+Y(100)+'" stroke="rgba(0,0,0,.06)"/><line x1="'+X(0)+'" x2="'+X(100)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="rgba(0,0,0,.06)"/><text x="'+X(v)+'" y="'+(H-p+14)+'" font-size="10" text-anchor="middle" fill="#9a988f">'+v+'</text><text x="'+(p-6)+'" y="'+(Y(v)+4)+'" font-size="10" text-anchor="end" fill="#9a988f">'+v+'</text>'; });
-  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(100)+'" y2="'+Y(100)+'" stroke="#9a988f" stroke-dasharray="4,4"/>';
-  s+='<text x="'+((X(0)+X(100))/2)+'" y="'+(H-4)+'" font-size="10.5" text-anchor="middle" fill="#6b6a64">'+(LANG==="zh"?"市场隐含概率 (%)":"market-implied probability (%)")+'</text>';
-  s+='<text x="10" y="'+((Y(0)+Y(100))/2)+'" font-size="10.5" text-anchor="middle" fill="#6b6a64" transform="rotate(-90 10 '+((Y(0)+Y(100))/2)+')">'+(LANG==="zh"?"实际发生频率 (%)":"actual frequency (%)")+'</text>';
-  keys.forEach(function(k){ if(REL_OFF[k]) return; var pts=R[k], c=PCOLOR[k];
-    s+='<path d="'+pts.map(function(q,i){return (i?"L":"M")+X(q[0]).toFixed(1)+","+Y(q[1]).toFixed(1);}).join("")+'" fill="none" stroke="'+c+'" stroke-width="'+(k==="consensus"?2.2:1.2)+'" opacity="'+(k==="consensus"?1:.6)+'"/>';
-    pts.forEach(function(q){ s+='<circle cx="'+X(q[0]).toFixed(1)+'" cy="'+Y(q[1]).toFixed(1)+'" r="'+Math.min(9,2.5+Math.sqrt(q[2])/1.6).toFixed(1)+'" fill="'+c+'" fill-opacity="'+(k==="consensus"?.9:.55)+'" data-tip="'+(k==="consensus"?L("cons"):k)+' · '+q[0]+'% → '+q[1]+'% · n='+q[2]+'"/>'; });
-  });
+
+// ───── 转折点：斜线图 ─────
+function slope(){
+  var rows=A.swings.slice(0,10), el=document.getElementById("slope"), W=Math.max(320,el.clientWidth||900), rowH=40, H=rows.length*rowH+40;
+  var lx=Math.min(300,W*.34), rx=W-150, X=function(v){ return lx+v/100*(rx-lx); };
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
+  [0,25,50,75,100].forEach(function(v){ s+='<line x1="'+X(v)+'" x2="'+X(v)+'" y1="12" y2="'+(H-18)+'" stroke="rgba(255,255,255,.06)"/><text x="'+X(v)+'" y="'+(H-4)+'" font-size="10" text-anchor="middle" fill="#6c6a64">'+v+'%</text>'; });
+  rows.forEach(function(r,i){ var y=24+i*rowH, x1=X(r.before), x2=X(r.after), c=r.delta>0?"#17d17f":"#ff3b52";
+    var t=nm(r.home)+" "+r.sa+"–"+r.sb+" "+nm(r.away)+" · "+stg(r.grp)+"<br>"+nm(r.team)+": "+r.before+"% → "+r.after+"%";
+    s+='<a href="'+replayMatch(r)+'"><g data-tip="'+t.replace(/"/g,"&quot;")+'" style="cursor:pointer">'+
+      '<rect x="0" y="'+(y-16)+'" width="'+W+'" height="'+rowH+'" fill="transparent"/>'+
+      '<image href="'+flagSrc(r.team)+'" x="0" y="'+(y-9)+'" width="26" height="18"/>'+
+      '<text x="34" y="'+(y+4)+'" font-size="13" font-weight="650" fill="#f3f1ea">'+nm(r.team)+'</text>'+
+      '<text x="34" y="'+(y+18)+'" font-size="10.5" fill="#6c6a64">'+stg(r.grp)+' · '+nm(r.home)+' '+r.sa+'–'+r.sb+' '+nm(r.away)+'</text>'+
+      '<line x1="'+x1+'" x2="'+x2+'" y1="'+y+'" y2="'+y+'" stroke="'+c+'" stroke-width="3" stroke-linecap="round" opacity=".85"/>'+
+      '<circle cx="'+x1+'" cy="'+y+'" r="4.5" fill="#15171d" stroke="#9a978f" stroke-width="1.5"/><circle cx="'+x2+'" cy="'+y+'" r="6" fill="'+c+'"/>'+
+      '<text x="'+(rx+18)+'" y="'+(y+5)+'" font-size="15" font-weight="800" fill="'+c+'">'+(r.delta>0?"+":"")+r.delta.toFixed(1)+'pt</text></g></a>'; });
   el.innerHTML=s+'</svg>';
-  document.getElementById("relLg").innerHTML=keys.map(function(k){ return '<span class="lg'+(REL_OFF[k]?" off":"")+'" data-k="'+k+'"><i style="background:'+PCOLOR[k]+'"></i>'+(k==="consensus"?L("cons"):k)+'</span>'; }).join("");
-}
-document.addEventListener("click",function(e){ var g=e.target.closest("#relLg .lg"); if(g){ REL_OFF[g.dataset.k]=!REL_OFF[g.dataset.k]; rel(); } });
-document.addEventListener("mousemove",function(e){ var c=e.target.closest&&e.target.closest("[data-tip]"); if(c) showTip(e,c.getAttribute("data-tip")); else if(!e.target.closest("#raceSvg")) hideTip(); });
-
-function upsets(){
-  var head='<thead><tr><th>'+L("th_match")+'</th><th>'+L("th_stage")+'</th><th>'+L("th_fav")+'</th><th class="r">'+L("th_pact")+'</th><th></th></tr></thead>';
-  var favName=function(m){ return m.fav==="D"? L("draw") : nm(m.fav==="A"?m.home:m.away); };
-  var row=function(m){ return '<tr><td>'+score(m)+'</td><td>'+stg(m.grp)+'</td><td>'+favName(m)+' <span class="num" style="color:#9a988f">'+m.p_fav.toFixed(0)+'%</span></td><td class="r num"><span class="pill" style="background:'+(m.hit?"#e3f2ea":"#fbe7df")+';color:'+(m.hit?"#10593f":"#8a2e12")+'">'+m.p_actual.toFixed(1)+'%</span></td><td class="r"><a class="go" href="'+replay(m.kickoff-1800)+'">'+L("replay")+' →</a></td></tr>'; };
-  document.getElementById("upsets").innerHTML='<table>'+head+'<tbody>'+A.upsets.slice(0,10).map(row).join("")+'</tbody></table>';
-  document.getElementById("sure").innerHTML='<table>'+head+'<tbody>'+A.sure.slice(0,5).map(row).join("")+'</tbody></table>';
 }
 
-function teams(){
-  var rows=A.teams.slice().sort(function(a,b){return b.gap-a.gap;}), mx=Math.max.apply(null,rows.map(function(r){return Math.abs(r.gap);}));
-  var el=document.getElementById("teams");
-  el.innerHTML='<div style="display:grid;grid-template-columns:minmax(118px,160px) 1fr 50px;gap:3px 10px;align-items:center;font-size:13px">'+rows.map(function(r){
-    var w=Math.abs(r.gap)/mx*50, pos=r.gap>=0;
-    var bar='<div style="position:relative;height:14px"><div style="position:absolute;left:50%;top:-3px;bottom:-3px;border-left:.5px solid rgba(0,0,0,.25)"></div><div style="position:absolute;top:2px;height:10px;border-radius:3px;background:'+(pos?"#1d9e75":"#d85a30")+';'+(pos?'left:50%;width:'+w+'%':'right:50%;width:'+w+'%')+'"></div></div>';
-    var t=(LANG==="zh"?"市场预期拿分率 ":"expected ")+r.mkt+"% · "+(LANG==="zh"?"实际 ":"actual ")+r.act+"% · "+r.w+"-"+r.d+"-"+r.l+(r.big?" · "+(LANG==="zh"?"最大冷门 ":"best upset ")+"vs "+nm(r.big.opp)+" "+r.big.score:"");
-    return '<div data-tip="'+t.replace(/"/g,"&quot;")+'" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+tm(r.team)+'</div><div data-tip="'+t.replace(/"/g,"&quot;")+'">'+bar+'</div><div class="num '+(pos?"up":"down")+'" style="text-align:right;font-weight:600">'+(pos?"+":"")+r.gap+'</div>'; }).join("")+'</div>'+
-    '<div class="note" style="margin-top:10px">'+(LANG==="zh"?"数值单位：百分点（pt）。悬停可看战绩与赛前预期。":"Units: percentage points. Hover for record and expectation.")+'</div>';
+// ───── 准确度 ─────
+function hitStage(){ var h=A.accuracy.hit;
+  document.getElementById("hitStage").innerHTML=["group","R32","R16","QF+","all"].map(function(k){ var x=h[k]; if(!x||!x.n) return "";
+    return '<div style="display:flex;align-items:center;gap:12px;margin:12px 0"><div style="width:100px;font-size:13.5px;'+(k==="all"?"font-weight:700":"")+'">'+stg(k)+'</div><div class="hbar" style="flex:1;height:12px"><i data-w="'+x.rate+'%" style="background:'+(k==="all"?"#f3f1ea":"#17d17f")+'"></i></div><div class="num" style="width:100px;text-align:right"><b style="font-size:16px">'+x.rate.toFixed(1)+'%</b> <span style="color:#6c6a64;font-size:12px">'+x.hit+'/'+x.n+'</span></div></div>'; }).join(""); }
+function draws(){ var a=A.accuracy;
+  var bar=function(l,v,c){ return '<div style="margin:16px 0"><div style="display:flex;justify-content:space-between;font-size:13.5px"><span>'+l+'</span><b class="num" style="font-size:22px">'+v.toFixed(1)+'%</b></div><div class="hbar" style="height:16px;margin-top:6px"><i data-w="'+(v/35*100)+'%" style="background:'+c+'"></i></div></div>'; };
+  document.getElementById("draws").innerHTML=bar(L("implied"),a.draw_implied,"#f0c75e")+bar(L("actual"),a.draw_actual,"#f3f1ea"); }
+function brier(){ var rows=A.accuracy.brier, lo=0.42, hi=0.54;
+  document.getElementById("brier").innerHTML=rows.map(function(b){ var isC=b.p==="consensus", w=(hi-b.all)/(hi-lo)*100;
+    return '<div style="display:flex;align-items:center;gap:12px;margin:11px 0" data-tip="'+(isC?L("cons"):b.p)+' · n='+b.n+(b.group!=null?'<br>'+stg("group")+' '+b.group.toFixed(3):'')+(b.ko!=null?' · KO '+b.ko.toFixed(3):'')+'"><div style="width:100px;font-size:13.5px"><span style="color:'+(PCOLOR[b.p]||"#888")+'">●</span> '+(isC?L("cons"):b.p)+'</div><div class="hbar" style="flex:1;height:12px"><i data-w="'+Math.max(4,Math.min(100,w))+'%" style="background:'+(PCOLOR[b.p]||"#888")+'"></i></div><div class="num" style="width:56px;text-align:right;font-weight:700">'+b.all.toFixed(3)+'</div></div>'; }).join("")+
+    '<div style="display:flex;align-items:center;gap:12px;margin:11px 0;color:#6c6a64"><div style="width:100px;font-size:13.5px"><span style="color:'+PCOLOR.manifold+'">●</span> manifold</div><div style="font-size:12.5px">'+L("only_champ")+'</div></div>'; }
+var REL_OFF={};
+function rel(){ var R=A.accuracy.reliability, keys=["consensus","polymarket","kalshi","42","predict"].filter(function(k){return R[k]&&R[k].length;});
+  var el=document.getElementById("rel"), W=Math.min(520,Math.max(280,el.clientWidth||480)), H=W*.8, p=34, X=function(v){return p+v/100*(W-p-10);}, Y=function(v){return H-p-v/100*(H-p-10);};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block;max-width:520px">';
+  [0,50,100].forEach(function(v){ s+='<line x1="'+X(0)+'" x2="'+X(100)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="rgba(255,255,255,.06)"/><text x="'+(p-6)+'" y="'+(Y(v)+4)+'" font-size="10" text-anchor="end" fill="#6c6a64">'+v+'</text><text x="'+X(v)+'" y="'+(H-p+14)+'" font-size="10" text-anchor="middle" fill="#6c6a64">'+v+'</text>'; });
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(100)+'" y2="'+Y(100)+'" stroke="#6c6a64" stroke-dasharray="4,4"/>';
+  keys.forEach(function(k){ if(REL_OFF[k]) return; var pts=R[k], c=PCOLOR[k];
+    s+='<path d="'+pts.map(function(q,i){return (i?"L":"M")+X(q[0]).toFixed(1)+","+Y(q[1]).toFixed(1);}).join("")+'" fill="none" stroke="'+c+'" stroke-width="'+(k==="consensus"?2.4:1.2)+'" opacity="'+(k==="consensus"?1:.55)+'"/>';
+    pts.forEach(function(q){ s+='<circle cx="'+X(q[0]).toFixed(1)+'" cy="'+Y(q[1]).toFixed(1)+'" r="'+Math.min(9,2.5+Math.sqrt(q[2])/1.6).toFixed(1)+'" fill="'+c+'" fill-opacity="'+(k==="consensus"?.95:.5)+'" data-tip="'+(k==="consensus"?L("cons"):k)+' · '+q[0]+'% → '+q[1]+'% · n='+q[2]+'"/>'; }); });
+  el.innerHTML=s+'</svg>';
+  document.getElementById("relLg").innerHTML=keys.map(function(k){ return '<span class="lg'+(REL_OFF[k]?" off":"")+'" data-k="'+k+'"><i style="background:'+PCOLOR[k]+'"></i>'+(k==="consensus"?L("cons"):k)+'</span>'; }).join(""); }
+
+// ───── 看走眼：散点 ─────
+function scatter(){
+  var rows=A.teams, el=document.getElementById("scatter"), W=Math.max(320,el.clientWidth||900), H=Math.round(Math.min(560,Math.max(360,W*.6))), p=46;
+  var X=function(v){return p+v/100*(W-p-20);}, Y=function(v){return H-p-v/100*(H-p-18);};
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
+  s+='<path d="M'+X(0)+','+Y(0)+' L'+X(100)+','+Y(100)+' L'+X(0)+','+Y(100)+' Z" fill="rgba(23,209,127,.05)"/><path d="M'+X(0)+','+Y(0)+' L'+X(100)+','+Y(100)+' L'+X(100)+','+Y(0)+' Z" fill="rgba(255,59,82,.05)"/>';
+  [0,25,50,75,100].forEach(function(v){ s+='<line x1="'+X(v)+'" x2="'+X(v)+'" y1="'+Y(0)+'" y2="'+Y(100)+'" stroke="rgba(255,255,255,.05)"/><line x1="'+X(0)+'" x2="'+X(100)+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="rgba(255,255,255,.05)"/><text x="'+X(v)+'" y="'+(H-p+16)+'" font-size="10" text-anchor="middle" fill="#6c6a64">'+v+'%</text><text x="'+(p-8)+'" y="'+(Y(v)+4)+'" font-size="10" text-anchor="end" fill="#6c6a64">'+v+'%</text>'; });
+  s+='<line x1="'+X(0)+'" y1="'+Y(0)+'" x2="'+X(100)+'" y2="'+Y(100)+'" stroke="#9a978f" stroke-dasharray="5,5"/>';
+  s+='<text x="'+(X(4))+'" y="'+(Y(94))+'" font-size="13" font-weight="700" fill="#17d17f">'+L("under")+'</text><text x="'+(X(96))+'" y="'+(Y(6))+'" font-size="13" font-weight="700" fill="#ff3b52" text-anchor="end">'+L("over")+'</text>';
+  s+='<text x="'+((X(0)+X(100))/2)+'" y="'+(H-8)+'" font-size="11" text-anchor="middle" fill="#9a978f">'+L("x_lab")+'</text><text x="12" y="'+((Y(0)+Y(100))/2)+'" font-size="11" text-anchor="middle" fill="#9a978f" transform="rotate(-90 12 '+((Y(0)+Y(100))/2)+')">'+L("y_lab")+'</text>';
+  var sorted=rows.slice().sort(function(a,b){return Math.abs(a.gap)-Math.abs(b.gap);});
+  sorted.forEach(function(r){ var x=X(r.mkt), y=Y(r.act), big=Math.abs(r.gap)>=25, c=r.gap>=0?"#17d17f":"#ff3b52", fw=big?30:22, fh=big?20:15;
+    var t="<b>"+nm(r.team)+"</b> · "+r.w+"-"+r.d+"-"+r.l+"<br>"+(LANG==="zh"?"市场预期 ":"expected ")+r.mkt+"% → "+(LANG==="zh"?"实际 ":"actual ")+r.act+"%<br><b style='color:"+(r.gap>=0?"#0a8a64":"#c23a2a")+"'>"+(r.gap>=0?"+":"")+r.gap+"pt</b>"+(r.big?"<br>"+(LANG==="zh"?"最大冷门：":"best upset: ")+"vs "+nm(r.big.opp)+" "+r.big.score:"");
+    s+='<g data-tip="'+t.replace(/"/g,"&quot;")+'" style="cursor:pointer"><rect x="'+(x-fw/2-2)+'" y="'+(y-fh/2-2)+'" width="'+(fw+4)+'" height="'+(fh+4)+'" rx="4" fill="'+c+'" opacity="'+(big?.9:.35)+'"/><image href="'+flagSrc(r.team)+'" x="'+(x-fw/2)+'" y="'+(y-fh/2)+'" width="'+fw+'" height="'+fh+'" preserveAspectRatio="xMidYMid slice"/>'+
+      (big?'<text x="'+(x+fw/2+6)+'" y="'+(y+4)+'" font-size="11.5" font-weight="700" fill="'+c+'">'+nm(r.team)+' '+(r.gap>=0?"+":"")+r.gap+'</text>':"")+'</g>'; });
+  el.innerHTML=s+'</svg>';
 }
 
-function plats(){
-  var P=A.platforms;
-  document.getElementById("plats").innerHTML='<table><thead><tr><th>'+L("th_plat")+'</th><th class="r">'+L("th_changes")+'</th><th class="r">'+L("th_n")+'</th><th class="r">Brier</th><th class="r">'+L("th_over")+'</th><th class="r">'+L("th_bias")+'</th><th class="r">'+L("th_out")+'</th><th class="r">'+L("th_dev")+'</th><th class="r">'+L("th_poll")+'</th></tr></thead><tbody>'+
-    P.map(function(p){ var b=p.fav_bias;
-      return '<tr><td><span style="color:'+PCOLOR[p.p]+'">●</span> <b>'+p.p+'</b></td><td class="r num">'+p.changes.toLocaleString("en-US")+'</td><td class="r num">'+(p.matches||"—")+'</td><td class="r num">'+(p.brier!=null?p.brier.toFixed(3):"—")+'</td><td class="r num">'+(p.overround!=null?p.overround.toFixed(1)+"%":"—")+'</td><td class="r num '+(b>0?"up":b<0?"down":"")+'">'+(b!=null?(b>0?"+":"")+b.toFixed(1)+"pt":"—")+'</td><td class="r num">'+(p.outlier||0)+'</td><td class="r num">'+(p.champ_dev!=null?p.champ_dev.toFixed(2)+"pt":"—")+'</td><td class="r num">'+(p.pollution||0)+'</td></tr>'; }).join("")+'</tbody></table>'+
-    '<div class="note" style="margin-top:8px">'+L("bias_note")+'</div>';
-}
+// ───── 平台 ─────
+function pcards(){ var P=A.platforms.slice(), best=function(key,dir){ var xs=P.filter(function(p){return p[key]!=null;}); xs.sort(function(a,b){return dir*(a[key]-b[key]);}); return xs[0]&&xs[0].p; };
+  var bB=best("brier",1), bA=best("changes",-1), bO=best("outlier",-1), bC=best("fav_bias",-1), bP=best("pollution",-1);
+  document.getElementById("pcards").innerHTML=P.map(function(p){ var b=[]; if(p.p===bB)b.push(L("b_best")); if(p.p===bA)b.push(L("b_active")); if(p.p===bO)b.push(L("b_out")); if(p.p===bC)b.push(L("b_conf")); if(p.p===bP&&p.pollution)b.push(L("b_poll"));
+    var row=function(k,v){ return '<div class="row"><span>'+L(k)+'</span><span class="num">'+v+'</span></div>'; };
+    return '<div class="pc" style="--pc:'+PCOLOR[p.p]+'"><div class="n">'+p.p+'</div><div class="badges">'+b.map(function(x){return '<span class="badge">'+x+'</span>';}).join("")+'</div>'+
+      row("r_changes",p.changes.toLocaleString("en-US"))+row("r_matches",p.matches||"—")+row("r_brier",p.brier!=null?p.brier.toFixed(3):"—")+row("r_over",p.overround!=null?p.overround.toFixed(1)+"%":"—")+
+      row("r_bias",p.fav_bias!=null?(p.fav_bias>0?"+":"")+p.fav_bias.toFixed(1)+"pt":"—")+row("r_dev",p.champ_dev!=null?p.champ_dev.toFixed(2)+"pt":"—")+row("r_poll",p.pollution||0)+'</div>'; }).join(""); }
 
-function game(){
-  var o=A.overview;
-  var c=function(l,v,s){ return '<div class="mc"><div class="l">'+l+'</div><div class="v">'+v+'</div>'+(s?'<div class="s">'+s+'</div>':"")+'</div>'; };
-  document.getElementById("gameCards").innerHTML=
-    c(L("c_goals"),o.goals,o.gpm+" "+L("gpm"))+
-    c(stg("group"),o.gpm_group,L("gpm"))+
-    c(LANG==="zh"?"淘汰赛":"Knockouts",o.gpm_ko,L("gpm"))+
-    c(L("draw"),o.draws,(o.draws/o.matches*100).toFixed(1)+"%");
-  var tab=function(list){ return '<table><tbody>'+list.map(function(m){ return '<tr><td>'+score(m)+'</td><td style="color:#9a988f">'+stg(m.grp)+'</td><td class="r"><a class="go" href="'+replay(m.kickoff+8100)+'">'+L("replay")+' →</a></td></tr>'; }).join("")+'</tbody></table>'; };
-  document.getElementById("high").innerHTML=tab(A.highest_scoring);
-  document.getElementById("big").innerHTML=tab(A.biggest_wins);
-  document.getElementById("ko").innerHTML='<table><tbody>'+A.knockout.map(function(m){ return '<tr><td style="color:#9a988f;width:90px">'+stg(m.grp)+'</td><td>'+score(m)+'</td><td>'+(m.winner?"→ "+tm(m.winner):"")+'</td><td style="color:#9a988f" class="num">'+fmtD(m.kickoff,true)+'</td><td class="r"><a class="go" href="'+replay(m.kickoff-1800)+'">'+L("replay")+' →</a></td></tr>'; }).join("")+'</tbody></table>';
-}
+// ───── 比赛 ─────
+function game(){ var o=A.overview;
+  var c=function(v,k,d,col){ return '<div class="bn" style="--c:'+(col||"var(--ink)")+'"><div class="v num">'+v+'</div><div class="k">'+k+'</div>'+(d?'<div class="d">'+d+'</div>':"")+'</div>'; };
+  document.getElementById("gnums").innerHTML=c(cnt(o.goals,0,""),L("g_goals"),"","var(--gold)")+c(cnt(o.gpm,2,""),L("g_gpm"),L("gpm_d")(o))+c(cnt(o.draws,0,""),L("g_draws"),(o.draws/o.matches*100).toFixed(1)+"%");
+  document.getElementById("ko").innerHTML='<table><tbody>'+A.knockout.map(function(m){ return '<tr><td style="color:#9a978f;width:92px">'+stg(m.grp)+'</td><td>'+tm(m.home)+' <b class="num" style="margin:0 6px">'+m.sa+'–'+m.sb+'</b> '+tm(m.away)+'</td><td style="color:#9a978f" class="num">'+fmtD(m.kickoff)+'</td><td class="r"><a class="go2" href="'+replayMatch(m)+'">'+L("toCard")+'</a></td></tr>'; }).join("")+'</tbody></table>'; }
 
-function visits(){
-  var V=A.visits; if(!V||!V.length){ document.getElementById("visits").innerHTML=""; return; }
-  var el=document.getElementById("visits"), W=Math.max(300,el.clientWidth||900), H=180, pl=34, pb=22, mx=Math.max.apply(null,V.map(function(v){return v[1];}));
-  var bw=(W-pl-6)/V.length, s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
-  [0,.5,1].forEach(function(f){ var y=H-pb-f*(H-pb-10); s+='<line x1="'+pl+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="rgba(0,0,0,.07)"/><text x="'+(pl-5)+'" y="'+(y+4)+'" font-size="10" text-anchor="end" fill="#9a988f">'+Math.round(mx*f)+'</text>'; });
-  V.forEach(function(v,i){ var h=v[1]/mx*(H-pb-10), x=pl+i*bw;
-    s+='<rect x="'+(x+1).toFixed(1)+'" y="'+(H-pb-h).toFixed(1)+'" width="'+Math.max(1,bw-2).toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+(v===A.overview.peak_day||v[0]===(A.overview.peak_day||[])[0]?"#d85a30":"#1d9e75")+'" data-tip="'+v[0]+' · '+v[1]+(LANG==="zh"?" 次访问 · 独立访客 ":" views · unique ")+v[2]+'"/>';
-    if(i%7===0) s+='<text x="'+(x+bw/2)+'" y="'+(H-6)+'" font-size="10" text-anchor="middle" fill="#9a988f">'+v[0].slice(5).replace("-","/")+'</text>'; });
-  el.innerHTML=s+'</svg><div class="note" style="margin-top:6px">'+L("total")+" "+A.overview.visits.toLocaleString("en-US")+" · "+L("peak")+" "+A.overview.peak_day[0]+" ("+A.overview.peak_day[1]+")"+'</div>';
-}
+// ───── 观众 ─────
+function visits(){ var V=A.visits; if(!V||!V.length) return; var el=document.getElementById("visits"), W=Math.max(320,el.clientWidth||900), H=200, pl=36, pb=24, mx=Math.max.apply(null,V.map(function(v){return v[1];})), bw=(W-pl-6)/V.length;
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="display:block">';
+  [0,.5,1].forEach(function(f){ var y=H-pb-f*(H-pb-12); s+='<line x1="'+pl+'" x2="'+W+'" y1="'+y+'" y2="'+y+'" stroke="rgba(255,255,255,.06)"/><text x="'+(pl-6)+'" y="'+(y+4)+'" font-size="10" text-anchor="end" fill="#6c6a64">'+Math.round(mx*f)+'</text>'; });
+  var pk=(A.overview.peak_day||[])[0];
+  V.forEach(function(v,i){ var h=v[1]/mx*(H-pb-12), x=pl+i*bw; s+='<rect x="'+(x+1).toFixed(1)+'" y="'+(H-pb-h).toFixed(1)+'" width="'+Math.max(1,bw-2).toFixed(1)+'" height="'+h.toFixed(1)+'" rx="2" fill="'+(v[0]===pk?"#ff3b52":"#17d17f")+'" data-tip="'+v[0]+' · '+v[1]+'"/>';
+    if(i%7===0) s+='<text x="'+(x+bw/2)+'" y="'+(H-6)+'" font-size="10" text-anchor="middle" fill="#6c6a64">'+v[0].slice(5).replace("-","/")+'</text>'; });
+  el.innerHTML=s+'</svg><div class="note" style="margin-top:8px">'+L("total")+" "+A.overview.visits.toLocaleString("en-US")+" · "+L("peak")+" "+pk+" ("+A.overview.peak_day[1]+")</div>"; }
 
-function method(){
-  var o=A.overview, zh=LANG==="zh";
-  var items=zh?[
-    "数据来源：pm-watcher 在赛事期间对 Polymarket、Kalshi、42、Manifold、Predict 五个平台每约 30 秒抓取一次，只在价格变动 ≥0.1pt 时落盘，共 "+o.snap_rows.toLocaleString("en-US")+" 条定价变动；赛果来自 football-data.org。",
-    "单场口径：用「收盘线」（开球前各平台最后一笔），三档都有报价的平台才参与，先归一化再比较。Brier = 三档平方误差之和。Manifold 只有冠军盘（play money），不参与单场统计。",
-    "冠军概率走势做过清洗：某平台价格偏离其他平台中位数超过 20pt（多为其他运动的「World Cup」盘同名球队串入）会被剔除；超过 5 天未更新的报价视为下架；球队被淘汰后记 0、决赛后冠军记 100%。",
-    "回放看板则如实还原当时线上显示的内容，包括上述串盘污染——它们确实曾出现在当时的网站上。",
-    "「被看走眼的球队」与看板「球队名片」同公式：拿分率 = 积分 ÷（场次 × 3）；市场预期 = 各场赛前该队获胜的共识概率平均。"
-  ]:[
-    "Source: during the tournament pm-watcher polled Polymarket, Kalshi, 42, Manifold and Predict about every 30s, storing a row only when a price moved ≥0.1pt — "+o.snap_rows.toLocaleString("en-US")+" price changes in total. Results from football-data.org.",
-    "Matches use the closing line (each platform's last price before kickoff); only platforms quoting all three outcomes count, normalized before comparing. Brier = sum of squared errors over three outcomes. Manifold (play money) only had a title market.",
-    "The title-race series is cleaned: prices more than 20pt from the other platforms' median (usually a same-named team from another sport's “World Cup” market) are removed; quotes older than 5 days count as delisted; eliminated teams go to 0 and the champion to 100% after the final.",
-    "The replay board, by contrast, shows exactly what the live site showed at the time — including those cross-sport glitches, which really did appear on the site.",
-    "“Teams the market misread” uses the Team Cards formula: points rate = points ÷ (matches × 3); expectation = average pre-match consensus win probability."
+function method(){ var o=A.overview, zh=LANG==="zh";
+  var items=zh?["数据来源：pm-watcher 在赛事期间对 Polymarket、Kalshi、42、Manifold、Predict 五个平台每约 30 秒抓取一次，价格变动 ≥0.1pt 时落盘，共 "+o.snap_rows.toLocaleString("en-US")+" 条定价变动；赛果来自 football-data.org。",
+    "单场口径：「收盘线」（开球前各平台最后一笔），三档都有报价的平台才参与，先归一化再比较。Brier = 三档平方误差之和。Manifold 只有冠军盘（play money），不参与单场统计。",
+    "冠军概率走势做过清洗：偏离其他平台中位数 >20pt 的报价（多为其他运动的「World Cup」盘同名球队串入）会被剔除；超过 5 天未更新视为下架；被淘汰后记 0，决赛后冠军记 100%。",
+    "回放看板则如实还原当时线上显示的内容，包括上述串盘——它们确实曾出现在当时的网站上。",
+    "「看走眼」与看板「球队名片」同公式：拿分率 = 积分 ÷（场次 × 3）；市场预期 = 各场赛前该队获胜的共识概率平均。"]
+   :["Source: pm-watcher polled Polymarket, Kalshi, 42, Manifold and Predict about every 30s during the tournament, storing a row when a price moved ≥0.1pt — "+o.snap_rows.toLocaleString("en-US")+" price changes. Results from football-data.org.",
+    "Matches use the closing line (last price before kickoff); only platforms quoting all three outcomes count, normalized first. Brier = sum of squared errors over three outcomes. Manifold (play money) only had a title market.",
+    "The title-race series is cleaned: quotes >20pt from the other platforms' median (usually a same-named team from another sport's “World Cup” market) are removed; quotes older than 5 days count as delisted; eliminated teams go to 0, the champion to 100% after the final.",
+    "The replay board, by contrast, shows exactly what the live site showed — including those glitches, which really appeared on it.",
+    "“Misread” uses the Team Cards formula: points rate = points ÷ (matches × 3); expectation = average pre-match consensus win probability."];
+  document.getElementById("method").innerHTML=items.map(function(x){return "<li>"+x+"</li>";}).join(""); }
+
+// 导航高亮
+var secIO=new IntersectionObserver(function(es){ es.forEach(function(en){ if(en.isIntersecting){ document.querySelectorAll(".nav .links a").forEach(function(a){ a.classList.toggle("on",a.dataset.sec===en.target.id); }); } }); },{rootMargin:"-45% 0px -50% 0px"});
+
+function renderAll(){ statics(); hero(); raceInit(); bign(); ucards(); slope(); hitStage(); draws(); brier(); rel(); scatter(); pcards(); game(); visits(); method();
+  document.querySelectorAll("section.sec").forEach(function(s){ secIO.observe(s); }); observe();
+  document.querySelectorAll(".reveal.in .hbar i[data-w]").forEach(function(i){ i.style.width=i.dataset.w; }); }
+document.querySelectorAll("[data-lang]").forEach(function(b){ b.addEventListener("click",function(){ LANG=b.dataset.lang; try{localStorage.setItem("pmw_lang",JSON.stringify(LANG));}catch(e){} var f=RB.f, pl=RB.playing; racePause(); renderAll(); RB.f=f; raceRender(); if(pl) racePlay();
+  document.querySelectorAll("[data-count]").forEach(function(el){ if(el.closest(".reveal.in")||el.closest(".hero")) countUp(el); }); }); });
+var rt; addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(function(){ if(!A) return; slope(); rel(); scatter(); visits(); if(RB.view==="line") raceLine(); },200); });
+fetch("data/analysis.json").then(function(r){return r.json();}).then(function(j){ A=j; renderAll(); document.querySelectorAll(".hero [data-count]").forEach(countUp); });
+})();
+</script>
+<script>
+/* 背景：多束「丝带」由上百条细曲线构成，随时间起伏、随滚动与鼠标轻微形变。
+   配色取自 2026 世界杯视觉：奖杯金 + 加拿大红 / 墨西哥绿 / 美国蓝。 */
+(function(){
+  var cv=document.getElementById("fx"); if(!cv||!cv.getContext) return;
+  var ctx=cv.getContext("2d"), W=0, H=0, DPR=1, t=0, last=0, raf=0;
+  var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var mobile=Math.min(innerWidth,innerHeight)<700;
+  var RIB=[
+    {c:["#ff2d4b","#ff7a3d","#f0c75e"], y:.34, amp:.13, k:1.25, sp:.17, n:34, fan:.085, ph:0},
+    {c:["#2f6bff","#43b8ff","#8f7bff"], y:.56, amp:.11, k:1.65, sp:-.13, n:30, fan:.10, ph:2.1},
+    {c:["#12c96f","#20d6c0","#2f6bff"], y:.70, amp:.09, k:1.05, sp:.10, n:24, fan:.07, ph:4.2}
   ];
-  document.getElementById("method").innerHTML=items.map(function(x){return "<li>"+x+"</li>";}).join("");
-}
-
-function renderAll(){ statics(); hero(); insights(); race(); startTop(); swings(); hitStage(); draws(); brier(); rel(); upsets(); teams(); plats(); game(); visits(); method(); }
-document.querySelectorAll("[data-lang]").forEach(function(b){ b.addEventListener("click",function(){ LANG=b.dataset.lang; try{localStorage.setItem("pmw_lang",JSON.stringify(LANG));}catch(e){} renderAll(); }); });
-var rt; addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(function(){ if(A){ race(); rel(); visits(); } },200); });
-fetch("data/analysis.json").then(function(r){return r.json();}).then(function(j){ A=j; renderAll(); });
+  if(mobile) RIB.forEach(function(r){ r.n=Math.round(r.n*.6); r.amp*=.55; r.fan*=.7; r.k*=.6; });
+  var mx=.5, my=.5, tmx=.5, tmy=.5, sy=0, grads=[];
+  function hex(h,a){ var n=parseInt(h.slice(1),16); return "rgba("+(n>>16)+","+(n>>8&255)+","+(n&255)+","+a+")"; }
+  function resize(){ DPR=Math.min(window.devicePixelRatio||1,mobile?1.25:1.6); W=innerWidth; H=innerHeight;
+    cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR); ctx.setTransform(DPR,0,0,DPR,0,0);
+    grads=RIB.map(function(r){ var g=ctx.createLinearGradient(0,0,W,0); r.c.forEach(function(c,i){ g.addColorStop(i/(r.c.length-1),c); }); return g; });
+    if(reduce) draw(); }
+  // 某一束丝带里第 u 条线（u∈[-.5,.5]）在横坐标 x 处的纵坐标
+  function Y(r,u,x,tt,lift){
+    var X=x/W, w=X*Math.PI*2*r.k;
+    var base=Math.sin(w+tt*r.sp*6+r.ph)*r.amp + Math.sin(w*.47-tt*r.sp*3.1+r.ph*1.7)*r.amp*.55;
+    var fan=u*r.fan*(1.1+Math.sin(w*1.3+tt*.45+r.ph)*.9);                 // 线束开合 → 丝带扭转感
+    var bump=Math.exp(-Math.pow((X-mx)*3.2,2))*(my-r.y)*.22;               // 鼠标附近轻微牵引
+    return (r.y+base+fan+bump-lift)*H;
+  }
+  function draw(){
+    var tt=t, lift=Math.min(sy/H,1.5)*.06, fade=1-Math.min(sy/(H*1.2),1)*.45, step=mobile?16:11;
+    ctx.globalCompositeOperation="source-over"; ctx.clearRect(0,0,W,H);
+    // 环境光晕
+    [[.78,.18,"#ff2d4b",.13],[.12,.82,"#12c96f",.10],[.5,.55,"#2f6bff",.10],[.9,.85,"#f0c75e",.06]].forEach(function(b,i){
+      var x=(b[0]+Math.sin(tt*.07+i)*.04)*W, y=(b[1]+Math.cos(tt*.05+i*2)*.04)*H, R=Math.max(W,H)*.55;
+      var g=ctx.createRadialGradient(x,y,0,x,y,R); g.addColorStop(0,hex(b[2],b[3]*fade)); g.addColorStop(1,hex(b[2],0));
+      ctx.fillStyle=g; ctx.fillRect(0,0,W,H); });
+    ctx.globalCompositeOperation="lighter";
+    RIB.forEach(function(r,ri){
+      // 柔光带：丝带中心的粗描边
+      ctx.strokeStyle=grads[ri];
+      [[46,.035],[16,.06]].forEach(function(gw){ ctx.globalAlpha=gw[1]*fade; ctx.lineWidth=gw[0]; ctx.beginPath();
+        for(var x=-20;x<=W+20;x+=step){ var y=Y(r,0,x,tt,lift); x<=-20?ctx.moveTo(x,y):ctx.lineTo(x,y); } ctx.stroke(); });
+      // 细线束
+      ctx.lineWidth=.9;
+      for(var j=0;j<r.n;j++){ var u=j/(r.n-1)-.5, edge=1-Math.abs(u)*1.6;
+        ctx.globalAlpha=(.09+.38*edge*edge)*fade; ctx.beginPath();
+        for(var x=-20;x<=W+20;x+=step){ var y=Y(r,u,x,tt,lift); x<=-20?ctx.moveTo(x,y):ctx.lineTo(x,y); }
+        ctx.stroke(); }
+      // 沿丝带流动的数据光点
+      for(var p=0;p<3;p++){ var fx=((tt*.035*(ri%2?-1:1)+p/3+ri*.21)%1+1)%1, x=fx*W, u=(p-1)*.28, y=Y(r,u,x,tt,lift);
+        var g=ctx.createRadialGradient(x,y,0,x,y,18); g.addColorStop(0,"rgba(255,255,255,"+(.9*fade)+")"); g.addColorStop(.25,hex(r.c[1],.55*fade)); g.addColorStop(1,hex(r.c[1],0));
+        ctx.globalAlpha=1; ctx.fillStyle=g; ctx.fillRect(x-18,y-18,36,36); }
+    });
+    ctx.globalAlpha=1; ctx.globalCompositeOperation="source-over";
+  }
+  function loop(now){ raf=requestAnimationFrame(loop); if(now-last<(mobile?40:28)) return;
+    var dt=last?Math.min(now-last,100):16; last=now; t+=dt/1000;
+    mx+=(tmx-mx)*.04; my+=(tmy-my)*.04; draw(); }
+  addEventListener("resize",resize);
+  addEventListener("scroll",function(){ sy=scrollY; if(reduce) draw(); },{passive:true});
+  addEventListener("pointermove",function(e){ tmx=e.clientX/W; tmy=e.clientY/H; },{passive:true});
+  document.addEventListener("visibilitychange",function(){ if(document.hidden){ cancelAnimationFrame(raf); raf=0; } else if(!reduce&&!raf){ last=0; raf=requestAnimationFrame(loop); } });
+  resize(); t=reduce?8:0; if(reduce) draw(); else raf=requestAnimationFrame(loop);
 })();
 </script>
 </body>

@@ -37,3 +37,7 @@
   .dm-toggle{top:auto;bottom:14px}
   #danmaku{top:64px}
 }
+
+/* 从分析页「回放」跳转过来时，高亮对应的比赛小卡 */
+#recap .node.pmw-focus{outline:3px solid #1d9e75;outline-offset:4px;animation:pmwflash 1.4s ease-out 2}
+@keyframes pmwflash{0%{box-shadow:0 0 0 0 rgba(29,158,117,.55)}70%{box-shadow:0 0 0 14px rgba(29,158,117,0)}100%{box-shadow:0 0 0 0 rgba(29,158,117,0)}}
