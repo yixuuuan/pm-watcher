@@ -177,21 +177,21 @@
   .m3d.drag{cursor:grabbing}
   .m3d-stage{position:absolute;left:50%;top:50%;transform-style:preserve-3d;transform-origin:50% 50%}
   #mapSvg{position:absolute;left:0;top:0;display:block;overflow:visible}
-  #mapSvg .grat path{fill:none;stroke:rgba(120,160,255,.09);stroke-width:.7}
-  #mapSvg .land path{fill:#1f2431;stroke:rgba(255,255,255,.09);stroke-width:.5;transition:fill .4s}
+  #mapSvg .grat path{fill:none;stroke:rgba(120,160,255,.09);stroke-width:calc(.7px * var(--iz,1))}
+  #mapSvg .land path{fill:#1f2431;stroke:rgba(255,255,255,.09);stroke-width:calc(.5px * var(--iz,1));transition:fill .4s}
   #mapSvg .land path.wc{stroke:rgba(255,255,255,.22);cursor:pointer}
   #mapSvg .anc{fill:rgba(255,255,255,.35)}
-  #mapSvg .mlink{fill:none;stroke:rgba(150,160,180,.2);stroke-width:.8;animation:mlin 1.2s ease 1s backwards}
+  #mapSvg .mlink{fill:none;stroke:rgba(150,160,180,.2);stroke-width:calc(.8px * var(--iz,1));animation:mlin 1.2s ease 1s backwards}
   @keyframes mlin{from{opacity:0}}
-  #mapSvg .marc{fill:none;stroke-width:2.2;stroke-linecap:round;animation:marc 2.4s ease-out forwards}
+  #mapSvg .marc{fill:none;stroke-width:calc(2.2px * var(--iz,1));stroke-linecap:round;animation:marc 2.4s ease-out forwards}
   @keyframes marc{0%{stroke-dashoffset:var(--L);opacity:1}40%{stroke-dashoffset:0;opacity:1}100%{stroke-dashoffset:0;opacity:0}}
-  #mapSvg .mring{fill:none;stroke-width:2.5;transform-box:fill-box;transform-origin:center;animation:mring 1.3s ease-out forwards}
+  #mapSvg .mring{fill:none;stroke-width:calc(2.5px * var(--iz,1));transform-box:fill-box;transform-origin:center;animation:mring 1.3s ease-out forwards}
   @keyframes mring{from{transform:scale(.6);opacity:.95}to{transform:scale(3.2);opacity:0}}
   .m3d-bars{position:absolute;left:0;top:0;width:100%;height:100%;transform-style:preserve-3d;pointer-events:none}
   .b3{position:absolute;width:0;height:0;transform-style:preserve-3d;pointer-events:auto}
-  .b3 .f{position:absolute;left:-2px;bottom:0;width:4px;height:230px;transform-origin:50% 100%;
+  .b3 .f{position:absolute;left:calc(-2px * var(--iz,1));bottom:0;width:calc(4px * var(--iz,1));height:230px;transform-origin:50% 100%;
     background:linear-gradient(to top,var(--c0),var(--c));opacity:.9;transition:transform .35s ease-out;cursor:pointer}
-  .b3 .cap{position:absolute;left:-3px;top:-3px;width:6px;height:6px;border-radius:50%;background:#fff;box-shadow:0 0 4px 1px var(--c);transition:transform .35s ease-out}
+  .b3 .cap{position:absolute;left:calc(-3px * var(--iz,1));top:calc(-3px * var(--iz,1));width:calc(6px * var(--iz,1));height:calc(6px * var(--iz,1));border-radius:50%;background:#fff;box-shadow:0 0 4px 1px var(--c);transition:transform .35s ease-out}
   .b3.zero .f,.b3.zero .cap{opacity:0}
   .b3.hit .cap{animation:bhit .9s ease-out}
   @keyframes bhit{30%{box-shadow:0 0 10px 4px var(--c)}}
@@ -841,7 +841,9 @@ function mapToggleFs(){ var p=document.getElementById("mapPanel");
   else { if(document.fullscreenElement&&document.exitFullscreen) document.exitFullscreen().catch(function(){}); else if(document.webkitFullscreenElement&&document.webkitExitFullscreen) document.webkitExitFullscreen(); mapSetFs(false); } }
 function mapView(){
   var st=document.getElementById("m3dStage"); if(!st) return;
-  var sc=MP.s*(MP.zoom||1);
+  var sc=MP.s*(MP.zoom||1), iz=Math.pow(MP.zoom||1,-.85);
+  if(iz!==MP.iz){ MP.iz=iz; document.getElementById("m3d").style.setProperty("--iz",iz.toFixed(3));
+    if(MP.dots) [].forEach.call(MP.dots.childNodes,function(c){ c.setAttribute("r",(2.2*iz).toFixed(2)); }); }
   st.style.transform="translate(-50%,-50%) translate("+(MP.px||0).toFixed(1)+"px,"+(MP.py||0).toFixed(1)+"px) translateY("+(MP.tilt*1.5*sc).toFixed(1)+"px) scale("+sc.toFixed(4)+") rotateX("+MP.tilt.toFixed(2)+"deg) rotateZ("+MP.rz.toFixed(2)+"deg)";
   var inv=" rotateZ("+(-MP.rz).toFixed(2)+"deg) rotateX("+(-MP.tilt).toFixed(2)+"deg) scale("+(1/Math.max(.6,sc)).toFixed(3)+") translate(-50%,-100%)";
   Object.keys(MP.nodes||{}).forEach(function(t){ var n=MP.nodes[t]; n.lab.style.transform="translateZ("+(n.h+6).toFixed(1)+"px)"+inv; });
