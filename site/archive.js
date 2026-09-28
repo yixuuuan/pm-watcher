@@ -325,11 +325,11 @@
     D.visits.forEach(function (v) { total += v[1]; });
     return { total: total + (PMW.liveN || 0), today_hits: last[1], today_unique: last[2] };
   }
-  // 实时访问量（Cloudflare Pages Function /api/visits）：每个浏览器会话只计一次
+  // 实时访问量（Worker /api/visits）：每次打开/刷新页面计一次，之后的定时刷新只读取
   PMW.liveN = 0;
+  var hitSent = false;
   PMW.pullVisits = function () {
-    var first = false;
-    try { first = !sessionStorage.getItem("pmw_hit"); if (first) sessionStorage.setItem("pmw_hit", "1"); } catch (e) {}
+    var first = !hitSent; hitSent = true;
     return of("/api/visits", { method: first ? "POST" : "GET", cache: "no-store" })
       .then(function (r) { return r.ok ? r.json() : null; })
       .then(function (j) { if (j && typeof j.n === "number") PMW.liveN = j.n; return PMW.liveN; })

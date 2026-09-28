@@ -957,9 +957,9 @@ function mapInit(){
   }
   if(!MP.started){ MP.tilt=0; MP.rz=0; } mapView();
 }
-// 实时访问量：历史累计（analysis.json）+ 存档上线后的新增（/api/visits，每个会话计一次）
-var VBASE=null, VLIVE=0;
-function pullVisits(){ var first=false; try{ first=!sessionStorage.getItem("pmw_hit"); if(first) sessionStorage.setItem("pmw_hit","1"); }catch(e){}
+// 实时访问量：历史累计（analysis.json）+ 存档上线后的新增（/api/visits，每次打开/刷新页面计一次）
+var VBASE=null, VLIVE=0, HIT_SENT=false;
+function pullVisits(){ var first=!HIT_SENT; HIT_SENT=true;
   return fetch("/api/visits",{method:first?"POST":"GET",cache:"no-store"}).then(function(r){ return r.ok?r.json():null; })
     .then(function(j){ if(j&&typeof j.n==="number"&&j.n!==VLIVE){ VLIVE=j.n; applyVisits(); } }).catch(function(){}); }
 function applyVisits(){ if(!A) return; if(VBASE==null) VBASE=A.overview.visits; A.overview.visits=VBASE+VLIVE; footViews();

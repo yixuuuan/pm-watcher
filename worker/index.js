@@ -1,6 +1,6 @@
 // pm-watcher 历史存档站的 Worker：静态文件照常由 assets 提供，只多一个实时访问量接口
 //   GET  /api/visits → { n }   只读
-//   POST /api/visits → { n }   计一次访问后返回（页面每个浏览器会话只 POST 一次）
+//   POST /api/visits → { n }   计一次访问后返回（页面每次打开/刷新 POST 一次）
 // n 是「存档上线之后」新增的访问量；页面会把它加到原站历史累计上显示。
 export default {
   async fetch(request, env) {

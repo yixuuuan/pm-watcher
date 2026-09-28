@@ -66,7 +66,7 @@ python3 -m http.server 8765 -d site          # 打开 http://localhost:8765
 
 ## 实时访问量（可选，免费）
 
-页脚与分析页的「累计访问」= 原站历史累计 + 存档上线后的新增。新增部分由 `worker/index.js` 记录在 Cloudflare KV 里，每个浏览器会话只计一次；其余请求照常由 `site/` 里的静态文件响应。配置在仓库根目录的 `wrangler.jsonc`。
+页脚与分析页的「累计访问」= 原站历史累计 + 存档上线后的新增。新增部分由 `worker/index.js` 记录在 Cloudflare KV 里，每次打开或刷新页面计一次；其余请求照常由 `site/` 里的静态文件响应。配置在仓库根目录的 `wrangler.jsonc`。
 
 一次性设置：
 
