@@ -61,6 +61,9 @@ class H(BaseHTTPRequestHandler):
 
     def do_GET(self):
         path = self.path.split("?")[0]
+        if path == "/healthz":                      # Railway 健康检查
+            self._send(200, b"ok", "text/plain; charset=utf-8")
+            return
         db, sz = find_db()
         if path == "/":
             body = "<h3>pm-watcher · 数据恢复</h3>"
@@ -76,19 +79,25 @@ class H(BaseHTTPRequestHandler):
             return
         if path == f"/dl/{TOKEN}" and db:
             try:
-                data = open(db, "rb").read()
+                f = open(db, "rb")
             except Exception as e:
                 self._send(500, str(e).encode(), "text/plain; charset=utf-8")
                 return
             self.send_response(200)
             self.send_header("Content-Type", "application/octet-stream")
             self.send_header("Content-Disposition", "attachment; filename=history.db")
-            self.send_header("Content-Length", str(len(data)))
+            self.send_header("Content-Length", str(sz))
             self.end_headers()
-            try:
-                self.wfile.write(data)
+            try:                                     # 分块流式，避免 400MB 一次进内存
+                while True:
+                    chunk = f.read(1024 * 1024)
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
             except Exception:
                 pass
+            finally:
+                f.close()
             return
         self._send(404, b"not found", "text/plain; charset=utf-8")
 
