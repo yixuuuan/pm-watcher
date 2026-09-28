@@ -6,7 +6,7 @@
 <title>2026 世界杯 · 全程数据复盘 | pm-watcher</title>
 <meta name="description" content="五个预测市场、20 万次定价变动，复盘 2026 世界杯：冠军争夺战、冷门、市场准不准、谁被看走眼。">
 <style>
-  :root{--bg:#07080b;--bg2:#101217;--panel:rgba(20,22,28,.78);--panel2:rgba(27,30,37,.85);--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.14);
+  :root{--bg:#07080b;--bg2:#101217;--panel:rgba(18,20,26,.88);--panel2:rgba(27,30,37,.92);--line:rgba(255,255,255,.08);--line2:rgba(255,255,255,.14);
         --ink:#f3f1ea;--mut:#9a978f;--dim:#6c6a64;--teal:#17d17f;--hot:#ff3b52;--gold:#f0c75e;--blue:#3d7bff}
   *{box-sizing:border-box}
   html{scroll-behavior:smooth}
@@ -149,7 +149,6 @@
     background-size:160px 160px,56px 56px,56px 56px;opacity:.28;
     -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 30%,transparent 100%);mask-image:radial-gradient(ellipse 90% 80% at 50% 45%,#000 30%,transparent 100%)}
   .fx-tex::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 120% 90% at 50% 50%,transparent 55%,rgba(0,0,0,.55) 100%)}
-  .panel,.bn,.pc{-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
 </style>
 </head>
 <body>
@@ -374,7 +373,8 @@ function countUp(el){ if(el.classList.contains("done")) return; el.classList.add
   var to=+el.dataset.count, dec=+(el.dataset.dec||0), pre=el.dataset.pre||"", suf=el.dataset.suf||"", fmt=el.dataset.fmt, t0=performance.now(), D=1400;
   function f(t){ var p=Math.min(1,(t-t0)/D), e=1-Math.pow(1-p,3), v=to*e;
     var s= fmt==="k"? Math.round(v).toLocaleString("en-US") : v.toFixed(dec);
-    el.innerHTML=pre+s+suf; if(p<1) requestAnimationFrame(f); }
+    el.innerHTML=pre+s+suf; if(p<1&&!el._fin) requestAnimationFrame(f); }
+  setTimeout(function(){ el._fin=1; var s=fmt==="k"?Math.round(to).toLocaleString("en-US"):to.toFixed(dec); el.innerHTML=pre+s+suf; },D+200);
   requestAnimationFrame(f); }
 function cnt(v,dec,suf,pre,fmt){ return '<span data-count="'+v+'" data-dec="'+(dec||0)+'" data-suf="'+(suf||"").replace(/"/g,"&quot;")+'" data-pre="'+(pre||"")+'"'+(fmt?' data-fmt="'+fmt+'"':"")+'>'+(pre||"")+"0"+(suf||"")+'</span>'; }
 
@@ -649,12 +649,13 @@ fetch("data/analysis.json").then(function(r){return r.json();}).then(function(j)
     {c:["#12c96f","#20d6c0","#2f6bff"], y:.70, amp:.09, k:1.05, sp:.10, n:24, fan:.07, ph:4.2}
   ];
   if(mobile) RIB.forEach(function(r){ r.n=Math.round(r.n*.6); r.amp*=.55; r.fan*=.7; r.k*=.6; });
+  var BUDGET=2.4e6, slow=0, frames=0, still=false;   // 画布最多约 240 万像素；持续掉帧就降级
   var mx=.5, my=.5, tmx=.5, tmy=.5, sy=0, grads=[];
   function hex(h,a){ var n=parseInt(h.slice(1),16); return "rgba("+(n>>16)+","+(n>>8&255)+","+(n&255)+","+a+")"; }
-  function resize(){ DPR=Math.min(window.devicePixelRatio||1,mobile?1.25:1.6); W=innerWidth; H=innerHeight;
+  function resize(){ W=innerWidth; H=innerHeight; DPR=Math.min(window.devicePixelRatio||1,mobile?1.25:1.6,Math.sqrt(BUDGET/(W*H)));
     cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR); ctx.setTransform(DPR,0,0,DPR,0,0);
     grads=RIB.map(function(r){ var g=ctx.createLinearGradient(0,0,W,0); r.c.forEach(function(c,i){ g.addColorStop(i/(r.c.length-1),c); }); return g; });
-    if(reduce) draw(); }
+    if(reduce||still) draw(); }
   // 某一束丝带里第 u 条线（u∈[-.5,.5]）在横坐标 x 处的纵坐标
   function Y(r,u,x,tt,lift){
     var X=x/W, w=X*Math.PI*2*r.k;
@@ -692,11 +693,17 @@ fetch("data/analysis.json").then(function(r){return r.json();}).then(function(j)
   }
   function loop(now){ raf=requestAnimationFrame(loop); if(now-last<(mobile?40:28)) return;
     var dt=last?Math.min(now-last,100):16; last=now; t+=dt/1000;
-    mx+=(tmx-mx)*.04; my+=(tmy-my)*.04; draw(); }
+    mx+=(tmx-mx)*.04; my+=(tmy-my)*.04;
+    var a=performance.now(); draw(); var cost=performance.now()-a;
+    frames++; if(cost>18||dt>70) slow++;
+    if(frames>=40){                                   // 每 40 帧检查一次：一半以上掉帧 → 先降分辨率/线数，再不行就静止
+      if(slow>20){ if(BUDGET>9e5){ BUDGET*=.5; RIB.forEach(function(r){ r.n=Math.max(10,Math.round(r.n*.7)); }); resize(); }
+                   else { still=true; cancelAnimationFrame(raf); raf=0; draw(); } }
+      frames=0; slow=0; } }
   addEventListener("resize",resize);
-  addEventListener("scroll",function(){ sy=scrollY; if(reduce) draw(); },{passive:true});
+  addEventListener("scroll",function(){ sy=scrollY; if(reduce||still) draw(); },{passive:true});
   addEventListener("pointermove",function(e){ tmx=e.clientX/W; tmy=e.clientY/H; },{passive:true});
-  document.addEventListener("visibilitychange",function(){ if(document.hidden){ cancelAnimationFrame(raf); raf=0; } else if(!reduce&&!raf){ last=0; raf=requestAnimationFrame(loop); } });
+  document.addEventListener("visibilitychange",function(){ if(document.hidden){ cancelAnimationFrame(raf); raf=0; } else if(!reduce&&!still&&!raf){ last=0; raf=requestAnimationFrame(loop); } });
   resize(); t=reduce?8:0; if(reduce) draw(); else raf=requestAnimationFrame(loop);
 })();
 </script>
