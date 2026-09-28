@@ -137,6 +137,12 @@ def export_news():
     for x in sorted(items, key=lambda x: int(x.get("ts") or x.get("first_seen") or 0)):
         if not x.get("title") or not x.get("url"):
             continue
+        u = x["url"].lower()
+        # BBC 综合体育频道会混进网球/板球等（「France」「England」被当成球队）→ 只留足球
+        if "bbc." in u and "/sport/" in u and "/sport/football" not in u:
+            continue
+        if x["title"].startswith("Copy of "):       # ESPN 源里的草稿标题
+            continue
         key = re.sub(r"^https?://(www\.)?", "", x["url"].split("?")[0].split("#")[0]).rstrip("/").lower()
         if key in seen:                    # 同一篇报道出现在多个频道/带不同跟踪参数 → 只留一条
             continue

@@ -145,12 +145,28 @@ def _cache_file(url: str) -> Path:
     return CACHE / (hashlib.sha1(url.encode()).hexdigest() + ".bin")
 
 
+OFFLINE = "--offline" in sys.argv          # 只用本地缓存重新解析，不联网
+
+
+def _gunzip(b: bytes | None) -> bytes | None:
+    """档案馆有时原样返回 gzip 压缩的 RSS（当年服务器就是压缩存的），需先解压才能解析。"""
+    if b and b[:2] == b"\x1f\x8b":
+        import gzip
+        try:
+            return gzip.decompress(b)
+        except Exception:
+            return b
+    return b
+
+
 def cached_get(url: str, valid=None) -> bytes | None:
     """带缓存的 GET。valid(body)->bool 用于拒绝缓存限流页之类的无效响应。"""
     f = _cache_file(url)
     if f.exists():
-        return f.read_bytes()
-    body = http_get(url)
+        return _gunzip(f.read_bytes())
+    if OFFLINE:
+        return None
+    body = _gunzip(http_get(url))
     if body is not None and (valid is None or valid(body)):
         f.write_bytes(body)
         return body
@@ -303,7 +319,7 @@ def run_gdelt(news):
                 url = "https://api.gdeltproject.org/api/v2/doc/doc?" + q
                 cached = _cache_file(url).exists()
                 body = cached_get(url, valid=_gdelt_valid)
-                if not cached:
+                if not cached and not OFFLINE:
                     time.sleep(5.5)                     # GDELT 要求约 5 秒一次
                 if not body:
                     continue
