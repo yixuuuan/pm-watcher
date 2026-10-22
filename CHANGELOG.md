@@ -7,6 +7,29 @@ Format based on [Keep a Changelog](https://keepachangelog.com/); versions follow
 
 ---
 
+## [1.0.0] — 2026-09-28
+
+The archive release. The tournament is over; the live service becomes a permanent, static replay of how five markets priced it.
+
+### Added
+- **Static replay site** — any moment from the opener to the final, reconstructed in the browser from ~200,000 recorded pricing changes. Timeline bar with drag and play; every moment is a shareable `?t=` link.
+- **Replay layer** (`archive/web/archive.js`) — recomputes what the server would have returned at time *T*, using the same logic as `serve.py` and `history.py`. Verified against the original Python at 20 timestamps: 11,808 fields, bit-identical.
+- **Full-tournament recap** (`analysis.html`, built by `archive/analyze.py`) — favourite hit rate by round, draw pricing vs. reality, the title race, the largest misses, per-platform Brier scores and calibration.
+- **News backfill** (`archive/backfill_news.py`) — the live news feed was never persisted; tournament headlines recovered from the Wayback Machine.
+- **Visit counter** — optional Cloudflare Worker + KV (`worker/`, `wrangler.jsonc`).
+
+### Changed
+- Hosting moved to **Cloudflare Pages** at **pmwatcher.wy-x.com**. No server, database or API token required.
+- Overround counts only the 48 tournament teams; settled cricket and player markets that lingered in the history are excluded.
+- README rewritten for the archive: tournament numbers, findings, how the replay works.
+
+### Privacy
+- The raw database (hashed visitor IPs) stays private. The public repo carries only exported pricing, results and daily visit totals.
+
+> 中文：「档案」版本。赛事结束，实时服务转为永久静态回放。新增 **时刻回放**(约 20 万条定价变动在浏览器内重算，可分享任意时刻链接；与原 Python 在 20 个时刻对拍 11,808 个字段逐位一致)、**全程数据复盘**页、**新闻补回**(Wayback Machine)、可选**访问计数**。托管迁至 Cloudflare Pages(pmwatcher.wy-x.com)，无需服务器、数据库或 token。原始数据库不公开。
+
+---
+
 ## [0.2.0] — 2026-06-24
 
 The retrospective release: once a match is over, the board stops asking *"what will happen"* and starts asking *"who priced it right — and how wrong were the rest?"* Built around the guiding idea **calibration, not prediction (校准而非预测)**.
@@ -48,5 +71,6 @@ First public version: one World Cup, five prediction markets, side by side.
 
 ---
 
+[1.0.0]: https://github.com/yixuuuan/pm-watcher/releases/tag/v1.0.0
 [0.2.0]: https://github.com/yixuuuan/pm-watcher/releases/tag/v0.2.0
 [0.1.0]: https://github.com/yixuuuan/pm-watcher/releases/tag/v0.1.0
