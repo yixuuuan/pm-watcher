@@ -2,6 +2,10 @@
 
 *by Yixuan · [English](./README.md)*
 
+<a href="https://github.com/yixuuuan/pm-watcher/releases/tag/keynote-film"><img src="docs/film/trailer.webp" alt="pm-watcher 宣传片 · 15 秒预览" width="100%"></a>
+
+<p align="center"><b><a href="https://github.com/yixuuuan/pm-watcher/releases/download/keynote-film/pm-watcher-keynote-1080p.mp4">▶ 观看宣传片 · 2:50</a></b> &nbsp;·&nbsp; <a href="https://github.com/yixuuuan/pm-watcher/releases/download/keynote-film/pm-watcher-keynote-HD.mp4">高清版</a></p>
+
 > 🏆 **2026 世界杯已经结束，这个看板已成为永久的历史档案。** 打开 **[pmwatcher.wy-x.com](https://pmwatcher.wy-x.com/)**，从揭幕战到决赛任选一个时刻，就能看到当时线上看板显示的样子（可拖动时间轴或倍速播放）。另有一份 **[全程数据复盘](https://pmwatcher.wy-x.com/analysis.html)**：市场准不准、谁被看走眼、冠军之路如何被一步步定价。归档的构建方式见 [`archive/`](./archive/README.md)。
 
 同一场世界杯，五个预测市场，五种定价。pm-watcher 把 Polymarket、Kalshi、42、Manifold、Predict.fun 对 2026 世界杯的实时定价并排放在一张看板上——看它们在哪里取得共识，在哪里相互背离。

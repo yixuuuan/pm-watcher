@@ -2,6 +2,10 @@
 
 *by Yixuan · [中文版](./README.zh-CN.md)*
 
+<a href="https://github.com/yixuuuan/pm-watcher/releases/tag/keynote-film"><img src="docs/film/trailer.webp" alt="pm-watcher — keynote film, 15-second preview" width="100%"></a>
+
+<p align="center"><b><a href="https://github.com/yixuuuan/pm-watcher/releases/download/keynote-film/pm-watcher-keynote-1080p.mp4">▶ Watch the film · 2:50</a></b> &nbsp;·&nbsp; <a href="https://github.com/yixuuuan/pm-watcher/releases/download/keynote-film/pm-watcher-keynote-HD.mp4">HD</a></p>
+
 > 🏆 **The 2026 World Cup is over — this board is now a permanent archive.** Open **[pmwatcher.wy-x.com](https://pmwatcher.wy-x.com/)** and pick any moment from the opener to the final to see exactly what the live board showed then (drag the timeline or press play). Plus a **[full-tournament data recap](https://pmwatcher.wy-x.com/analysis.html)**: were the markets right, who did they misread, and how the title race was priced. How the archive is built: [`archive/`](./archive/README.md).
 
 One World Cup, five prediction markets, five different answers. pm-watcher puts Polymarket, Kalshi, 42, Manifold and Predict.fun side by side as they price the 2026 World Cup in real time — so you can see where they agree, and where they diverge.
